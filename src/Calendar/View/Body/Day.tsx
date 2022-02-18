@@ -1,6 +1,11 @@
 import { createEffect, mergeProps, splitProps } from 'solid-js';
 import { Dynamic } from 'solid-js/web';
-import { useCalendarActions, useCalendarState, useDateContext } from '~/Calendar/context';
+import {
+  externalState,
+  useCalendarActions,
+  useCalendarState,
+  useDateContext,
+} from '~/Calendar/context';
 import { useKeyEventHandlers } from '~/eventUtils';
 import { BaseComponent, StyleProps } from '~/types';
 
@@ -17,6 +22,7 @@ type DayProps = {
     | string
     | BaseComponent<
         {
+          disabled: boolean;
           onClick(event: MouseEvent): void;
           onKeyDown(event: KeyboardEvent): void;
           tabIndex: DayProps['tabIndex'];
@@ -26,6 +32,7 @@ type DayProps = {
   cellProps?: StyleProps & {
     as?: string | BaseComponent<{}, typeof dataAttributeDayCell>;
   };
+  disabled?: boolean;
   tabIndex?: number | string;
 };
 
@@ -59,7 +66,7 @@ const Day: BaseComponent<DayProps> = (props) => {
     }
   });
 
-  const [localProps, otherProps] = splitProps(props, ['as', 'cellProps', 'tabIndex']);
+  const [localProps, otherProps] = splitProps(props, ['as', 'cellProps', 'disabled', 'tabIndex']);
   const [localCellProps, otherCellProps] = splitProps(localProps.cellProps, ['as']);
 
   return (
@@ -68,6 +75,12 @@ const Day: BaseComponent<DayProps> = (props) => {
         {...otherProps}
         component={localProps.as}
         {...dataAttributeDayButton}
+        data-active={externalState.isDateActive ? '' : undefined}
+        data-current-month={externalState.isDateInCurrentMonth ? '' : undefined}
+        data-date-range={externalState.isDateInRange ? '' : undefined}
+        data-selected={externalState.isDateSelected ? '' : undefined}
+        data-today={externalState.isDateToday ? '' : undefined}
+        disabled={localProps.disabled}
         onClick={handleClick}
         onKeyDown={handleKeyDown}
         ref={buttonRef}

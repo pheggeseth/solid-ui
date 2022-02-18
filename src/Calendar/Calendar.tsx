@@ -10,8 +10,8 @@ import {
   CalendarActions,
   CalendarContext,
   CalendarState,
-  useCalendarState,
-  useDateContext,
+  ExternalState,
+  externalState
 } from './context';
 import NextMonth from './NextMonth';
 import NextYear from './NextYear';
@@ -153,15 +153,7 @@ type CalendarComponentType = {
   View: typeof View;
   Cancel: typeof Cancel;
   Save: typeof Save;
-  state: {
-    visibleMonth: string;
-    date: string;
-    isDateInCurrentMonth: boolean;
-    isDateActive: boolean;
-    isDateSelected: boolean;
-    isDateToday: boolean;
-    isDateInRange: boolean;
-  };
+  state: ExternalState;
 };
 
 const CalendarComponent: CalendarComponentType = Object.assign(Container, {
@@ -175,30 +167,7 @@ const CalendarComponent: CalendarComponentType = Object.assign(Container, {
   View,
   Cancel,
   Save,
-  state: {
-    get visibleMonth() {
-      const state = useCalendarState();
-      return dayjs([state.visibleYear, state.visibleMonth]).format('YYYY-MM-DD');
-    },
-    get date() {
-      return useDateContext();
-    },
-    get isDateInCurrentMonth() {
-      return dayjs(useDateContext()).month() === useCalendarState().visibleMonth;
-    },
-    get isDateInRange() {
-      return false; // TODO: implement this
-    },
-    get isDateActive() {
-      return useDateContext() === useCalendarState().activeDate;
-    },
-    get isDateSelected() {
-      return useDateContext() === useCalendarState().selectedDate;
-    },
-    get isDateToday() {
-      return useDateContext() === dayjs().format('YYYY-MM-DD');
-    },
-  },
+  state: externalState,
 });
 
 export default CalendarComponent;

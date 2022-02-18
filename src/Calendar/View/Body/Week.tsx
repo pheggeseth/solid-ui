@@ -16,12 +16,12 @@ const Week: BaseComponent<WeekProps> = (props) => {
 
   const week = useWeekContext();
 
-  const [localProps, otherProps] = splitProps(props, ['as']);
+  const [localProps, otherProps] = splitProps(props, ['as', 'children']);
 
   return (
     <Dynamic {...otherProps} component={localProps.as} {...dataAttribute}>
       <For each={week}>
-        {(date) => <DateContext.Provider value={date}>{otherProps.children}</DateContext.Provider>}
+        {(date) => <DateContext.Provider value={date}>{localProps.children}</DateContext.Provider>}
       </For>
     </Dynamic>
   );
