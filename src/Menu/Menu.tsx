@@ -1,32 +1,35 @@
 import { Component, JSXElement, PropsWithChildren } from 'solid-js';
 import { ListInPopoverProvider } from '~/List/ListProvider';
-import { PopoverProvider } from '~/Popover';
+import { Popover } from '~/Popover';
 import Button from './Button';
 import Item from './Item';
 import Items from './Items';
+import Overlay from './Overlay';
 import Panel from './Panel';
 
 export const MenuProvider: Component = (props) => {
   return (
-    <PopoverProvider>
+    <Popover>
       <ListInPopoverProvider>{props.children}</ListInPopoverProvider>
-    </PopoverProvider>
+    </Popover>
   );
 };
 
 type MenuComponent = {
   (props: PropsWithChildren): JSXElement;
   Button: typeof Button;
-  Panel: typeof Panel;
-  Items: typeof Items;
   Item: typeof Item;
+  Items: typeof Items;
+  Overlay: typeof Overlay;
+  Panel: typeof Panel;
 };
 
 const Menu: MenuComponent = Object.assign(MenuProvider, {
   Button,
-  Panel,
-  Items,
   Item,
+  Items,
+  Overlay,
+  Panel,
 });
 
 export default Menu;

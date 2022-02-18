@@ -1,11 +1,12 @@
 import { Component, JSX, PropsWithChildren } from 'solid-js';
 import { InitialMountFocus, useListActions } from '~/List/context';
 import { ListInPopoverProvider } from '~/List/ListProvider';
-import { PopoverProvider } from '~/Popover';
+import { Popover as PopoverProvider } from '~/Popover';
 import Button from './Button';
 import Label from './Label';
 import Option from './Option';
 import Options from './Options';
+import Overlay from './Overlay';
 import Panel from './Panel';
 
 export type ListboxProviderProps = {
@@ -33,19 +34,21 @@ const ListboxComponent: Component<ListboxProviderProps> = (props) => {
 
 type ListboxComponentType = {
   (props: PropsWithChildren<ListboxProviderProps>): JSX.Element;
-  Label: typeof Label;
   Button: typeof Button;
-  Panel: typeof Panel;
-  Options: typeof Options;
+  Label: typeof Label;
   Option: typeof Option;
+  Options: typeof Options;
+  Overlay: typeof Overlay;
+  Panel: typeof Panel;
 };
 
 const Listbox: ListboxComponentType = Object.assign(ListboxComponent, {
-  Label,
   Button,
-  Panel,
-  Options,
+  Label,
   Option,
+  Options,
+  Overlay,
+  Panel,
 });
 
 export default Listbox;

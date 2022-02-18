@@ -6,7 +6,6 @@ import {
   JSX,
   mergeProps,
   on,
-  PropsWithChildren,
   splitProps,
   useContext,
 } from 'solid-js';
@@ -14,9 +13,9 @@ import { createStore } from 'solid-js/store';
 import { Position, useListActions, useListState } from '~/List/context';
 import { ListInPopoverProvider } from '~/List/ListProvider';
 import { Listbox as ListboxProvider } from '~/Listbox';
-import { PopoverProvider } from '~/Popover';
+import { Popover as PopoverProvider } from '~/Popover';
 import { usePopoverActions } from '~/Popover/context';
-import { BaseComponent } from '~/types';
+import { BaseComponent, BaseComponentProps } from '~/types';
 import Container, { ContainerProps } from './Container';
 import { ComboboxActions, ComboboxContext, ComboboxState } from './context';
 import Dropdown from './Dropdown';
@@ -207,7 +206,7 @@ export const ComboboxContainer: BaseComponent<ComboboxContainerProps> = (props) 
 };
 
 type ComboboxComponentType = {
-  (props: PropsWithChildren<ComboboxContainerProps>): JSX.Element;
+  (props: BaseComponentProps<ComboboxContainerProps>): JSX.Element;
   Label: typeof Label;
   Textbox: typeof Textbox;
   Dropdown: typeof Dropdown;

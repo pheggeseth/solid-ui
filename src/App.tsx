@@ -79,6 +79,7 @@ const MyListbox = () => {
     <Listbox value={value()} onChange={setValue}>
       <Listbox.Label>Option:</Listbox.Label>
       <Listbox.Button>{value}</Listbox.Button>
+      <Listbox.Overlay class="popover-overlay" />
       <Listbox.Options class="popover">
         <For each={listboxItems}>
           {(item) => (

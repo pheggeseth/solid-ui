@@ -1,14 +1,14 @@
-import Overlay from './Overlay';
-import Panel from './Panel';
+import PopoverOverlay from './Overlay';
+import PopoverPanel from './Panel';
 import Popover, { AnchorRef, PopoverProvider } from './Popover';
-import Trigger from './Trigger';
+import PopoverTrigger from './Trigger';
 
 export {
-  PopoverProvider,
-  Trigger as PopoverTrigger,
+  PopoverOverlay,
+  PopoverPanel,
+  PopoverProvider as Popover,
+  PopoverTrigger,
   AnchorRef as PopoverAnchorRef,
-  Overlay as PopoverOverlay,
-  Panel as PopoverPanel,
 };
 
 export default Popover;

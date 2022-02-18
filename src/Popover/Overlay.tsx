@@ -7,19 +7,17 @@ import { usePopoverActions, usePopoverState } from './context';
 type PopoverOverlayDataAttributeProp =
   | { 'data-solid-popover-overlay': '' }
   | { 'data-solid-menu-overlay': '' }
-  | { 'data-solid-listbox-overlay': '' }
-  | { 'data-solid-combobox-overlay': '' };
+  | { 'data-solid-listbox-overlay': '' };
 
-type OverlayProps = {
+export type OverlayProps = {
   as?: string | BaseComponent<{ id: string } & PopoverOverlayDataAttributeProp>;
   dataAttribute?:
     | 'data-solid-popover-overlay'
     | 'data-solid-menu-overlay'
-    | 'data-solid-listbox-overlay'
-    | 'data-solid-combobox-overlay';
+    | 'data-solid-listbox-overlay';
 };
 
-export const Overlay: BaseComponent<OverlayProps> = function Overlay(props) {
+const Overlay: BaseComponent<OverlayProps> = function Overlay(props) {
   props = mergeProps({ as: 'div', dataAttribute: 'data-solid-popover-overlay' }, props);
 
   const state = usePopoverState();
