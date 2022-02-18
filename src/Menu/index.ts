@@ -1,15 +1,9 @@
-import Button from './Button';
-import Item from './Item';
-import Items from './Items';
+import MenuButton from './Button';
+import MenuItem from './Item';
+import MenuItems from './Items';
 import Menu, { MenuProvider } from './Menu';
-import Panel from './Panel';
+import MenuPanel from './Panel';
 
-export {
-  MenuProvider as Menu,
-  Button as MenuButton,
-  Panel as MenuPanel,
-  Items as MenuItems,
-  Item as MenuItem,
-};
+export { MenuProvider as Menu, MenuButton, MenuItem, MenuItems, MenuPanel };
 
 export default Menu;

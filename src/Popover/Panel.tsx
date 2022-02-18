@@ -19,24 +19,37 @@ export function usePopoverPanelConfigContext() {
   );
 }
 
-type PanelProps = {
+type PopoverPanelDataAttributeProp =
+  | { 'data-solid-popover-panel': '' }
+  | { 'data-solid-menu-panel': '' }
+  | { 'data-solid-listbox-panel': '' }
+  | { 'data-solid-combobox-panel': '' };
+
+export type PanelProps = {
   as?:
     | string
-    | BaseComponent<{
-        'aria-modal'?: PanelProps['aria-modal'];
-        id: string;
-        onKeyDown: PanelProps['onKeyDown'];
-        role: PanelProps['role'];
-        tabIndex: string | number;
-      }>;
+    | BaseComponent<
+        {
+          'aria-modal'?: PanelProps['aria-modal'];
+          id: string;
+          onKeyDown: PanelProps['onKeyDown'];
+          role: PanelProps['role'];
+          tabIndex: string | number;
+        } & PopoverPanelDataAttributeProp
+      >;
   'aria-modal'?: boolean;
+  dataAttribute?:
+    | 'data-solid-popover-panel'
+    | 'data-solid-menu-panel'
+    | 'data-solid-listbox-panel'
+    | 'data-solid-combobox-panel';
   onKeyDown?: (event: KeyboardEvent) => void;
   ref?: (element: HTMLElement) => void;
   role?: string;
 };
 
 export const Panel: BaseComponent<PanelProps> = function Panel(props) {
-  props = mergeProps({ as: 'div' }, props);
+  props = mergeProps({ as: 'div', dataAttribute: 'data-solid-popover-panel' }, props);
 
   const state = usePopoverState();
   const actions = usePopoverActions();
@@ -71,7 +84,7 @@ export const Panel: BaseComponent<PanelProps> = function Panel(props) {
     props.onKeyDown?.(event);
   }
 
-  const [localProps, otherProps] = splitProps(props, ['as', 'role']);
+  const [localProps, otherProps] = splitProps(props, ['as', 'dataAttribute', 'role']);
 
   return (
     <Show when={state.isPanelOpen}>
@@ -79,6 +92,7 @@ export const Panel: BaseComponent<PanelProps> = function Panel(props) {
         <Dynamic
           {...otherProps}
           component={localProps.as}
+          {...({ [localProps.dataAttribute]: '' } as PopoverPanelDataAttributeProp)}
           id={state.panelId}
           onKeyDown={handleKeyDown}
           ref={ref}

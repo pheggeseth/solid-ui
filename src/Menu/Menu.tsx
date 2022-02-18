@@ -22,7 +22,7 @@ type MenuComponent = {
   Item: typeof Item;
 };
 
-export const Menu: MenuComponent = Object.assign(MenuProvider, {
+const Menu: MenuComponent = Object.assign(MenuProvider, {
   Button,
   Panel,
   Items,

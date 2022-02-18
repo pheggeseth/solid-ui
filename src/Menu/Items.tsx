@@ -13,11 +13,23 @@ type ItemsProps = {
     | 'data-solid-menu-items'
     | 'data-solid-listbox-options'
     | 'data-solid-combobox-listbox';
+  dataAttributePanel?:
+    | 'data-solid-menu-panel'
+    | 'data-solid-listbox-panel'
+    | 'data-solid-combobox-panel';
   role?: 'menu' | 'listbox';
 };
 
 const Items: BaseComponent<ItemsProps> = (props) => {
-  props = mergeProps({ as: 'div', dataAttribute: 'data-solid-menu-items', role: 'menu' }, props);
+  props = mergeProps(
+    {
+      as: 'div',
+      dataAttribute: 'data-solid-menu-items',
+      dataAttributePanel: 'data-solid-menu-panel',
+      role: 'menu',
+    },
+    props
+  );
 
   const ListActions = useListActions();
 
@@ -32,6 +44,7 @@ const Items: BaseComponent<ItemsProps> = (props) => {
     'aria-labelledby',
     'aria-orientation',
     'dataAttribute',
+    'dataAttributePanel',
     'role',
   ]);
 
@@ -48,7 +61,11 @@ const Items: BaseComponent<ItemsProps> = (props) => {
     />
   );
 
-  return PopoverState.panelId ? renderList() : <Panel>{renderList()}</Panel>;
+  return PopoverState.panelId ? (
+    renderList()
+  ) : (
+    <Panel dataAttribute={localProps.dataAttributePanel}>{renderList()}</Panel>
+  );
 };
 
 export default Items;
