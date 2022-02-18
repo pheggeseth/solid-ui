@@ -117,6 +117,8 @@ export const Item: BaseComponent<ItemProps> = function Item(props) {
         aria-checked={state.isRadioList && isSelected() ? true : false}
         aria-selected={!state.isRadioList && isSelected() ? true : undefined}
         {...({ [localProps.dataAttribute]: '' } as ListItemDataAttributeProp)}
+        data-active={isActive() ? '' : undefined}
+        data-selected={isSelected() ? '' : undefined}
         disabled={props.disabled}
         id={itemId}
         onBlur={handleBlur}
@@ -137,7 +139,7 @@ type ItemComponentType = {
   };
 };
 
-export const ItemComponent: ItemComponentType = Object.assign(Item, {
+const ItemComponent: ItemComponentType = Object.assign(Item, {
   state: {
     isActive() {
       return useItemContext().isActive();

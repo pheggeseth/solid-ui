@@ -4,12 +4,16 @@ import { useId } from '~/componentUtils';
 import { useListActions, useListState } from '~/List/context';
 import { BaseComponent } from '~/types';
 
+const dataAttribute = {
+  'data-solid-list-label': '' as const,
+};
+
 export type LabelProps = {
-  as?: string | BaseComponent<{ id: string }>;
+  as?: string | BaseComponent<{ id: string }, typeof dataAttribute>;
   idPrefix?: string;
 };
 
-export const Label: BaseComponent<LabelProps> = function Label(props) {
+const Label: BaseComponent<LabelProps> = function Label(props) {
   props = mergeProps({ as: 'label' }, props);
 
   const ListState = useListState();
@@ -21,7 +25,9 @@ export const Label: BaseComponent<LabelProps> = function Label(props) {
 
   const [localProps, otherProps] = splitProps(props, ['as']);
 
-  return <Dynamic {...otherProps} component={localProps.as} id={ListState.labelId} />;
+  return (
+    <Dynamic {...otherProps} component={localProps.as} {...dataAttribute} id={ListState.labelId} />
+  );
 };
 
 export default Label;
