@@ -25,7 +25,7 @@ export const RadioGroup: BaseComponent<RadioGroupProps> = (props) => {
       useRovingTabIndex
       isRadioList
     >
-      <List {...otherProps} as={localProps.as} role="none">
+      <List {...otherProps} as={localProps.as} dataAttribute="data-solid-radio-group" role="none">
         {props.children}
       </List>
     </ListProvider>

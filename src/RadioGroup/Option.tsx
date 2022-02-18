@@ -26,6 +26,7 @@ const Option: BaseComponent<OptionProps> = (props) => {
       {...otherProps}
       as={localProps.as}
       aria-labelledby={ListState.labelId}
+      dataAttribute="data-solid-radio-group-option"
       idPrefix="radio-group-option"
       role="radio"
     />

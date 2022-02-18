@@ -21,12 +21,6 @@ type ListItemDataAttributeProp =
   | { 'data-solid-listbox-option': '' }
   | { 'data-solid-combobox-option': '' };
 
-type ListItemDataAttribute =
-  | 'data-solid-list-item'
-  | 'data-solid-menu-item'
-  | 'data-solid-listbox-option'
-  | 'data-solid-combobox-option';
-
 export type ItemProps = {
   as?:
     | BaseComponent<
@@ -42,7 +36,12 @@ export type ItemProps = {
         } & ListItemDataAttributeProp
       >
     | string;
-  dataAttribute?: ListItemDataAttribute;
+  dataAttribute?:
+    | 'data-solid-list-item'
+    | 'data-solid-menu-item'
+    | 'data-solid-listbox-option'
+    | 'data-solid-combobox-option'
+    | 'data-solid-radio-group-option';
   disabled?: boolean;
   idPrefix?: string;
   onClick?: (event?: MouseEvent) => void;

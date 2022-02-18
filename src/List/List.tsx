@@ -33,7 +33,8 @@ export type ListProps = {
     | 'data-solid-list'
     | 'data-solid-menu-items'
     | 'data-solid-listbox-options'
-    | 'data-solid-combobox-listbox';
+    | 'data-solid-combobox-listbox'
+    | 'data-solid-radio-group';
   role?: 'menu' | 'listbox' | 'none';
   value?: any;
 };
@@ -43,8 +44,6 @@ export const List: BaseComponent<ListProps> = (props) => {
     { 'aria-orientation': 'vertical', as: 'ul', dataAttribute: 'data-solid-list' },
     props
   );
-
-  props.dataAttribute;
 
   const state = useListState();
   const actions = useListActions();
