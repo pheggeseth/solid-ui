@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import { createEffect, mergeProps, splitProps } from 'solid-js';
 import { Dynamic } from 'solid-js/web';
 import {
@@ -25,6 +26,7 @@ type DayProps = {
           disabled: boolean;
           onClick(event: MouseEvent): void;
           onKeyDown(event: KeyboardEvent): void;
+          onFocus(event: FocusEvent): void;
           tabIndex: DayProps['tabIndex'];
         },
         typeof dataAttributeDayButton
@@ -48,7 +50,9 @@ const Day: BaseComponent<DayProps> = (props) => {
   const date = useDateContext();
 
   function handleClick() {
-    actions.onDateClick(date);
+    if (date === state.activeDate) {
+      actions.onDateClick(date);
+    }
   }
 
   const handleKeyDown = useKeyEventHandlers({
@@ -57,6 +61,12 @@ const Day: BaseComponent<DayProps> = (props) => {
     ArrowLeft: actions.goToPreviousDay,
     ArrowRight: actions.goToNextDay,
   });
+
+  function handleFocus() {
+    if (date !== state.activeDate) {
+      actions.selectDate(dayjs(date));
+    }
+  }
 
   let buttonRef;
 
@@ -82,6 +92,7 @@ const Day: BaseComponent<DayProps> = (props) => {
         data-today={externalState.isDateToday ? '' : undefined}
         disabled={localProps.disabled}
         onClick={handleClick}
+        onFocus={handleFocus}
         onKeyDown={handleKeyDown}
         ref={buttonRef}
         tabIndex={localProps.tabIndex}

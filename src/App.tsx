@@ -129,6 +129,8 @@ const MyCombobox: Component<{ selection: 'manual' | 'automatic' | 'inline-automa
 function MyCalendar() {
   const [date, setDate] = createSignal(dayjs().format('YYYY-MM-DD'));
 
+  const isDisabled = () => dayjs(Calendar.state.date).date() % 2 === 1;
+
   return (
     <div>
       <div>{date()}</div>
@@ -159,6 +161,7 @@ function MyCalendar() {
                   'calendar-is-selected': Calendar.state.isDateSelected,
                   'calendar-is-active': Calendar.state.isDateActive,
                 }}
+                disabled={isDisabled()}
                 tabIndex={Calendar.state.isDateActive ? 0 : -1}
               >
                 {dayjs(Calendar.state.date).format('DD')}
