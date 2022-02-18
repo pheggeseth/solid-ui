@@ -4,7 +4,7 @@ import { MenuButton } from '~/Menu';
 import { ButtonProps } from '~/Menu/Button';
 import { BaseComponent } from '~/types';
 
-export const Button: BaseComponent<ButtonProps> = function Button(props) {
+export const Button: BaseComponent<Omit<ButtonProps, 'dataAttribute'>> = function Button(props) {
   const ListState = useListState();
   const ListActions = useListActions();
 
@@ -16,6 +16,7 @@ export const Button: BaseComponent<ButtonProps> = function Button(props) {
     <MenuButton
       {...props}
       aria-labelledby={ListState.labelId}
+      dataAttribute="data-solid-listbox-button"
       idPrefix={props.idPrefix || 'listbox-button'}
     />
   );

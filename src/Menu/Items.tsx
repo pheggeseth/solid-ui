@@ -5,16 +5,14 @@ import { usePopoverState } from '~/Popover/context';
 import { BaseComponent } from '~/types';
 import Panel from './Panel';
 
-type MenuItemsDataAttribute =
-  | 'data-solid-menu-items'
-  | 'data-solid-listbox-options'
-  | 'data-solid-combobox-listbox';
-
 type ItemsProps = {
   as?: string | BaseComponent<ListProps>;
   'aria-labelledby'?: string;
   'aria-orientation'?: ListOrientation;
-  dataAttribute?: MenuItemsDataAttribute;
+  dataAttribute?:
+    | 'data-solid-menu-items'
+    | 'data-solid-listbox-options'
+    | 'data-solid-combobox-listbox';
   role?: 'menu' | 'listbox';
 };
 

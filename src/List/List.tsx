@@ -12,12 +12,6 @@ export type ListDataAttributeProp =
   | { 'data-solid-listbox-options': '' }
   | { 'data-solid-combobox-listbox': '' };
 
-export type ListDataAttribute =
-  | 'data-solid-list'
-  | 'data-solid-menu-items'
-  | 'data-solid-listbox-options'
-  | 'data-solid-combobox-listbox';
-
 export type ListProps = {
   as?:
     | string
@@ -35,7 +29,11 @@ export type ListProps = {
       >;
   'aria-labelledby'?: string;
   'aria-orientation'?: ListOrientation;
-  dataAttribute?: ListDataAttribute;
+  dataAttribute?:
+    | 'data-solid-list'
+    | 'data-solid-menu-items'
+    | 'data-solid-listbox-options'
+    | 'data-solid-combobox-listbox';
   role?: 'menu' | 'listbox' | 'none';
   value?: any;
 };

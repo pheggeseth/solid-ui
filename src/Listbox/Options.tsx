@@ -8,12 +8,10 @@ type ListboxOptionsDataAttributeProp =
   | { 'data-solid-listbox-options': '' }
   | { 'data-solid-combobox-listbox': '' };
 
-type ListboxOptionsDataAttribute = 'data-solid-listbox-options' | 'data-solid-combobox-listbox';
-
 export type OptionsProps = {
   as?: string | BaseComponent<Omit<ListProps, 'dataAttribute'> & ListboxOptionsDataAttributeProp>;
   'aria-orientation'?: ListOrientation;
-  dataAttribute?: ListboxOptionsDataAttribute;
+  dataAttribute?: 'data-solid-listbox-options' | 'data-solid-combobox-listbox';
 };
 
 const Options: BaseComponent<OptionsProps> = (props) => {

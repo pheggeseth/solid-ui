@@ -4,18 +4,29 @@ import { useId } from '~/componentUtils';
 import { BaseComponent } from '~/types';
 import { usePopoverActions, usePopoverState } from './context';
 
-type TriggerProps = {
+type PopoverTriggerDataAttributeProp =
+  | { 'data-solid-popover-trigger': '' }
+  | { 'data-solid-menu-button': '' }
+  | { 'data-solid-listbox-button': '' };
+
+export type TriggerProps = {
   as?:
-    | BaseComponent<{
-        'aria-expanded': boolean;
-        'aria-haspopup': TriggerProps['aria-haspopup'];
-        id: string;
-        onClick: TriggerProps['onClick'];
-        onKeyDown?: TriggerProps['onKeyDown'];
-        type: 'button';
-      }>
+    | BaseComponent<
+        {
+          'aria-expanded': boolean;
+          'aria-haspopup': TriggerProps['aria-haspopup'];
+          id: string;
+          onClick: TriggerProps['onClick'];
+          onKeyDown?: TriggerProps['onKeyDown'];
+          type: 'button';
+        } & PopoverTriggerDataAttributeProp
+      >
     | string;
   'aria-haspopup'?: boolean | string;
+  dataAttribute?:
+    | 'data-solid-popover-trigger'
+    | 'data-solid-menu-button'
+    | 'data-solid-listbox-button';
   idPrefix?: string;
   onClick?: (event: MouseEvent) => void;
   onKeyDown?: (event: KeyboardEvent) => void;
@@ -23,7 +34,10 @@ type TriggerProps = {
 };
 
 export const Trigger: BaseComponent<TriggerProps> = function Trigger(props) {
-  props = mergeProps({ 'aria-haspopup': 'dialog', as: 'button' }, props);
+  props = mergeProps(
+    { 'aria-haspopup': 'dialog', as: 'button', dataAttribute: 'data-solid-popover-trigger' },
+    props
+  );
 
   const state = usePopoverState();
   const actions = usePopoverActions();
@@ -59,7 +73,7 @@ export const Trigger: BaseComponent<TriggerProps> = function Trigger(props) {
     props.onKeyDown?.(event);
   }
 
-  const [localProps, otherProps] = splitProps(props, ['as', 'aria-haspopup']);
+  const [localProps, otherProps] = splitProps(props, ['as', 'aria-haspopup', 'dataAttribute']);
 
   return (
     <Dynamic
@@ -68,6 +82,7 @@ export const Trigger: BaseComponent<TriggerProps> = function Trigger(props) {
       aria-controls={state.isOpen ? state.panelId : undefined}
       aria-expanded={state.isOpen}
       aria-haspopup={localProps['aria-haspopup']}
+      {...({ [localProps.dataAttribute]: '' } as PopoverTriggerDataAttributeProp)}
       id={triggerId}
       onClick={handleClick}
       onKeyDown={handleKeyDown}
