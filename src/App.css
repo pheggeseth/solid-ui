@@ -1,0 +1,52 @@
+.popover {
+  background-color: white;
+  padding: 10px;
+  border: 1px solid;
+  margin: 0;
+  list-style: none;
+}
+
+.popover ul {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.popover-overlay {
+  background-color: rgba(0, 0, 0, 0.1);
+  position: fixed;
+  inset: 0;
+}
+
+.selected {
+  background-color: lightgreen;
+}
+
+.active {
+  background-color: lightblue;
+}
+
+*:focus-visible {
+  outline: 2px solid black;
+}
+
+.combobox-dropdown {
+  display: inline-block;
+}
+
+.calendar-root {
+  display: inline-flex;
+  flex-direction: column;
+}
+
+.calendar-outside-month {
+  background-color: lightblue;
+}
+
+.calendar-is-selected {
+  background-color: lightgreen;
+}
+
+.calendar-is-active {
+  border: 2px solid black;
+}
