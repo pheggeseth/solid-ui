@@ -29,7 +29,15 @@ export const Label: BaseComponent<LabelProps> = (props) => {
     }
   }
 
-  return <Dynamic {...otherProps} component={localProps.as} id={id} onClick={handleClick} />;
+  return (
+    <Dynamic
+      {...otherProps}
+      component={localProps.as}
+      data-solid-switch-label=""
+      id={id}
+      onClick={handleClick}
+    />
+  );
 };
 
 export default Label;

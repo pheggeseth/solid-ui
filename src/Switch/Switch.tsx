@@ -66,6 +66,7 @@ export const Switch: BaseComponent<SwitchProps> = (props) => {
       aria-labelledby={state?.labelId}
       aria-describedby={state?.descriptionId}
       aria-checked={localProps.checked}
+      data-solid-switch=""
       onClick={toggle}
       onKeyPress={handleKeyPress}
       onKeyUp={handleKeyUp}

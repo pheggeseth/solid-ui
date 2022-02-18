@@ -34,7 +34,7 @@ export const Group: BaseComponent<GroupProps> = (props) => {
 
   return (
     <SwitchContext.Provider value={[state, actions]}>
-      <Dynamic {...otherProps} component={localProps.as} />
+      <Dynamic {...otherProps} component={localProps.as} data-solid-switch-group="" />
     </SwitchContext.Provider>
   );
 };

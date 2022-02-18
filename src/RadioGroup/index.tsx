@@ -1,6 +1,6 @@
 import RadioGroupOption from './Option';
-import RadioGroup, { RadioGroup as RadioGroupRoot } from './RadioGroup';
+import RadioGroupComponent, { RadioGroup } from './RadioGroup';
 
-export { RadioGroupOption, RadioGroupRoot as RadioGroup };
+export { RadioGroupOption, RadioGroup };
 
-export default RadioGroup;
+export default RadioGroupComponent;

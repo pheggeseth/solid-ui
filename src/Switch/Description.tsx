@@ -21,7 +21,9 @@ export const Description: BaseComponent<DescriptionProps> = (props) => {
     actions?.registerDescriptionId(id);
   });
 
-  return <Dynamic {...otherProps} component={localProps.as} id={id} />;
+  return (
+    <Dynamic {...otherProps} component={localProps.as} data-solid-switch-description="" id={id} />
+  );
 };
 
 export default Description;
