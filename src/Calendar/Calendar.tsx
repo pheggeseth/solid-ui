@@ -11,7 +11,7 @@ import {
   CalendarContext,
   CalendarState,
   ExternalState,
-  externalState
+  externalState,
 } from './context';
 import NextMonth from './NextMonth';
 import NextYear from './NextYear';

@@ -30,7 +30,7 @@ export type TriggerProps = {
   idPrefix?: string;
   onClick?: (event: MouseEvent) => void;
   onKeyDown?: (event: KeyboardEvent) => void;
-  ref?: (element: Element) => void;
+  ref?: Element | ((element: Element) => void);
 };
 
 export const Trigger: BaseComponent<TriggerProps> = function Trigger(props) {
@@ -54,7 +54,11 @@ export const Trigger: BaseComponent<TriggerProps> = function Trigger(props) {
     if (state.triggerId === triggerId) {
       actions.setTriggerReference(element);
     }
-    props.ref?.(element);
+    if (typeof props.ref === 'function') {
+      props.ref(element);
+    } else {
+      props.ref = element;
+    }
   }
 
   createEffect((prevIsOpen) => {

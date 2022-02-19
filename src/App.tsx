@@ -1,8 +1,6 @@
-import dayjs from 'dayjs';
 import { Component, createSignal } from 'solid-js';
 import { For } from 'solid-js/web';
 import { CacheProvider } from '~/Cache';
-import Calendar from '~/Calendar';
 import Combobox from '~/Combobox';
 import Disclosure from '~/Disclosure';
 import Form from '~/Form';
@@ -11,12 +9,13 @@ import Menu from '~/Menu';
 import Popover from '~/Popover';
 import RadioGroup from '~/RadioGroup';
 import Switch from '~/Switch';
+import CalendarDemo from '../demo/Calendar';
 import './App.css';
 
 const MyPopover: Component = () => {
   return (
     <Popover>
-      <Popover.Trigger>{Popover.state.isOpen() ? 'Close' : 'Open'}</Popover.Trigger>
+      <Popover.Trigger>{Popover.state.isOpen ? 'Close' : 'Open'}</Popover.Trigger>
       <Popover.Overlay class="popover-overlay" />
       <Popover.Panel class="popover">
         <Popover.Trigger>X</Popover.Trigger>
@@ -24,7 +23,7 @@ const MyPopover: Component = () => {
         <Popover>
           <button ref={Popover.AnchorRef}>2</button>
           <button>3</button>
-          <Popover.Trigger>{Popover.state.isOpen() ? 'Close' : 'Open'}</Popover.Trigger>
+          <Popover.Trigger>{Popover.state.isOpen ? 'Close' : 'Open'}</Popover.Trigger>
           <Popover.Overlay class="popover-overlay" />
           <Popover.Panel class="popover">
             <button>1</button>
@@ -126,59 +125,6 @@ const MyCombobox: Component<{ selection: 'manual' | 'automatic' | 'inline-automa
     </Combobox>
   );
 };
-
-function MyCalendar() {
-  const [date, setDate] = createSignal(dayjs().format('YYYY-MM-DD'));
-
-  const isDisabled = () => dayjs(Calendar.state.date).date() % 2 === 1;
-
-  return (
-    <div>
-      <div>{date()}</div>
-      <Calendar class={'calendar-root'} value={date()} onChange={setDate} onCancel={() => {}}>
-        <div style={{ display: 'flex' }}>
-          <Calendar.PreviousYear>{'<<'}</Calendar.PreviousYear>
-          <Calendar.PreviousMonth>{'<'}</Calendar.PreviousMonth>
-          <span style={{ flex: '1 0 auto', 'text-align': 'center' }}>
-            {/* TODO: create label element for dialog and add id to state, use as 'aria-labelledby' for container */}
-            {/* {dayjs(Calendar.state.visibleMonth).format('MMMM YYYY')} */}
-            <Calendar.SelectMonth />
-            <Calendar.SelectYear />
-          </span>
-          <Calendar.NextMonth>{'>'}</Calendar.NextMonth>
-          <Calendar.NextYear>{'>>'}</Calendar.NextYear>
-        </div>
-        <Calendar.View>
-          <Calendar.View.Header>
-            <Calendar.View.Header.Day>
-              {dayjs(Calendar.state.date).format('dd')}
-            </Calendar.View.Header.Day>
-          </Calendar.View.Header>
-          <Calendar.View.Body>
-            <Calendar.View.Body.Week>
-              <Calendar.View.Body.Day
-                classList={{
-                  'calendar-outside-month': !Calendar.state.isDateInCurrentMonth,
-                  'calendar-is-selected': Calendar.state.isDateSelected,
-                  'calendar-is-active': Calendar.state.isDateActive,
-                }}
-                disabled={isDisabled()}
-                tabIndex={Calendar.state.isDateActive ? 0 : -1}
-              >
-                {dayjs(Calendar.state.date).format('DD')}
-              </Calendar.View.Body.Day>
-            </Calendar.View.Body.Week>
-          </Calendar.View.Body>
-        </Calendar.View>
-        <div>
-          <Calendar.Cancel>Cancel</Calendar.Cancel>
-          <Calendar.Save>Save</Calendar.Save>
-          <Calendar.Today>Today</Calendar.Today>
-        </div>
-      </Calendar>
-    </div>
-  );
-}
 
 function MyDisclosure() {
   let ref;
@@ -315,7 +261,7 @@ const App: Component = () => {
         <MyCombobox selection="manual" />
         <MyCombobox selection="automatic" />
         <MyCombobox selection="inline-automatic" />
-        <MyCalendar />
+        <CalendarDemo />
         <MyDisclosure />
         <MyRadioGroup />
         <MySwitch />

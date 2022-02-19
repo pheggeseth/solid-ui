@@ -1,4 +1,4 @@
-import { Accessor, Component, createMemo, JSXElement, PropsWithChildren } from 'solid-js';
+import { Component, createMemo, JSXElement, PropsWithChildren } from 'solid-js';
 import { createStore } from 'solid-js/store';
 import usePopper from '~/usePopper';
 import {
@@ -59,7 +59,9 @@ export const PopoverProvider: Component = (props) => {
   };
 
   return (
-    <PopoverContext.Provider value={[state, actions]}>{props.children}</PopoverContext.Provider>
+    <PopoverContext.Provider value={[state, actions]}>
+      {props.children}
+    </PopoverContext.Provider>
   );
 };
 
@@ -70,8 +72,9 @@ export function AnchorRef(element: HTMLElement) {
 
 type PopoverComponent = {
   (props: PropsWithChildren): JSXElement;
+  close(): void;
   state: {
-    isOpen: Accessor<boolean>;
+    isOpen: boolean;
   };
   Trigger: typeof Trigger;
   AnchorRef: typeof AnchorRef;
@@ -80,8 +83,11 @@ type PopoverComponent = {
 };
 
 export const Popover: PopoverComponent = Object.assign(PopoverProvider, {
+  close() {
+    usePopoverActions().closePopover();
+  },
   state: {
-    isOpen() {
+    get isOpen() {
       const state = usePopoverState();
       return state.isOpen;
     },
