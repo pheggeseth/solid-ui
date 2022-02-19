@@ -1,15 +1,15 @@
 import { Component, createSignal } from 'solid-js';
 import { For } from 'solid-js/web';
 import { CacheProvider } from '~/Cache';
-import Combobox from '~/Combobox';
-import Disclosure from '~/Disclosure';
-import Form from '~/Form';
-import Listbox from '~/Listbox';
-import Menu from '~/Menu';
-import Popover from '~/Popover';
-import RadioGroup from '~/RadioGroup';
-import Switch from '~/Switch';
-import CalendarDemo from '../demo/Calendar';
+import Combobox from '~/components/Combobox';
+import Disclosure from '~/components/Disclosure';
+import Form from '~/components/Form';
+import Listbox from '~/components/Listbox';
+import Menu from '~/components/Menu';
+import Popover from '~/components/Popover';
+import RadioGroup from '~/components/RadioGroup';
+import Switch from '~/components/Switch';
+import CalendarDemo from './demo/Calendar';
 import './App.css';
 
 const MyPopover: Component = () => {
