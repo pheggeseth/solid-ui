@@ -41,9 +41,9 @@ export default function CalendarDemo() {
             </div>
             <Calendar.View>
               <Calendar.View.Header>
-                <Calendar.View.Header.Day>
-                  {dayjs(Calendar.state.date).format('dd')}
-                </Calendar.View.Header.Day>
+                {(date) => (
+                  <Calendar.View.Header.Day>{dayjs(date).format('dd')}</Calendar.View.Header.Day>
+                )}
               </Calendar.View.Header>
               <Calendar.View.Body>
                 <Calendar.View.Body.Week>
