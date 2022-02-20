@@ -1,8 +1,8 @@
 import dayjs from 'dayjs';
 import Weekday from 'dayjs/plugin/weekday';
-import { JSXElement } from 'solid-js';
+import { JSXElement, untrack } from 'solid-js';
 import { For } from 'solid-js/web';
-import { BaseComponent, BaseComponentProps } from '~/types';
+import { BaseComponentProps } from '~/types';
 import { DateContext } from '../../context';
 import Day from './Day';
 
@@ -12,14 +12,22 @@ const dataAttribute = {
   'data-solid-calendar-view-header': '' as const,
 };
 
-export const Header: BaseComponent<{}, typeof dataAttribute> = (props) => {
+type HeaderProps = Omit<BaseComponentProps, 'children'> & {
+  children: (date: string) => JSXElement;
+};
+
+export const Header = (props: HeaderProps) => {
   const dates = getHeaderDates();
 
   return (
-    <thead {...dataAttribute}>
+    <thead {...props} {...dataAttribute}>
       <tr>
         <For each={dates}>
-          {(date) => <DateContext.Provider value={date}>{props.children}</DateContext.Provider>}
+          {(date) => (
+            <DateContext.Provider value={date}>
+              {untrack(() => props.children(date))}
+            </DateContext.Provider>
+          )}
         </For>
       </tr>
     </thead>
@@ -27,7 +35,7 @@ export const Header: BaseComponent<{}, typeof dataAttribute> = (props) => {
 };
 
 type HeaderComponentType = {
-  (props: BaseComponentProps): JSXElement;
+  (props: HeaderProps): JSXElement;
   Day: typeof Day;
 };
 
