@@ -2,29 +2,32 @@ import { Component, createMemo, JSXElement, PropsWithChildren } from 'solid-js';
 import { createStore } from 'solid-js/store';
 import { usePopper } from '~/utils/popperUtils';
 import {
+  Context,
   PopoverActions,
-  PopoverContext,
+  PopoverComponentContext,
+  PopoverExternalContext,
   PopoverState,
   usePopoverActions,
-  usePopoverState,
 } from './context';
 import Overlay from './Overlay';
 import Panel from './Panel';
 import Trigger from './Trigger';
 
-export const PopoverProvider: Component = (props) => {
+type PopoverProviderProps = {
+  context?: (context: PopoverExternalContext) => void;
+};
+
+export const PopoverProvider: Component<PopoverProviderProps> = (props) => {
   const [state, setState] = createStore<PopoverState>({
     isOpen: false,
     isOverlayOpen: false,
     get isPanelOpen(): boolean {
-      return isPanelOpen();
+      return state.isOpen && (!state.overlayId || state.isOverlayOpen);
     },
     triggerId: null,
     overlayId: null,
     panelId: null,
   });
-
-  const isPanelOpen = createMemo(() => state.isOpen && (!state.overlayId || state.isOverlayOpen));
 
   const { setTriggerReference, setAnchorReference, setPopperReference } = usePopper();
 
@@ -58,10 +61,17 @@ export const PopoverProvider: Component = (props) => {
     },
   };
 
+  const contextMemo = createMemo(() => ({
+    isOpen: state.isOpen,
+    close: actions.closePopover,
+  }));
+
+  props.context?.(contextMemo);
+
   return (
-    <PopoverContext.Provider value={[state, actions]}>
+    <PopoverComponentContext.Provider value={[state, actions]}>
       {props.children}
-    </PopoverContext.Provider>
+    </PopoverComponentContext.Provider>
   );
 };
 
@@ -71,11 +81,8 @@ export function AnchorRef(element: HTMLElement) {
 }
 
 type PopoverComponent = {
-  (props: PropsWithChildren): JSXElement;
-  close(): void;
-  state: {
-    isOpen: boolean;
-  };
+  (props: PropsWithChildren<PopoverProviderProps>): JSXElement;
+  Context: typeof Context;
   Trigger: typeof Trigger;
   AnchorRef: typeof AnchorRef;
   Overlay: typeof Overlay;
@@ -83,15 +90,7 @@ type PopoverComponent = {
 };
 
 export const Popover: PopoverComponent = Object.assign(PopoverProvider, {
-  close() {
-    usePopoverActions().closePopover();
-  },
-  state: {
-    get isOpen() {
-      const state = usePopoverState();
-      return state.isOpen;
-    },
-  },
+  Context,
   Trigger,
   AnchorRef,
   Overlay,
