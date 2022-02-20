@@ -5,65 +5,12 @@ import Combobox from '~/components/Combobox';
 import Disclosure from '~/components/Disclosure';
 import Form from '~/components/Form';
 import Listbox from '~/components/Listbox';
-import Menu from '~/components/Menu';
-import Popover from '~/components/Popover';
 import RadioGroup from '~/components/RadioGroup';
 import Switch from '~/components/Switch';
-import CalendarDemo from './demo/Calendar';
 import './App.css';
-
-const MyPopover: Component = () => {
-  return (
-    <Popover>
-      <Popover.Trigger>{Popover.state.isOpen ? 'Close' : 'Open'}</Popover.Trigger>
-      <Popover.Overlay class="popover-overlay" />
-      <Popover.Panel class="popover">
-        <Popover.Trigger>X</Popover.Trigger>
-        <button>1</button>
-        <Popover>
-          <button ref={Popover.AnchorRef}>2</button>
-          <button>3</button>
-          <Popover.Trigger>{Popover.state.isOpen ? 'Close' : 'Open'}</Popover.Trigger>
-          <Popover.Overlay class="popover-overlay" />
-          <Popover.Panel class="popover">
-            <button>1</button>
-            <button>2</button>
-            <button>3</button>
-          </Popover.Panel>
-        </Popover>
-      </Popover.Panel>
-    </Popover>
-  );
-};
-
-const MyMenuItem = (props) => {
-  return (
-    <Menu.Item
-      as="button"
-      classList={{ active: Menu.Item.state.isActive() }}
-      onClick={() => console.log(`clicked Item ${props.value}`)}
-      disabled={props.value % 2 === 0}
-    >
-      {`Item ${props.value}`}
-    </Menu.Item>
-  );
-};
-
-function MyMenu() {
-  return (
-    <Menu>
-      <Menu.Button>Open Menu</Menu.Button>
-      <Menu.Panel class="popover">
-        <h4 tabIndex={0}>Choose an item</h4>
-        <Menu.Items aria-orientation="horizontal">
-          <MyMenuItem value={1} />
-          <MyMenuItem value={2} />
-          <MyMenuItem value={3} />
-        </Menu.Items>
-      </Menu.Panel>
-    </Menu>
-  );
-}
+import CalendarDemo from './demo/Calendar';
+import MenuDemo from './demo/Menu';
+import PopoverDemo from './demo/Popover';
 
 const listboxItems = [0, 1, 12, 123, 3, 4, 5, 6, 7, 8];
 const MyListbox = () => {
@@ -255,8 +202,8 @@ const App: Component = () => {
   return (
     <CacheProvider>
       <div>
-        <MyPopover />
-        <MyMenu />
+        <PopoverDemo />
+        <MenuDemo />
         <MyListbox />
         <MyCombobox selection="manual" />
         <MyCombobox selection="automatic" />
