@@ -29,7 +29,7 @@ const MyListbox = () => {
       <Listbox.Options class="popover">
         <For each={listboxItems}>
           {(item) => (
-            <Listbox.Option classList={classList()} value={item} disabled={item % 2 === 0}>
+            <Listbox.Option classList={classList()} value={item}>
               {item}
             </Listbox.Option>
           )}
