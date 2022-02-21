@@ -12,7 +12,7 @@ type SelectMonthProps = {
   as?:
     | string
     | BaseComponent<
-        { value: number; onChange: JSX.EventHandlerUnion<HTMLSelectElement, Event> },
+        { value: number; onChange: JSX.EventHandler<HTMLSelectElement, Event> },
         typeof dataAttribute
       >;
 };
@@ -29,15 +29,18 @@ export const SelectMonth: BaseComponent<SelectMonthProps> = (props) => {
 
   const [localProps, otherProps] = splitProps(props, ['as']);
 
+  const handleChange: JSX.EventHandler<HTMLSelectElement, Event> = (event) => {
+    event.stopPropagation();
+    actions.selectVisibleMonth(Number(event.currentTarget.value));
+  };
+
   return (
     <Dynamic
       {...otherProps}
       component={localProps.as}
       {...dataAttribute}
       value={state.visibleMonth}
-      onChange={(event) => {
-        actions.selectVisibleMonth(Number(event.target.value));
-      }}
+      onChange={handleChange}
     >
       {otherProps.children || (
         <For each={months}>{(month, index) => <option value={index()}>{month}</option>}</For>
