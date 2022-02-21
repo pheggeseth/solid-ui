@@ -6,12 +6,12 @@ import { BaseComponent } from '~/types';
 
 type ListboxOptionsDataAttributeProp =
   | { 'data-solid-listbox-options': '' }
-  | { 'data-solid-combobox-listbox': '' };
+  | { 'data-solid-combobox-options': '' };
 
 export type OptionsProps = {
   as?: string | BaseComponent<Omit<ListProps, 'dataAttribute'> & ListboxOptionsDataAttributeProp>;
   'aria-orientation'?: ListOrientation;
-  dataAttribute?: 'data-solid-listbox-options' | 'data-solid-combobox-listbox';
+  dataAttribute?: 'data-solid-listbox-options' | 'data-solid-combobox-options';
   dataAttributePanel?: 'data-solid-listbox-panel' | 'data-solid-combobox-panel';
 };
 

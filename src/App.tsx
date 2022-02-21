@@ -60,7 +60,7 @@ const MyCombobox: Component<{ selection: 'manual' | 'automatic' | 'inline-automa
       <Combobox.Label>My Combobox:</Combobox.Label>
       <Combobox.Textbox />
       <Combobox.Dropdown class="combobox-dropdown">Open</Combobox.Dropdown>
-      <Combobox.Listbox class="popover">
+      <Combobox.Options class="popover">
         <For each={Combobox.state.options}>
           {(option) => (
             <Combobox.Option classList={classList()} value={option}>
@@ -68,7 +68,7 @@ const MyCombobox: Component<{ selection: 'manual' | 'automatic' | 'inline-automa
             </Combobox.Option>
           )}
         </For>
-      </Combobox.Listbox>
+      </Combobox.Options>
     </Combobox>
   );
 };

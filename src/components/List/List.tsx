@@ -33,7 +33,7 @@ export type ListProps = {
     | 'data-solid-list'
     | 'data-solid-menu-items'
     | 'data-solid-listbox-options'
-    | 'data-solid-combobox-listbox'
+    | 'data-solid-combobox-options'
     | 'data-solid-radio-group';
   role?: 'menu' | 'listbox' | 'none';
   value?: any;

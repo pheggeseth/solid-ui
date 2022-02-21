@@ -1,8 +1,8 @@
 import Combobox, { ComboboxContainer } from './Combobox';
 import ComboboxDropdown from './Dropdown';
 import ComboboxLabel from './Label';
-import ComboboxListbox from './Listbox';
 import ComboboxOption from './Option';
+import ComboboxOptions from './Options';
 import ComboboxPanel from './Panel';
 import ComboboxTextbox from './Textbox';
 
@@ -11,8 +11,8 @@ export {
   ComboboxDropdown,
   ComboboxLabel,
   ComboboxPanel,
-  ComboboxListbox,
   ComboboxOption,
+  ComboboxOptions,
   ComboboxTextbox,
 };
 

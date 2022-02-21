@@ -23,8 +23,8 @@ export type HeaderDateProps = {
 };
 
 const Day: BaseComponent<HeaderDateProps> = (props) => {
-  const date = useDateContext();
-  props = mergeProps({ as: 'th', abbr: dayjs(date).format('dddd'), scope: 'col' }, props);
+  const context = useDateContext();
+  props = mergeProps({ as: 'th', abbr: dayjs(context().date).format('dddd'), scope: 'col' }, props);
 
   const [localProps, otherProps] = splitProps(props, ['as', 'abbr', 'scope']);
 

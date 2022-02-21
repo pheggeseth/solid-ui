@@ -12,7 +12,7 @@ type ItemsProps = {
   dataAttribute?:
     | 'data-solid-menu-items'
     | 'data-solid-listbox-options'
-    | 'data-solid-combobox-listbox';
+    | 'data-solid-combobox-options';
   dataAttributePanel?:
     | 'data-solid-menu-panel'
     | 'data-solid-listbox-panel'

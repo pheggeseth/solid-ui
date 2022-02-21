@@ -20,8 +20,8 @@ import Container, { ContainerProps } from './Container';
 import { ComboboxActions, ComboboxContext, ComboboxState } from './context';
 import Dropdown from './Dropdown';
 import Label from './Label';
-import Listbox from './Listbox';
 import Option from './Option';
+import Options from './Options';
 import Panel from './Panel';
 import Textbox from './Textbox';
 
@@ -211,7 +211,7 @@ type ComboboxComponentType = {
   Textbox: typeof Textbox;
   Dropdown: typeof Dropdown;
   Panel: typeof Panel;
-  Listbox: typeof Listbox;
+  Options: typeof Options;
   Option: typeof Option;
   state: {
     options: readonly string[];
@@ -223,7 +223,7 @@ const Combobox: ComboboxComponentType = Object.assign(ComboboxContainer, {
   Textbox,
   Dropdown,
   Panel,
-  Listbox,
+  Options,
   Option,
   state: {
     get options() {
