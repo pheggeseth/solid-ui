@@ -1,6 +1,7 @@
-import Header, { Header as CalendarViewHeader } from './Header';
 import CalendarViewHeaderDay from './Day';
+import Header, { Header as CalendarViewHeader } from './Header';
+import CalendarViewHeaderWeek from './Week';
 
-export { CalendarViewHeader, CalendarViewHeaderDay };
+export { CalendarViewHeader, CalendarViewHeaderWeek, CalendarViewHeaderDay };
 
 export default Header;

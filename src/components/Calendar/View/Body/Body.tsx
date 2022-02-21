@@ -20,12 +20,12 @@ export const Body: BaseComponent<BodyProps> = (props) => {
   const state = useCalendarState();
   const weeks = createMemo(() => getDaysInVisibleMonth(state.visibleMonth, state.visibleYear));
 
-  const [localProps, otherProps] = splitProps(props, ['as']);
+  const [localProps, otherProps] = splitProps(props, ['as', 'children']);
 
   return (
     <Dynamic {...otherProps} component={localProps.as} {...dataAttribute}>
       <For each={weeks()}>
-        {(week) => <WeekContext.Provider value={week}>{otherProps.children}</WeekContext.Provider>}
+        {(week) => <WeekContext.Provider value={week}>{localProps.children}</WeekContext.Provider>}
       </For>
     </Dynamic>
   );

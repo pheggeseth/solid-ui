@@ -1,5 +1,5 @@
-import dayjs, { Dayjs } from 'dayjs';
-import { createContext, useContext } from 'solid-js';
+import { Dayjs } from 'dayjs';
+import { Accessor, createContext, useContext } from 'solid-js';
 
 export type CalendarState = {
   selectedDate: string;
@@ -47,42 +47,16 @@ export function useWeekContext() {
   return useContext(WeekContext);
 }
 
-export const DateContext = createContext<string>();
+export type DateContextMemo = Accessor<{
+  date: string;
+  isInCurrentMonth?: boolean;
+  isSelected?: boolean;
+  isActive?: boolean;
+  isInDateRange?: boolean;
+  isToday?: boolean;
+}>;
+
+export const DateContext = createContext<DateContextMemo>();
 export function useDateContext() {
   return useContext(DateContext);
 }
-
-export type ExternalState = {
-  date: string;
-  isDateActive: boolean;
-  isDateInCurrentMonth: boolean;
-  isDateSelected: boolean;
-  isDateToday: boolean;
-  isDateInRange: boolean;
-  visibleMonth: string;
-};
-
-export const externalState: ExternalState = {
-  get date() {
-    return useDateContext();
-  },
-  get isDateActive() {
-    return useDateContext() === useCalendarState().activeDate;
-  },
-  get isDateInCurrentMonth() {
-    return dayjs(useDateContext()).month() === useCalendarState().visibleMonth;
-  },
-  get isDateInRange() {
-    return false; // TODO: implement this
-  },
-  get isDateSelected() {
-    return useDateContext() === useCalendarState().selectedDate;
-  },
-  get isDateToday() {
-    return useDateContext() === dayjs().format('YYYY-MM-DD');
-  },
-  get visibleMonth() {
-    const state = useCalendarState();
-    return dayjs([state.visibleYear, state.visibleMonth]).format('YYYY-MM-DD');
-  },
-};

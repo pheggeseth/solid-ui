@@ -14,6 +14,7 @@ import {
   CalendarViewBodyWeek,
   CalendarViewHeader,
   CalendarViewHeaderDay,
+  CalendarViewHeaderWeek,
 } from './View';
 
 export {
@@ -32,6 +33,7 @@ export {
   CalendarViewBodyDay,
   CalendarViewBodyWeek,
   CalendarViewHeader,
+  CalendarViewHeaderWeek,
   CalendarViewHeaderDay,
 };
 

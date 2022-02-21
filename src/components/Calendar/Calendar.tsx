@@ -6,13 +6,7 @@ import { createStore } from 'solid-js/store';
 import { Dynamic } from 'solid-js/web';
 import { BaseComponent, BaseComponentProps } from '~/types';
 import { Cancel, Save } from './CancelSave';
-import {
-  CalendarActions,
-  CalendarContext,
-  CalendarState,
-  ExternalState,
-  externalState,
-} from './context';
+import { CalendarActions, CalendarContext, CalendarState } from './context';
 import NextMonth from './NextMonth';
 import NextYear from './NextYear';
 import PreviousMonth from './PreviousMonth';
@@ -153,7 +147,6 @@ type CalendarComponentType = {
   View: typeof View;
   Cancel: typeof Cancel;
   Save: typeof Save;
-  state: ExternalState;
 };
 
 const CalendarComponent: CalendarComponentType = Object.assign(Container, {
@@ -167,7 +160,6 @@ const CalendarComponent: CalendarComponentType = Object.assign(Container, {
   View,
   Cancel,
   Save,
-  state: externalState,
 });
 
 export default CalendarComponent;
