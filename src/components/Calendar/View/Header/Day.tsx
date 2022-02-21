@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import { mergeProps, splitProps } from 'solid-js';
 import { Dynamic } from 'solid-js/web';
-import { useDateContext } from '~/components/Calendar/context';
+import { useDayComponentContext } from '~/components/Calendar/context';
 import { BaseComponent } from '~/types';
 
 const dataAttribute = {
@@ -23,8 +23,8 @@ export type HeaderDateProps = {
 };
 
 const Day: BaseComponent<HeaderDateProps> = (props) => {
-  const context = useDateContext();
-  props = mergeProps({ as: 'th', abbr: dayjs(context().date).format('dddd'), scope: 'col' }, props);
+  const context = useDayComponentContext();
+  props = mergeProps({ as: 'th', abbr: dayjs(context.date()).format('dddd'), scope: 'col' }, props);
 
   const [localProps, otherProps] = splitProps(props, ['as', 'abbr', 'scope']);
 

@@ -1,14 +1,15 @@
 import dayjs from 'dayjs';
 import { Accessor, createMemo, For, JSXElement, mergeProps, splitProps, untrack } from 'solid-js';
+import { DeepReadonly } from 'solid-js/store';
 import { Dynamic } from 'solid-js/web';
 import { BaseComponent, BaseComponentProps } from '~/types';
-import { DateContext } from '../../context';
+import { DateContext, DayComponentContext } from '../../context';
 
 const dataAttribute = {
   'data-solid-calendar-view-header-week': '' as const,
 };
 
-type WeekContext = Accessor<{ date: string }>;
+type WeekContext = DeepReadonly<{ date: Accessor<string> }>;
 
 type WeekProps = Omit<
   BaseComponentProps<{
@@ -28,12 +29,12 @@ const Week = (props: WeekProps) => {
     <Dynamic component={localProps.as} {...otherProps} {...dataAttribute}>
       <For each={dates}>
         {(date) => {
-          const context: WeekContext = createMemo(() => ({ date }));
+          const context: WeekContext = { date: createMemo(() => date) };
 
           return (
-            <DateContext.Provider value={context}>
+            <DayComponentContext.Provider value={context as DateContext}>
               {untrack(() => localProps.children(context))}
-            </DateContext.Provider>
+            </DayComponentContext.Provider>
           );
         }}
       </For>

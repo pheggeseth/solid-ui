@@ -1,9 +1,9 @@
 import dayjs from 'dayjs';
-import { createMemo, JSXElement, mergeProps, splitProps, untrack } from 'solid-js';
+import { JSXElement, mergeProps, splitProps, untrack } from 'solid-js';
 import { Dynamic, For } from 'solid-js/web';
 import {
   DateContext,
-  DateContextMemo,
+  DayComponentContext,
   useCalendarState,
   useWeekContext,
 } from '~/components/Calendar/context';
@@ -19,7 +19,7 @@ type WeekProps = Omit<
   }>,
   'children'
 > & {
-  children: (context: DateContextMemo) => JSXElement;
+  children: (context: DateContext) => JSXElement;
 };
 
 const Week = (props: WeekProps) => {
@@ -35,19 +35,19 @@ const Week = (props: WeekProps) => {
         {(date) => {
           const state = useCalendarState();
 
-          const context = createMemo(() => ({
-            date,
-            isInCurrentMonth: dayjs(date).month() === state.visibleMonth,
-            isSelected: date === state.selectedDate,
-            isActive: date === state.activeDate,
-            isInDateRange: false, // TODO: implement this
-            isToday: date === dayjs().format('YYYY-MM-DD'),
-          }));
+          const context: DateContext = {
+            date: () => date,
+            isInCurrentMonth: () => dayjs(date).month() === state.visibleMonth,
+            isSelected: () => date === state.selectedDate,
+            isActive: () => date === state.activeDate,
+            isInDateRange: () => false, // TODO: implement this
+            isToday: () => date === dayjs().format('YYYY-MM-DD'),
+          };
 
           return (
-            <DateContext.Provider value={context}>
+            <DayComponentContext.Provider value={context}>
               {untrack(() => localProps.children(context))}
-            </DateContext.Provider>
+            </DayComponentContext.Provider>
           );
         }}
       </For>

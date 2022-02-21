@@ -1,5 +1,4 @@
-import { Accessor, createContext, createMemo, untrack, useContext } from 'solid-js';
-import { ExternalContextComponent } from '~/utils/contextUtils';
+import { createContext, useContext } from 'solid-js';
 
 export type PopoverState = {
   isOpen: boolean;
@@ -37,17 +36,3 @@ export function usePopoverState() {
 export function usePopoverActions() {
   return usePopoverComponentContext()[1];
 }
-
-export type PopoverExternalContext = Accessor<{ isOpen: boolean; close(): void }>;
-
-export const Context: ExternalContextComponent<PopoverExternalContext> = (props) => {
-  const state = usePopoverState();
-  const actions = usePopoverActions();
-
-  const context = createMemo(() => ({
-    isOpen: state.isOpen,
-    close: actions.closePopover,
-  }));
-
-  return untrack(() => props.children(context));
-};

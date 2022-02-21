@@ -1,11 +1,9 @@
-import { Component, createMemo, JSXElement, PropsWithChildren } from 'solid-js';
-import { createStore } from 'solid-js/store';
+import { Accessor, Component, createMemo, JSXElement, PropsWithChildren } from 'solid-js';
+import { createStore, DeepReadonly } from 'solid-js/store';
 import { usePopper } from '~/utils/portalUtils';
 import {
-  Context,
   PopoverActions,
   PopoverComponentContext,
-  PopoverExternalContext,
   PopoverState,
   usePopoverActions,
 } from './context';
@@ -13,8 +11,10 @@ import Overlay from './Overlay';
 import Panel from './Panel';
 import Trigger from './Trigger';
 
+export type PopoverContext = DeepReadonly<{ isOpen: Accessor<boolean>; close(): void }>;
+
 type PopoverProviderProps = {
-  context?: (context: PopoverExternalContext) => void;
+  context?: (context: PopoverContext) => void;
 };
 
 export const PopoverProvider: Component<PopoverProviderProps> = (props) => {
@@ -61,12 +61,12 @@ export const PopoverProvider: Component<PopoverProviderProps> = (props) => {
     },
   };
 
-  const contextMemo = createMemo(() => ({
-    isOpen: state.isOpen,
-    close: actions.closePopover,
-  }));
+  const context: PopoverContext = {
+    isOpen: createMemo(() => state.isOpen),
+    close: () => actions.closePopover(),
+  };
 
-  props.context?.(contextMemo);
+  props.context?.(context);
 
   return (
     <PopoverComponentContext.Provider value={[state, actions]}>
@@ -82,7 +82,6 @@ export function AnchorRef(element: HTMLElement) {
 
 type PopoverComponent = {
   (props: PropsWithChildren<PopoverProviderProps>): JSXElement;
-  Context: typeof Context;
   Trigger: typeof Trigger;
   AnchorRef: typeof AnchorRef;
   Overlay: typeof Overlay;
@@ -90,7 +89,6 @@ type PopoverComponent = {
 };
 
 export const Popover: PopoverComponent = Object.assign(PopoverProvider, {
-  Context,
   Trigger,
   AnchorRef,
   Overlay,

@@ -1,5 +1,6 @@
 import { Dayjs } from 'dayjs';
 import { Accessor, createContext, useContext } from 'solid-js';
+import { DeepReadonly } from 'solid-js/store';
 
 export type CalendarState = {
   selectedDate: string;
@@ -47,16 +48,16 @@ export function useWeekContext() {
   return useContext(WeekContext);
 }
 
-export type DateContextMemo = Accessor<{
-  date: string;
-  isInCurrentMonth?: boolean;
-  isSelected?: boolean;
-  isActive?: boolean;
-  isInDateRange?: boolean;
-  isToday?: boolean;
+export type DateContext = DeepReadonly<{
+  date: Accessor<string>;
+  isInCurrentMonth: Accessor<boolean>;
+  isSelected: Accessor<boolean>;
+  isActive: Accessor<boolean>;
+  isInDateRange: Accessor<boolean>;
+  isToday: Accessor<boolean>;
 }>;
 
-export const DateContext = createContext<DateContextMemo>();
-export function useDateContext() {
-  return useContext(DateContext);
+export const DayComponentContext = createContext<DateContext>();
+export function useDayComponentContext() {
+  return useContext(DayComponentContext);
 }

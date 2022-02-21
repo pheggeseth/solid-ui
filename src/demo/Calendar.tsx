@@ -1,14 +1,14 @@
 import dayjs from 'dayjs';
 import { createSignal } from 'solid-js';
 import Calendar from '~/components/Calendar';
-import Popover, { PopoverContextMemo } from '~/components/Popover';
+import Popover, { PopoverContext } from '~/components/Popover';
 
 export default function CalendarDemo() {
   const [date, setDate] = createSignal(dayjs().format('YYYY-MM-DD'));
 
   const isDisabled = (date: string) => dayjs(date).date() % 2 === 1;
 
-  let popover: PopoverContextMemo;
+  let popover: PopoverContext;
 
   return (
     <section>
@@ -21,10 +21,10 @@ export default function CalendarDemo() {
             value={date()}
             onChange={(date) => {
               setDate(date);
-              popover().close();
+              popover.close();
             }}
             onCancel={() => {
-              popover().close();
+              popover.close();
             }}
           >
             <div style={{ display: 'flex' }}>
@@ -44,24 +44,24 @@ export default function CalendarDemo() {
                 <Calendar.View.Header.Week>
                   {(context) => (
                     <Calendar.View.Header.Day>
-                      {dayjs(context().date).format('dd')}
+                      {dayjs(context.date()).format('dd')}
                     </Calendar.View.Header.Day>
                   )}
                 </Calendar.View.Header.Week>
               </Calendar.View.Header>
               <Calendar.View.Body>
                 <Calendar.View.Body.Week>
-                  {(context) => (
+                  {({ date, isInCurrentMonth, isSelected, isActive }) => (
                     <Calendar.View.Body.Day
                       classList={{
-                        'calendar-outside-month': !context().isInCurrentMonth,
-                        'calendar-is-selected': context().isSelected,
-                        'calendar-is-active': context().isActive,
+                        'calendar-outside-month': !isInCurrentMonth(),
+                        'calendar-is-selected': isSelected(),
+                        'calendar-is-active': isActive(),
                       }}
                       // disabled={isDisabled()}
-                      tabIndex={context().isActive ? 0 : -1}
+                      tabIndex={isActive() ? 0 : -1}
                     >
-                      {dayjs(context().date).format('DD')}
+                      {dayjs(date()).format('DD')}
                     </Calendar.View.Body.Day>
                   )}
                 </Calendar.View.Body.Week>

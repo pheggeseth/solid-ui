@@ -4,10 +4,10 @@ import { Dynamic } from 'solid-js/web';
 import {
   useCalendarActions,
   useCalendarState,
-  useDateContext,
+  useDayComponentContext,
 } from '~/components/Calendar/context';
-import { useKeyEventHandlers } from '~/utils/eventUtils';
 import { BaseComponent, StyleProps } from '~/types';
+import { useKeyEventHandlers } from '~/utils/eventUtils';
 
 const dataAttributeDayButton = {
   'data-solid-calendar-view-body-day-button': '' as const,
@@ -51,11 +51,11 @@ const Day: BaseComponent<DayProps> = (props) => {
   const state = useCalendarState();
   const actions = useCalendarActions();
 
-  const context = useDateContext();
+  const context = useDayComponentContext();
 
   function handleClick() {
-    if (context().date === state.activeDate) {
-      actions.onDateClick(context().date);
+    if (context.date() === state.activeDate) {
+      actions.onDateClick(context.date());
     }
   }
 
@@ -67,15 +67,15 @@ const Day: BaseComponent<DayProps> = (props) => {
   });
 
   function handleFocus() {
-    if (context().date !== state.activeDate) {
-      actions.selectDate(dayjs(context().date));
+    if (context.date() !== state.activeDate) {
+      actions.selectDate(dayjs(context.date()));
     }
   }
 
   let buttonRef;
 
   createEffect(() => {
-    if (context().date === state.activeDate && state.isActiveDateFromKeyboardMove) {
+    if (context.date() === state.activeDate && state.isActiveDateFromKeyboardMove) {
       buttonRef.focus();
     }
   });
@@ -89,11 +89,11 @@ const Day: BaseComponent<DayProps> = (props) => {
         {...otherProps}
         component={localProps.as}
         {...dataAttributeDayButton}
-        data-active={context().isActive ? '' : undefined}
-        data-current-month={context().isInCurrentMonth ? '' : undefined}
-        data-date-range={context().isInDateRange ? '' : undefined}
-        data-selected={context().isSelected ? '' : undefined}
-        data-today={context().isToday ? '' : undefined}
+        data-active={context.isActive() ? '' : undefined}
+        data-current-month={context.isInCurrentMonth() ? '' : undefined}
+        data-date-range={context.isInDateRange() ? '' : undefined}
+        data-selected={context.isSelected() ? '' : undefined}
+        data-today={context.isToday() ? '' : undefined}
         disabled={localProps.disabled}
         onClick={handleClick}
         onFocus={handleFocus}
