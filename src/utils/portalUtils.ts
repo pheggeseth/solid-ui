@@ -2,12 +2,12 @@ import { createPopper, Options } from '@popperjs/core';
 import { createEffect, createSignal } from 'solid-js';
 
 export function usePopper(props: Partial<Options> = {}): {
-  setTriggerReference(element: Element): void;
-  setAnchorReference(element: Element): void;
+  setTriggerReference(element: HTMLElement): void;
+  setAnchorReference(element: HTMLElement): void;
   setPopperReference(element: HTMLElement): void;
 } {
-  const [triggerReference, setTriggerReference] = createSignal<Element>();
-  const [anchorReference, setAnchorReference] = createSignal<Element>();
+  const [triggerReference, setTriggerReference] = createSignal<HTMLElement>();
+  const [anchorReference, setAnchorReference] = createSignal<HTMLElement>();
   const [popper, setPopperReference] = createSignal<HTMLElement>();
 
   let popperInstance;
@@ -25,7 +25,16 @@ export function usePopper(props: Partial<Options> = {}): {
       popperInstance = createPopper(reference, popper(), {
         placement,
         ...otherProps,
+        modifiers: [
+          ...(otherProps.modifiers || []),
+          {
+            name: 'offset',
+            options: { offset: [0, 4] },
+          },
+        ],
       });
+
+      console.log(popperInstance);
     }
   });
 
