@@ -1,8 +1,22 @@
-import { createEffect, createMemo, mergeProps, onCleanup, onMount, splitProps } from 'solid-js';
+import {
+  Accessor,
+  createEffect,
+  createMemo,
+  mergeProps,
+  onCleanup,
+  onMount,
+  splitProps,
+} from 'solid-js';
 import { Dynamic } from 'solid-js/web';
 import { BaseComponent, BaseComponentProps } from '~/types';
 import { useId } from '~/utils/componentUtils';
-import { ListItemExternalContext, Position, useListActions, useListState } from './context';
+import { Position, useListActions, useListState } from './context';
+
+export type ListItemContext<T = any> = {
+  isActive: Accessor<boolean>;
+  isSelected: Accessor<boolean>;
+  value: Accessor<T>;
+};
 
 type ListItemDataAttributeProp =
   | { 'data-solid-list-item': '' }
@@ -25,7 +39,7 @@ export type ItemProps<T> = {
         } & ListItemDataAttributeProp
       >
     | string;
-  context?: (context: ListItemExternalContext<T>) => void;
+  context?: (context: ListItemContext<T>) => void;
   dataAttribute?:
     | 'data-solid-list-item'
     | 'data-solid-menu-item'

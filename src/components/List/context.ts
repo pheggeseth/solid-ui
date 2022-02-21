@@ -82,9 +82,3 @@ export function useListState<T>() {
 export function useListActions<T>() {
   return useListContext<T>()[1];
 }
-
-export type ListItemExternalContext<T = any> = {
-  isActive: Accessor<boolean>;
-  isSelected: Accessor<boolean>;
-  value: Accessor<T>;
-};
