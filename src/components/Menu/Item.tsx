@@ -1,27 +1,20 @@
-import { JSXElement, mergeProps } from 'solid-js';
+import { mergeProps } from 'solid-js';
 import { ListItem } from '~/components/List';
 import { ItemProps } from '~/components/List/Item';
-import { BaseComponent, BaseComponentProps } from '~/types';
+import { BaseComponentProps } from '~/types';
 
 type MenuItemDataAttribute =
   | 'data-solid-menu-item'
   | 'data-solid-listbox-option'
   | 'data-solid-combobox-option';
 
-type MenuItemProps = Omit<ItemProps, 'dataAttribute'> & { dataAttribute?: MenuItemDataAttribute };
+type MenuItemProps<T> = Omit<ItemProps<T>, 'dataAttribute'> & {
+  dataAttribute?: MenuItemDataAttribute;
+};
 
-const MenuItem: BaseComponent<MenuItemProps> = (props) => {
+function MenuItem<T = any>(props: BaseComponentProps<MenuItemProps<T>>) {
   props = mergeProps({ role: 'menuitem', dataAttribute: 'data-solid-menu-item' }, props);
-  return <ListItem {...props} />;
-};
+  return <ListItem<T> {...props} />;
+}
 
-type MenuItemComponent = {
-  (props: BaseComponentProps<MenuItemProps>): JSXElement;
-  state: typeof ListItem.state;
-};
-
-export const Item: MenuItemComponent = Object.assign(MenuItem, {
-  state: ListItem.state,
-});
-
-export default Item;
+export default MenuItem;

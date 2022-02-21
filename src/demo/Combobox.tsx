@@ -1,5 +1,5 @@
 import { Component, createSignal, For } from 'solid-js';
-import Combobox from '~/components/Combobox';
+import Combobox, { ComboboxContext } from '~/components/Combobox';
 
 export default function ComboboxDemo() {
   return (
@@ -26,11 +26,7 @@ const MyCombobox: Component<{ selection: 'manual' | 'automatic' | 'inline-automa
 ) => {
   const [value, setValue] = createSignal('');
 
-  function classList() {
-    return {
-      active: Combobox.Option.state.isActive(),
-    };
-  }
+  let context: ComboboxContext;
 
   return (
     <Combobox
@@ -38,17 +34,14 @@ const MyCombobox: Component<{ selection: 'manual' | 'automatic' | 'inline-automa
       options={['red', 'rred', 'blue', 'green']}
       onChange={setValue}
       selection={props.selection}
+      context={(ctx) => (context = ctx)}
     >
       <Combobox.Label>My Combobox:</Combobox.Label>
       <Combobox.Textbox />
       <Combobox.Dropdown class="combobox-dropdown">Open</Combobox.Dropdown>
       <Combobox.Options class="popover">
-        <For each={Combobox.state.options}>
-          {(option) => (
-            <Combobox.Option classList={classList()} value={option}>
-              {option}
-            </Combobox.Option>
-          )}
+        <For each={context.options()}>
+          {(option) => <Combobox.Option value={option}>{option}</Combobox.Option>}
         </For>
       </Combobox.Options>
     </Combobox>

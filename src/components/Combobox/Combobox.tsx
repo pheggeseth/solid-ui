@@ -1,13 +1,12 @@
 import {
   Accessor,
-  Component,
-  createContext,
   createEffect,
+  createMemo,
   JSX,
   mergeProps,
   on,
+  PropsWithChildren,
   splitProps,
-  useContext,
 } from 'solid-js';
 import { createStore } from 'solid-js/store';
 import { Position, useListActions, useListState } from '~/components/List/context';
@@ -25,17 +24,15 @@ import Options from './Options';
 import Panel from './Panel';
 import Textbox from './Textbox';
 
-const ComboboxStateContext = createContext<{ options: Accessor<readonly string[]> }>();
-function useComboboxStateContext() {
-  return useContext(ComboboxStateContext);
-}
+export type ComboboxContext = { options: Accessor<readonly string[]> };
 
 type ComboboxProviderProps = {
-  options: any[];
+  options: string[];
   selection?: 'manual' | 'automatic' | 'inline-automatic';
+  context?: (ctx: ComboboxContext) => void;
 };
 
-export const ComboboxProvider: Component<ComboboxProviderProps> = (props) => {
+export function ComboboxProvider(props: PropsWithChildren<ComboboxProviderProps>) {
   props = mergeProps({ selection: 'manual' }, props);
 
   const [state, setState] = createStore<ComboboxState>({
@@ -48,15 +45,15 @@ export const ComboboxProvider: Component<ComboboxProviderProps> = (props) => {
     selection: props.selection,
   });
 
-  const ListState = useListState();
-  const ListActions = useListActions();
+  const ListState = useListState<string>();
+  const ListActions = useListActions<string>();
   const PopoverActions = usePopoverActions();
 
   createEffect(
     on(
       () => ListState.valueSelected,
-      (textboxValue) => {
-        setState({ textboxValue });
+      (valueSelected) => {
+        setState({ textboxValue: valueSelected });
       },
       { defer: true }
     )
@@ -120,7 +117,7 @@ export const ComboboxProvider: Component<ComboboxProviderProps> = (props) => {
       ListState.onValueChangeCallback(textboxValue);
 
       if (originalTextboxValue) {
-        (document.getElementById(state.textboxId) as HTMLInputElement).setSelectionRange(
+        (document.getElementById(state.textboxId) as HTMLInputElement)?.setSelectionRange(
           originalTextboxValue.length,
           textboxValue.length
         );
@@ -169,14 +166,16 @@ export const ComboboxProvider: Component<ComboboxProviderProps> = (props) => {
     }
   });
 
+  const options = createMemo(() => state.filteredOptions);
+
+  props.context?.({ options });
+
   return (
-    <ComboboxContext.Provider value={[state, actions]}>
-      <ComboboxStateContext.Provider value={{ options: () => state.filteredOptions }}>
-        {props.children}
-      </ComboboxStateContext.Provider>
+    <ComboboxContext.Provider value={[state as ComboboxState, actions]}>
+      {props.children}
     </ComboboxContext.Provider>
   );
-};
+}
 
 type ComboboxContainerProps = ComboboxProviderProps & {
   value?: any;
@@ -189,6 +188,7 @@ export const ComboboxContainer: BaseComponent<ComboboxContainerProps> = (props) 
     'onChange',
     'options',
     'selection',
+    'context',
     'children',
   ]);
 
@@ -196,7 +196,11 @@ export const ComboboxContainer: BaseComponent<ComboboxContainerProps> = (props) 
     <PopoverProvider>
       <ListInPopoverProvider value={localProps.value} onChange={localProps.onChange}>
         <ListboxProvider>
-          <ComboboxProvider options={localProps.options} selection={localProps.selection}>
+          <ComboboxProvider
+            options={localProps.options}
+            selection={localProps.selection}
+            context={localProps.context}
+          >
             <Container {...otherProps}>{localProps.children}</Container>
           </ComboboxProvider>
         </ListboxProvider>
@@ -213,9 +217,6 @@ type ComboboxComponentType = {
   Panel: typeof Panel;
   Options: typeof Options;
   Option: typeof Option;
-  state: {
-    options: readonly string[];
-  };
 };
 
 const Combobox: ComboboxComponentType = Object.assign(ComboboxContainer, {
@@ -225,12 +226,6 @@ const Combobox: ComboboxComponentType = Object.assign(ComboboxContainer, {
   Panel,
   Options,
   Option,
-  state: {
-    get options() {
-      const { options } = useComboboxStateContext();
-      return options();
-    },
-  },
 });
 
 export default Combobox;

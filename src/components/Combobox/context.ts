@@ -1,7 +1,6 @@
 import { createContext, useContext } from 'solid-js';
-import { DeepReadonly } from 'solid-js/store';
 
-export type ComboboxState = DeepReadonly<{
+export type ComboboxState = {
   textboxId: string | null;
   dropdownId: string | null;
   listboxId: string | null;
@@ -9,7 +8,7 @@ export type ComboboxState = DeepReadonly<{
   options: string[];
   filteredOptions: string[];
   selection: 'manual' | 'automatic' | 'inline-automatic';
-}>;
+};
 
 export type ComboboxActions = Readonly<{
   onTextboxMount(textboxId: string): void;

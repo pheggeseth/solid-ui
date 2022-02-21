@@ -1,8 +1,8 @@
-import { createContext, useContext } from 'solid-js';
+import { Accessor, createContext, useContext } from 'solid-js';
 import { DeepReadonly } from 'solid-js/store';
 
-export type ItemType = {
-  value?: any;
+export type ItemType<T = any> = {
+  value?: T;
   id: string;
   isActive: boolean;
   isDisabled: boolean;
@@ -12,14 +12,14 @@ export type ComboboxSelectionMode = 'manual' | 'automatic';
 
 export type ListOrientation = 'vertical' | 'horizontal';
 
-export type ListState = DeepReadonly<{
+export type ListState<T = any> = DeepReadonly<{
   labelId: string | null;
   labelComponent: string | null;
   orientation: ListOrientation;
-  valueSelected?: any;
-  onValueChangeCallback?: (value: any) => void;
-  items: ItemType[];
-  sortItems?: (itemA: ItemType, itemB: ItemType) => number;
+  valueSelected?: T;
+  onValueChangeCallback?: (value: T) => void;
+  items: ItemType<T>[];
+  sortItems?: (itemA: ItemType<T>, itemB: ItemType<T>) => number;
   searchText: string;
   initialMountFocus: InitialMountFocus;
   preventMouseDownDefault: boolean;
@@ -42,15 +42,15 @@ export enum InitialMountFocus {
   Selected = 'Selected',
 }
 
-export type ListActions = Readonly<{
+export type ListActions<T = any> = Readonly<{
   registerLabel(labelId: string, labelComponent: string): void;
   registerOrientation(orientation: ListOrientation): void;
   onItemMount(item: {
-    id: ItemType['id'];
-    isDisabled: ItemType['isDisabled'];
-    value?: ItemType['value'];
+    id: ItemType<T>['id'];
+    isDisabled: ItemType<T>['isDisabled'];
+    value?: ItemType<T>['value'];
   }): void;
-  onItemDisabledChange(itemId: ItemType['id'], isDisabled: ItemType['isDisabled']): void;
+  onItemDisabledChange(itemId: ItemType<T>['id'], isDisabled: ItemType<T>['isDisabled']): void;
   onItemCleanup(idToRemove: string): void;
   onItemFocus(
     props:
@@ -59,26 +59,32 @@ export type ListActions = Readonly<{
   ): void;
   onListTabOut(): void;
   onInitialMountFocusChange(initialMountFocus: InitialMountFocus): void;
-  onItemSelect(itemToSelect: ItemType): void;
+  onItemSelect(itemToSelect: ItemType<T>['value']): void;
   onItemPositionSelect(props: { position: Position.Next | Position.Previous });
-  onValueChange(valueSelected: any): void;
+  onValueChange(valueSelected: ItemType<T>['value']): void;
   onSearchTextChange(searchText: string): void;
   selectActiveItem(): void;
-  setOnValueChangeCallback(onValueChangeCallback: (value: any) => void): void;
+  setOnValueChangeCallback(onValueChangeCallback: (value: ItemType<T>['value']) => void): void;
   setShouldPreventMouseDownDefault(preventDefault: boolean): void;
-  setSortItems(sortItems: (itemA: ItemType, itemB: ItemType) => number): void;
+  setSortItems(sortItems: (itemA: ItemType<T>, itemB: ItemType<T>) => number): void;
 }>;
 
 export const ListContext = createContext<[state: ListState, actions: ListActions]>();
 
-export function useListContext() {
-  return useContext(ListContext);
+export function useListContext<T>() {
+  return useContext(ListContext) as [state: ListState<T>, actions: ListActions<T>];
 }
 
-export function useListState() {
-  return useListContext()[0];
+export function useListState<T>() {
+  return useListContext<T>()[0];
 }
 
-export function useListActions() {
-  return useListContext()[1];
+export function useListActions<T>() {
+  return useListContext<T>()[1];
 }
+
+export type ListItemExternalContext<T = any> = {
+  isActive: Accessor<boolean>;
+  isSelected: Accessor<boolean>;
+  value: Accessor<T>;
+};

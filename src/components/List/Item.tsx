@@ -1,19 +1,8 @@
-import {
-  Accessor,
-  createContext,
-  createEffect,
-  createMemo,
-  JSXElement,
-  mergeProps,
-  onCleanup,
-  onMount,
-  splitProps,
-  useContext,
-} from 'solid-js';
+import { createEffect, createMemo, mergeProps, onCleanup, onMount, splitProps } from 'solid-js';
 import { Dynamic } from 'solid-js/web';
-import { useId } from '~/utils/componentUtils';
 import { BaseComponent, BaseComponentProps } from '~/types';
-import { Position, useListActions, useListState } from './context';
+import { useId } from '~/utils/componentUtils';
+import { ListItemExternalContext, Position, useListActions, useListState } from './context';
 
 type ListItemDataAttributeProp =
   | { 'data-solid-list-item': '' }
@@ -21,21 +10,22 @@ type ListItemDataAttributeProp =
   | { 'data-solid-listbox-option': '' }
   | { 'data-solid-combobox-option': '' };
 
-export type ItemProps = {
+export type ItemProps<T> = {
   as?:
     | BaseComponent<
         {
-          disabled: ItemProps['disabled'];
+          disabled: ItemProps<T>['disabled'];
           id?: string;
           onBlur(event?: FocusEvent): void;
-          onClick: ItemProps['onClick'];
+          onClick: ItemProps<T>['onClick'];
           onFocus(event?: FocusEvent): void;
           onMouseEnter(event?: MouseEvent): void;
-          role?: ItemProps['role'];
+          role?: ItemProps<T>['role'];
           tabIndex: string | number;
         } & ListItemDataAttributeProp
       >
     | string;
+  context?: (context: ListItemExternalContext<T>) => void;
   dataAttribute?:
     | 'data-solid-list-item'
     | 'data-solid-menu-item'
@@ -46,25 +36,14 @@ export type ItemProps = {
   idPrefix?: string;
   onClick?: (event?: MouseEvent) => void;
   role?: 'menuitem' | 'option' | 'radio';
-  value?: any;
+  value?: T;
 };
 
-type ItemState = {
-  isActive: Accessor<boolean>;
-  isSelected: Accessor<boolean>;
-  value: any;
-};
-
-const ItemContext = createContext<ItemState>();
-export function useItemContext() {
-  return useContext(ItemContext);
-}
-
-export const Item: BaseComponent<ItemProps> = function Item(props) {
+function Item<T = any>(props: BaseComponentProps<ItemProps<T>>) {
   props = mergeProps({ as: 'li', dataAttribute: 'data-solid-list-item', disabled: false }, props);
 
-  const state = useListState();
-  const actions = useListActions();
+  const state = useListState<T>();
+  const actions = useListActions<T>();
 
   const itemId = useId(props.idPrefix || 'item');
 
@@ -81,7 +60,9 @@ export const Item: BaseComponent<ItemProps> = function Item(props) {
   });
 
   const isActive = createMemo(() => !!state.items.find((item) => item.id === itemId)?.isActive);
-  const isSelected = createMemo(() => state.valueSelected === props.value);
+  const isSelected = createMemo(
+    () => props.value !== undefined && props.value === state.valueSelected
+  );
 
   function handleClick(event: MouseEvent) {
     if (props.disabled) return;
@@ -108,45 +89,32 @@ export const Item: BaseComponent<ItemProps> = function Item(props) {
 
   const [localProps, otherProps] = splitProps(props, ['as', 'dataAttribute', 'idPrefix', 'value']);
 
-  return (
-    <ItemContext.Provider value={{ isActive, isSelected, value: props.value }}>
-      <Dynamic
-        {...otherProps}
-        component={localProps.as}
-        aria-checked={state.isRadioList && isSelected() ? true : false}
-        aria-selected={!state.isRadioList && isSelected() ? true : undefined}
-        {...({ [localProps.dataAttribute]: '' } as ListItemDataAttributeProp)}
-        data-active={isActive() ? '' : undefined}
-        data-selected={isSelected() ? '' : undefined}
-        disabled={props.disabled}
-        id={itemId}
-        onBlur={handleBlur}
-        onClick={handleClick}
-        onFocus={handleFocus}
-        onMouseEnter={handleMouseEnter}
-        tabIndex={state.useRovingTabIndex && isSelected() ? 0 : -1}
-      />
-    </ItemContext.Provider>
-  );
-};
-
-type ItemComponentType = {
-  (props: BaseComponentProps<ItemProps>): JSXElement;
-  state: {
-    isActive: Accessor<boolean>;
-    isSelected: Accessor<boolean>;
+  const externalContext = {
+    isActive,
+    isSelected,
+    value: createMemo(() => props.value),
   };
-};
 
-const ItemComponent: ItemComponentType = Object.assign(Item, {
-  state: {
-    isActive() {
-      return useItemContext().isActive();
-    },
-    isSelected() {
-      return useItemContext().isSelected();
-    },
-  },
-});
+  props.context?.(externalContext);
 
-export default ItemComponent;
+  return (
+    <Dynamic
+      {...otherProps}
+      component={localProps.as}
+      aria-checked={state.isRadioList && isSelected() ? true : false}
+      aria-selected={!state.isRadioList && isSelected() ? true : undefined}
+      {...({ [localProps.dataAttribute]: '' } as ListItemDataAttributeProp)}
+      data-active={isActive() ? '' : undefined}
+      data-selected={isSelected() ? '' : undefined}
+      disabled={props.disabled}
+      id={itemId}
+      onBlur={handleBlur}
+      onClick={handleClick}
+      onFocus={handleFocus}
+      onMouseEnter={handleMouseEnter}
+      tabIndex={state.useRovingTabIndex && isSelected() ? 0 : -1}
+    />
+  );
+}
+
+export default Item;
