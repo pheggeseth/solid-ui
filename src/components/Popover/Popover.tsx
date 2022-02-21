@@ -1,6 +1,6 @@
 import { Component, createMemo, JSXElement, PropsWithChildren } from 'solid-js';
 import { createStore } from 'solid-js/store';
-import { usePopper } from '~/utils/popperUtils';
+import { usePopper } from '~/utils/portalUtils';
 import {
   Context,
   PopoverActions,
