@@ -1,28 +1,30 @@
-import { JSXElement, mergeProps, splitProps } from 'solid-js';
+import { mergeProps, splitProps } from 'solid-js';
 import { useListState } from '~/components/List/context';
-import ListItem, { ItemProps } from '~/components/List/Item';
+import ListItem, { ItemProps, ListItemContext } from '~/components/List/Item';
 import { BaseComponent, BaseComponentProps } from '~/types';
 
-type OptionProps = {
+export type RadioOptionContext<T> = ListItemContext<T>;
+
+type OptionProps<T> = ItemProps<T> & {
   as?:
     | string
     | BaseComponent<
-        ItemProps & {
+        ItemProps<T> & {
           'aria-describedby'?: string;
           'aria-labelledby'?: string;
         }
       >;
-  value?: any;
+  value?: T;
 };
 
-const Option: BaseComponent<OptionProps> = (props) => {
+function Option<T = any>(props: BaseComponentProps<OptionProps<T>>) {
   props = mergeProps({ as: 'div' }, props);
   const ListState = useListState();
 
   const [localProps, otherProps] = splitProps(props, ['as']);
 
   return (
-    <ListItem
+    <ListItem<T>
       {...otherProps}
       as={localProps.as}
       aria-labelledby={ListState.labelId}
@@ -31,17 +33,6 @@ const Option: BaseComponent<OptionProps> = (props) => {
       role="radio"
     />
   );
-};
+}
 
-type OptionComponentType = {
-  (props: BaseComponentProps<OptionProps>): JSXElement;
-  state: typeof ListItem.state;
-};
-
-const OptionComponent: OptionComponentType = Object.assign(Option, {
-  state: ListItem.state,
-});
-
-export { OptionComponent as Option };
-
-export default OptionComponent;
+export default Option;

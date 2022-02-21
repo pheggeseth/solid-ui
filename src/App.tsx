@@ -1,10 +1,8 @@
 import { Component, createSignal } from 'solid-js';
 import { For } from 'solid-js/web';
 import { CacheProvider } from '~/Cache';
-import Combobox from '~/components/Combobox';
 import Disclosure from '~/components/Disclosure';
 import Form from '~/components/Form';
-import RadioGroup from '~/components/RadioGroup';
 import Switch from '~/components/Switch';
 import './App.css';
 import CalendarDemo from './demo/Calendar';
@@ -12,6 +10,7 @@ import ComboboxDemo from './demo/Combobox';
 import ListboxDemo from './demo/Listbox';
 import MenuDemo from './demo/Menu';
 import PopoverDemo from './demo/Popover';
+import RadioGroupDemo from './demo/RadioGroup';
 
 function MyDisclosure() {
   let ref;
@@ -26,37 +25,6 @@ function MyDisclosure() {
         <Disclosure.Button>Close</Disclosure.Button>
       </Disclosure.Panel>
     </Disclosure>
-  );
-}
-
-function MyRadioGroup() {
-  const [value, setValue] = createSignal(1);
-
-  function classList() {
-    return {
-      active: RadioGroup.Option.state.isActive(),
-      selected: RadioGroup.Option.state.isSelected(),
-    };
-  }
-
-  return (
-    <RadioGroup
-      value={value()}
-      onChange={(value) => {
-        console.log('radio group selected:', value);
-        setValue(value);
-      }}
-    >
-      <RadioGroup.Option classList={classList()} value={1}>
-        1
-      </RadioGroup.Option>
-      <RadioGroup.Option classList={classList()} value={2}>
-        2
-      </RadioGroup.Option>
-      <RadioGroup.Option classList={classList()} value={3}>
-        3
-      </RadioGroup.Option>
-    </RadioGroup>
   );
 }
 
@@ -148,7 +116,7 @@ const App: Component = () => {
         <ComboboxDemo />
         <CalendarDemo />
         <MyDisclosure />
-        {/* <MyRadioGroup /> */}
+        <RadioGroupDemo />
         <MySwitch />
         <MyForm />
         {/* <Todo />
