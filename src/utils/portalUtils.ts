@@ -33,8 +33,6 @@ export function usePopper(props: Partial<Options> = {}): {
           },
         ],
       });
-
-      console.log(popperInstance);
     }
   });
 
