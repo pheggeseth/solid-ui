@@ -30,10 +30,14 @@ type ComboboxProviderProps = {
   options: string[];
   selection?: 'manual' | 'automatic' | 'inline-automatic';
   context?: (ctx: ComboboxContext) => void;
+  filterOption?: (option: string, textboxValue: string) => boolean;
 };
 
 export function ComboboxProvider(props: PropsWithChildren<ComboboxProviderProps>) {
-  props = mergeProps({ selection: 'manual' }, props);
+  const startsWith = (option: string, textboxValue: string) =>
+    option.toLocaleLowerCase().startsWith(textboxValue.toLocaleLowerCase());
+
+  props = mergeProps({ selection: 'manual', filterOption: startsWith }, props);
 
   const [state, setState] = createStore<ComboboxState>({
     textboxId: null,
@@ -74,11 +78,8 @@ export function ComboboxProvider(props: PropsWithChildren<ComboboxProviderProps>
     (itemA, itemB) => props.options.indexOf(itemA.value) - props.options.indexOf(itemB.value)
   );
 
-  const startsWith = (textboxValue: string) => (option: string) =>
-    option.toLocaleLowerCase().startsWith(textboxValue.toLocaleLowerCase());
-
   function getFilteredOptions(textboxValue: string) {
-    return state.options.filter(startsWith(textboxValue));
+    return state.options.filter((option) => props.filterOption(option, textboxValue));
   }
 
   const actions: ComboboxActions = {

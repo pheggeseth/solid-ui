@@ -39,7 +39,7 @@ const MyCombobox: Component<{ selection: 'manual' | 'automatic' | 'inline-automa
       <Combobox.Label>My Combobox:</Combobox.Label>
       <Combobox.Textbox />
       <Combobox.Dropdown class="combobox-dropdown">Open</Combobox.Dropdown>
-      <Combobox.Options class="popover">
+      <Combobox.Options>
         <For each={context.options()}>
           {(option) => <Combobox.Option value={option}>{option}</Combobox.Option>}
         </For>
