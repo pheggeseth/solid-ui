@@ -4,74 +4,14 @@ import { CacheProvider } from '~/Cache';
 import Combobox from '~/components/Combobox';
 import Disclosure from '~/components/Disclosure';
 import Form from '~/components/Form';
-import Listbox from '~/components/Listbox';
 import RadioGroup from '~/components/RadioGroup';
 import Switch from '~/components/Switch';
 import './App.css';
 import CalendarDemo from './demo/Calendar';
+import ComboboxDemo from './demo/Combobox';
+import ListboxDemo from './demo/Listbox';
 import MenuDemo from './demo/Menu';
 import PopoverDemo from './demo/Popover';
-
-const listboxItems = [0, 1, 12, 123, 3, 4, 5, 6, 7, 8];
-const MyListbox = () => {
-  const [value, setValue] = createSignal(123);
-
-  const classList = () => ({
-    active: Listbox.Option.state.isActive(),
-    selected: Listbox.Option.state.isSelected(),
-  });
-
-  return (
-    <Listbox value={value()} onChange={setValue}>
-      <Listbox.Label>Option:</Listbox.Label>
-      <Listbox.Button>{value}</Listbox.Button>
-      <Listbox.Overlay class="popover-overlay" />
-      <Listbox.Options class="popover">
-        <For each={listboxItems}>
-          {(item) => (
-            <Listbox.Option classList={classList()} value={item}>
-              {item}
-            </Listbox.Option>
-          )}
-        </For>
-      </Listbox.Options>
-    </Listbox>
-  );
-};
-
-const MyCombobox: Component<{ selection: 'manual' | 'automatic' | 'inline-automatic' }> = (
-  props
-) => {
-  const [value, setValue] = createSignal('');
-
-  function classList() {
-    return {
-      active: Combobox.Option.state.isActive(),
-    };
-  }
-
-  return (
-    <Combobox
-      value={value()}
-      options={['red', 'rred', 'blue', 'green']}
-      onChange={setValue}
-      selection={props.selection}
-    >
-      <Combobox.Label>My Combobox:</Combobox.Label>
-      <Combobox.Textbox />
-      <Combobox.Dropdown class="combobox-dropdown">Open</Combobox.Dropdown>
-      <Combobox.Options class="popover">
-        <For each={Combobox.state.options}>
-          {(option) => (
-            <Combobox.Option classList={classList()} value={option}>
-              {option}
-            </Combobox.Option>
-          )}
-        </For>
-      </Combobox.Options>
-    </Combobox>
-  );
-};
 
 function MyDisclosure() {
   let ref;
@@ -204,10 +144,8 @@ const App: Component = () => {
       <div>
         <PopoverDemo />
         <MenuDemo />
-        <MyListbox />
-        <MyCombobox selection="manual" />
-        <MyCombobox selection="automatic" />
-        <MyCombobox selection="inline-automatic" />
+        <ListboxDemo />
+        <ComboboxDemo />
         <CalendarDemo />
         <MyDisclosure />
         <MyRadioGroup />
