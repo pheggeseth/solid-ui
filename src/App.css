@@ -30,6 +30,7 @@
   overflow: hidden;
 }
 
+[data-solid-list],
 [data-solid-menu-items],
 [data-solid-listbox-options],
 [data-solid-combobox-options] {
@@ -38,11 +39,22 @@
   padding: 0;
 }
 
+[data-solid-list],
 [data-solid-menu-item],
 [data-solid-listbox-option],
 [data-solid-combobox-option] {
+  background: white;
   padding: 8px;
+  border: none;
   cursor: pointer;
+}
+
+:is([data-solid-list-item], [data-solid-menu-item], [data-solid-listbox-option], [data-solid-combobox-option])[data-selected] {
+  background: lightgreen;
+}
+
+:is([data-solid-list-item], [data-solid-menu-item], [data-solid-listbox-option], [data-solid-combobox-option])[data-active] {
+  background: lightblue;
 }
 
 .selected {
