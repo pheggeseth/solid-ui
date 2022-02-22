@@ -14,3 +14,7 @@ export type BaseComponent<Props = {}, DataAttribute = {}> = Component<
 export type BaseComponentProps<Props = {}, DataAttribute = {}> = PropsWithChildren<
   Props & StyleProps & { [K in keyof DataAttribute]: DataAttribute[K] }
 >;
+
+export type DynamicComponent<T = {}> = keyof JSX.IntrinsicElements | BaseComponent<T>;
+
+export type ComponentRef<T extends HTMLElement> = T | ((element: T) => void);

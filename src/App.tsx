@@ -5,6 +5,9 @@ import Disclosure from '~/components/Disclosure';
 import Form from '~/components/Form';
 import Switch from '~/components/Switch';
 import './App.css';
+import { ComboboxButton, ComboboxPanel } from './components2/Combobox2';
+import { DialogProvider } from './components2/Dialog';
+import Popper from './components2/Popper';
 import CalendarDemo from './demo/Calendar';
 import ComboboxDemo from './demo/Combobox';
 import ListboxDemo from './demo/Listbox';
@@ -106,23 +109,38 @@ function MyForm() {
   );
 }
 
+function NewCombobox() {
+  return (
+    <DialogProvider>
+      <Popper>
+        <span ref={Popper.AnchorRef}>Other thing</span>
+        <ComboboxButton>Open</ComboboxButton>
+
+        <ComboboxPanel>
+          YO!!!
+          <ComboboxButton>Close</ComboboxButton>
+        </ComboboxPanel>
+      </Popper>
+    </DialogProvider>
+  );
+}
+
 const App: Component = () => {
   return (
     <CacheProvider>
-      <div>
-        <PopoverDemo />
-        <MenuDemo />
-        <ListboxDemo />
-        <ComboboxDemo />
-        <CalendarDemo />
-        <MyDisclosure />
-        <RadioGroupDemo />
-        <MySwitch />
-        <MyForm />
-        {/* <Todo />
+      <NewCombobox />
+      <PopoverDemo />
+      <MenuDemo />
+      <ListboxDemo />
+      <ComboboxDemo />
+      <CalendarDemo />
+      <MyDisclosure />
+      <RadioGroupDemo />
+      <MySwitch />
+      <MyForm />
+      {/* <Todo />
         <Todo />
         <Todo /> */}
-      </div>
     </CacheProvider>
   );
 };
