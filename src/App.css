@@ -2,6 +2,14 @@
   outline: 2px solid black;
 }
 
+[data-selected] {
+  background: lightgreen;
+}
+
+[data-active] {
+  background: lightblue;
+}
+
 [data-solid-popover-trigger],
 [data-solid-menu-button],
 [data-solid-listbox-button],

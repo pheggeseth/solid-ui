@@ -1,17 +1,8 @@
-import {
-  createContext,
-  createEffect,
-  mergeProps,
-  PropsWithChildren,
-  Show,
-  splitProps,
-  useContext,
-} from 'solid-js';
+import { createContext, createEffect, PropsWithChildren, useContext } from 'solid-js';
 import { JSX } from 'solid-js/jsx-runtime';
 import { createStore } from 'solid-js/store';
-import { Dynamic, Portal } from 'solid-js/web';
-import { ComponentRef, DynamicComponent } from '~/types';
-import { useId } from '~/utils/componentUtils';
+import { ComponentRef } from '~/types';
+import { setRef, useId } from '~/utils/componentUtils';
 import { useOnClickAway } from '~/utils/eventUtils';
 import { getFirstFocusableElement, useFocusOnOpen, useFocusTrap } from '~/utils/focusUtils';
 import { usePopperContext } from './Popper';
@@ -50,7 +41,7 @@ export const DialogContext = createContext<{
   context: ReturnType<typeof createDialogExternalContext>;
 }>();
 
-type DialogContextRefProp = {
+export type DialogContextRefProp = {
   context?: (ctx: ReturnType<typeof createDialogExternalContext>) => void;
 };
 
@@ -59,7 +50,9 @@ export const useDialogActions = () => useContext(DialogContext).actions;
 export const exposeDialogExternalContext = (props: DialogContextRefProp) =>
   props.context?.(useContext(DialogContext).context);
 
-export function DialogProvider(props: PropsWithChildren<DialogContextRefProp>) {
+type DialogProviderProps = PropsWithChildren<DialogContextRefProp>;
+
+export function DialogProvider(props: DialogProviderProps) {
   const [state, setState] = createStore<DialogState>({
     buttonId: null,
     dialogId: null,
@@ -103,51 +96,15 @@ export function DialogProvider(props: PropsWithChildren<DialogContextRefProp>) {
   );
 }
 
-export type ButtonProps<T extends HTMLElement> = {
-  as?: DynamicComponent<{
-    'aria-haspopup': ButtonProps<T>['aria-haspopup'];
-    onClick: ButtonProps<T>['onClick'];
-    onKeyDown: ButtonProps<T>['onKeyDown'];
-  }>;
-  'aria-haspopup'?: boolean | string;
-  onClick: JSX.EventHandler<T, MouseEvent>;
-  onKeyDown?: JSX.EventHandler<T, KeyboardEvent>;
-  ref?: (element: T) => void;
-};
-
-export function Button<T extends HTMLElement = HTMLButtonElement>(
-  props: PropsWithChildren<ButtonProps<T>>
-) {
-  props = mergeProps({ as: 'button' }, props);
-
-  const [localProps, otherProps] = splitProps(props, [
-    'as',
-    'aria-haspopup',
-    'onClick',
-    'onKeyDown',
-  ]);
-
-  return (
-    <Dynamic
-      {...otherProps}
-      component={localProps.as}
-      aria-haspopup={localProps['aria-haspopup']}
-      data-solid-ui-button=""
-      onClick={localProps.onClick}
-      onKeyDown={localProps.onKeyDown}
-    />
-  );
-}
-
-type UseDialogButtonLogicProps<T extends HTMLElement> = {
+type UseDialogButtonLogicConfig<T extends HTMLElement> = {
   idPrefix?: string;
   onClick?: JSX.EventHandler<T, MouseEvent>;
 };
 
 export function useDialogButtonLogic<T extends HTMLElement>(
-  props: UseDialogButtonLogicProps<T> = {}
+  config: UseDialogButtonLogicConfig<T> = {}
 ) {
-  const { idPrefix = 'solid-dialog-button', onClick: userOnClick } = props;
+  const { idPrefix = 'solid-dialog-button', onClick: userOnClick } = config;
 
   const dialogState = useDialogState();
   const dialogActions = useDialogActions();
@@ -188,53 +145,12 @@ export function useDialogButtonLogic<T extends HTMLElement>(
   };
 }
 
-export type DialogProps<T extends HTMLElement> = {
-  as?: DynamicComponent<{
-    'aria-modal'?: DialogProps<T>['aria-modal'];
-    onKeyDown: DialogProps<T>['onKeyDown'];
-    role: DialogProps<T>['role'];
-    tabIndex: DialogProps<T>['tabIndex'];
-  }>;
-  'aria-modal'?: boolean;
-  onKeyDown: JSX.EventHandler<T, KeyboardEvent>;
-  portal?: boolean;
-  ref: ComponentRef<T>;
-  role?: string;
-  tabIndex?: string | number;
-} & DialogContextRefProp;
-
-export function Dialog<T extends HTMLElement = HTMLDivElement>(
-  props: PropsWithChildren<DialogProps<T>>
-) {
-  props = mergeProps({ as: 'div', portal: true }, props);
-
-  const state = useDialogState();
-
-  const [localProps, otherProps] = splitProps(props, ['as', 'portal', 'role', 'tabIndex']);
-
-  const panel = () => (
-    <Dynamic
-      {...otherProps}
-      component={localProps.as}
-      data-solid-ui-dialog=""
-      role={localProps.role}
-      tabIndex={localProps.tabIndex}
-    />
-  );
-
-  exposeDialogExternalContext(props);
-
-  return (
-    <Show when={state.isDialogOpen}>
-      {localProps.portal ? <Portal>{panel()}</Portal> : panel()}
-    </Show>
-  );
-}
-
-export type UseDialogLogicProps<T extends HTMLElement> = {
-  clickAway?: {
-    exceptions?: HTMLElement[];
-  };
+export type UseDialogLogicConfig<T extends HTMLElement> = {
+  clickAway?:
+    | {
+        exceptions?: HTMLElement[];
+      }
+    | false;
   idPrefix?: string;
   onKeyDown?: JSX.EventHandler<T, KeyboardEvent>;
   manageFocus?:
@@ -246,7 +162,7 @@ export type UseDialogLogicProps<T extends HTMLElement> = {
   ref?: ComponentRef<T>;
 };
 
-export function useDialogLogic<T extends HTMLElement>(props: UseDialogLogicProps<T> = {}) {
+export function useDialogLogic<T extends HTMLElement>(props: UseDialogLogicConfig<T> = {}) {
   const {
     clickAway = {},
     idPrefix = 'solid-dialog',
@@ -276,17 +192,19 @@ export function useDialogLogic<T extends HTMLElement>(props: UseDialogLogicProps
       );
     }
 
-    const exceptions = clickAway.exceptions || [];
-    const button = document.getElementById(dialogState.buttonId);
+    if (clickAway) {
+      const exceptions = clickAway.exceptions || [];
+      const button = document.getElementById(dialogState.buttonId);
 
-    if (button) {
-      exceptions.push(button);
+      if (button) {
+        exceptions.push(button);
+      }
+
+      useOnClickAway(dialogElement, () => dialogActions.closeDialog(), {
+        exceptions,
+        shouldContainActiveElement: !!manageFocus,
+      });
     }
-
-    useOnClickAway(dialogElement, () => dialogActions.closeDialog(), {
-      exceptions,
-      shouldContainActiveElement: !!manageFocus,
-    });
 
     setRef(userRef, dialogElement);
   }
@@ -299,18 +217,9 @@ export function useDialogLogic<T extends HTMLElement>(props: UseDialogLogicProps
   };
 
   return {
-    ref,
+    isOpen: () => dialogState.isDialogOpen,
     onKeyDown,
+    ref,
     tabIndex: manageFocus ? 0 : undefined,
   };
-}
-
-function setRef<T extends HTMLElement>(ref: ComponentRef<T>, element: T) {
-  if (ref) {
-    if (typeof ref === 'function') {
-      ref(element);
-    } else {
-      ref = element;
-    }
-  }
 }

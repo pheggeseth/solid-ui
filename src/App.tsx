@@ -1,11 +1,11 @@
-import { Component, createSignal } from 'solid-js';
+import { Component, createSignal, JSX, PropsWithChildren } from 'solid-js';
 import { For } from 'solid-js/web';
 import { CacheProvider } from '~/Cache';
 import Disclosure from '~/components/Disclosure';
 import Form from '~/components/Form';
 import Switch from '~/components/Switch';
 import './App.css';
-import { ComboboxButton, ComboboxPanel } from './components2/Combobox2';
+import { ComboboxButton, ComboboxPanel } from './components2/Combobox';
 import { DialogProvider } from './components2/Dialog';
 import Popper from './components2/Popper';
 import CalendarDemo from './demo/Calendar';
@@ -14,6 +14,7 @@ import ListboxDemo from './demo/Listbox';
 import MenuDemo from './demo/Menu';
 import PopoverDemo from './demo/Popover';
 import RadioGroupDemo from './demo/RadioGroup';
+import { ListboxProvider, Listbox, ListboxOption } from './components2/Listbox';
 
 function MyDisclosure() {
   let ref;
@@ -125,9 +126,31 @@ function NewCombobox() {
   );
 }
 
+const options = [1, 2, 3];
+function NewListbox() {
+  const [value, setValue] = createSignal(2);
+
+  return (
+    <ListboxProvider
+      value={value()}
+      onChange={(value) => {
+        console.log('new value:', value);
+        setValue(value);
+      }}
+    >
+      <Listbox>
+        <For each={options}>
+          {(option) => <ListboxOption value={option}>{option}</ListboxOption>}
+        </For>
+      </Listbox>
+    </ListboxProvider>
+  );
+}
+
 const App: Component = () => {
   return (
     <CacheProvider>
+      <NewListbox />
       <NewCombobox />
       <PopoverDemo />
       <MenuDemo />

@@ -1,11 +1,13 @@
-import { createEffect, onCleanup } from 'solid-js';
+import { createEffect, JSX, onCleanup } from 'solid-js';
 
-interface KeyHandlerObject {
-  [key: string]: (event: KeyboardEvent) => void;
+interface KeyHandlerObject<T> {
+  [key: string]: JSX.EventHandler<T, KeyboardEvent>;
 }
 
-export function useKeyEventHandlers(handlers: KeyHandlerObject) {
-  return (event: KeyboardEvent) => {
+export function useKeyEventHandlers<T extends HTMLElement = HTMLElement>(
+  handlers: KeyHandlerObject<T>
+): JSX.EventHandler<T, KeyboardEvent> {
+  return (event) => {
     if (handlers[event.key]) {
       handlers[event.key](event);
     } else {

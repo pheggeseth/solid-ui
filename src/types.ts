@@ -18,3 +18,9 @@ export type BaseComponentProps<Props = {}, DataAttribute = {}> = PropsWithChildr
 export type DynamicComponent<T = {}> = keyof JSX.IntrinsicElements | BaseComponent<T>;
 
 export type ComponentRef<T extends HTMLElement> = T | ((element: T) => void);
+
+export type ListboxOrientation = 'vertical' | 'horizontal';
+
+export type ListboxFocusManagement = 'roving tabindex' | 'aria-activedescendent';
+
+export type ItemPosition = 'first' | 'last' | 'previous' | 'next';
