@@ -122,9 +122,7 @@ export function ListboxProvider<T = any>(props: ListProviderProps<T>) {
       };
     }
   });
-  const selectedOption = createMemo(() =>
-    optionsWithIndex().find(({ option }) => props.value ?? option.value === props.value)
-  );
+
   const isActiveOption = createSelector<string, string>(() => activeOption()?.option.id);
   const isSelectedOption = createSelector<T, T>(() => props.value);
 
@@ -135,11 +133,11 @@ export function ListboxProvider<T = any>(props: ListProviderProps<T>) {
     last: () => optionsWithIndex().slice().reverse().find(isNotDisabled)?.index,
     next: () =>
       optionsWithIndex()
-        .slice((activeOption()?.index || 0) + 1)
+        .slice((activeOption()?.index ?? 0) + 1)
         .find(isNotDisabled)?.index,
     previous: () =>
       optionsWithIndex()
-        .slice(0, activeOption()?.index || optionsWithIndex().length)
+        .slice(0, activeOption()?.index ?? 0)
         .reverse()
         .find(isNotDisabled)?.index,
   };
@@ -148,11 +146,11 @@ export function ListboxProvider<T = any>(props: ListProviderProps<T>) {
     addOption(option) {
       setState('options', (options) => [...options, { ...option, active: false }]);
     },
-    updateOption(id, option) {
-      setState('options', (option) => option.id === id, option);
+    updateOption(optionId, updates) {
+      setState('options', ({ id }) => id === optionId, updates);
     },
-    removeOption(id) {
-      setState('options', (options) => options.filter((option) => option.id !== id));
+    removeOption(optionId) {
+      setState('options', (options) => options.filter(({ id }) => id !== optionId));
     },
     clearActiveOption() {
       setState('options', ({ active }) => active, 'active', false);
@@ -166,7 +164,7 @@ export function ListboxProvider<T = any>(props: ListProviderProps<T>) {
 
       if (['BUTTON', 'A'].includes(activeElement?.tagName)) {
         activeElement.click();
-      } else {
+      } else if (!state.isSelectedOption(state.activeOption.option.value as T)) {
         props.onChange?.(state.activeOption.option.value as T);
       }
     },
@@ -183,19 +181,16 @@ export function ListboxProvider<T = any>(props: ListProviderProps<T>) {
       if (optionIndex >= 0) {
         setState('options', (options) =>
           options.map((o, index) =>
-            state.isActiveOption(o.id)
-              ? { ...o, active: false }
-              : index === optionIndex
-              ? { ...o, active: true }
-              : o
+            index === optionIndex ? { ...o, active: true } : o.active ? { ...o, active: false } : o
           )
         );
 
+        // if we have the 'position' key, then we are navigating with the keyboard
         if ('position' in option) {
           actions.focusActiveOption();
 
           if (!state.activeOption.clickable) {
-            props.onChange?.(state.activeOption.option.value as T);
+            // props.onChange?.(state.activeOption.option.value as T);
           }
         }
       }
@@ -402,7 +397,7 @@ export function ListboxOption<V, E extends HTMLElement = HTMLLIElement>(
     <Dynamic
       {...otherProps}
       component={localProps.as}
-      aria-selected={listboxState.isActiveOption(id) ? true : undefined}
+      aria-selected={listboxState.isSelectedOption(props.value)}
       data-active={listboxState.isActiveOption(id) ? '' : undefined}
       data-selected={listboxState.isSelectedOption(props.value) ? '' : undefined}
       data-solid-ui-listbox-option={listboxState.isRadioGroup ? undefined : ''}
