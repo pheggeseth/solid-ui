@@ -298,7 +298,7 @@ export function ListboxItem<ItemValue, ListboxItemElement extends HTMLElement = 
   return (
     <Dynamic
       {...otherProps}
-      aria-selected={listboxSelectors.isItemSelected(props.value) || undefined}
+      aria-selected={listboxSelectors.isItemActive(id) || undefined}
       data-active={listboxSelectors.isItemActive(id) ? '' : undefined}
       component={localProps.as}
       id={id}
