@@ -7,7 +7,8 @@ import Switch from '~/components/Switch';
 import './App.css';
 import { ComboboxButton, ComboboxPanel } from './components2/Combobox';
 import { DialogProvider } from './components2/Dialog';
-import { Listbox, ListboxItem, ListboxProvider } from './components2/Listbox2';
+import { Listbox, ListboxItem, ListboxProvider } from './components2/Listbox3';
+// import { Listbox, ListboxItem, ListboxProvider } from './components2/Listbox2';
 import Popper from './components2/Popper';
 import CalendarDemo from './demo/Calendar';
 import ComboboxDemo from './demo/Combobox';
@@ -150,7 +151,17 @@ function NewCombobox() {
 
 const fruits = ['apple', 'orange', 'pineapple', 'watermelon'];
 
-function Listbox2() {
+// function Listbox2() {
+//   return (
+//     <ListboxProvider>
+//       <Listbox>
+//         <For each={fruits}>{(fruit) => <ListboxItem value={fruit}>{fruit}</ListboxItem>}</For>
+//       </Listbox>
+//     </ListboxProvider>
+//   );
+// }
+
+function Listbox3() {
   return (
     <ListboxProvider>
       <Listbox>
@@ -174,7 +185,8 @@ const App: Component = () => {
         <For each={fruits}>{(fruit) => <option role="menuitem">{fruit}</option>}</For>
       </select>
       {/* <NewListbox /> */}
-      <Listbox2 />
+      {/* <Listbox2 /> */}
+      <Listbox3 />
       <NewCombobox />
       <PopoverDemo />
       <MenuDemo />
