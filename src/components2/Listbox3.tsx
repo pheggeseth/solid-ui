@@ -41,7 +41,7 @@ type ListboxActions<ItemValue> = {
   focusPreviousItem(): void;
   focusFirstItem(): void;
   focusLastItem(): void;
-  focusItemStartingWith(characters: string): void;
+  focusItemStartingWith(search: string): void;
   hoverItem(itemId: string): void;
   hoverItemClear(): void;
 };
@@ -131,13 +131,13 @@ export function ListboxProvider<ItemValue = any>(props: ListboxProviderProps<Ite
     focusLastItem() {
       focusItem(listboxState.items[listboxState.items.length - 1]);
     },
-    focusItemStartingWith(characters: string) {
+    focusItemStartingWith(search: string) {
       const activeItemIndex = getActiveItemIndex();
       const wrappedItems = listboxState.items
         .slice(activeItemIndex)
         .concat(listboxState.items.slice(0, activeItemIndex));
 
-      const searchTerm = characters.toLocaleLowerCase();
+      const searchTerm = search.toLocaleLowerCase();
       const matchingItem = wrappedItems.find((item) =>
         document.getElementById(item.id).textContent.toLocaleLowerCase().startsWith(searchTerm)
       );
@@ -198,6 +198,9 @@ export function Listbox<ItemValue, ListboxElement extends HTMLElement = HTMLULis
 
   const [localProps, otherProps] = splitProps(props, ['as', 'idPrefix', 'role']);
 
+  let search = '';
+  let resetSearch: NodeJS.Timeout;
+
   return (
     <Dynamic
       {...otherProps}
@@ -239,6 +242,17 @@ export function Listbox<ItemValue, ListboxElement extends HTMLElement = HTMLULis
         End(event) {
           event.preventDefault();
           listboxActions.focusLastItem();
+        },
+        default(event) {
+          if (event.key.length === 1) {
+            clearTimeout(resetSearch);
+            search += event.key;
+            listboxActions.focusItemStartingWith(search);
+
+            resetSearch = setTimeout(() => {
+              search = '';
+            }, 500);
+          }
         },
       })}
       role={localProps.role}
