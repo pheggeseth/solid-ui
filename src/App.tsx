@@ -149,7 +149,7 @@ function NewCombobox() {
 //   );
 // }
 
-const fruits = ['apple', 'orange', 'pineapple', 'watermelon'];
+const fruits = ['apple', 'apricot', 'orange', 'peach', 'pineapple', 'watermelon'];
 
 // function Listbox2() {
 //   return (

@@ -134,7 +134,7 @@ export function ListboxProvider<ItemValue = any>(props: ListboxProviderProps<Ite
     focusItemStartingWith(search: string) {
       const activeItemIndex = getActiveItemIndex();
       const wrappedItems = listboxState.items
-        .slice(activeItemIndex)
+        .slice(Math.min(activeItemIndex + 1, listboxState.items.length - 1))
         .concat(listboxState.items.slice(0, activeItemIndex));
 
       const searchTerm = search.toLocaleLowerCase();
