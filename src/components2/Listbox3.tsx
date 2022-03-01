@@ -1,6 +1,7 @@
 import {
   Accessor,
   createContext,
+  createEffect,
   createMemo,
   createSelector,
   JSX,
@@ -23,7 +24,8 @@ type ListboxItemType<ItemValue> = {
 };
 
 type ListboxState<ItemValue> = {
-  activeItemId: string | null;
+  labelId: string;
+  activeItemId: string;
   items: ListboxItemType<ItemValue>[];
 };
 
@@ -34,8 +36,9 @@ type ListboxSelectors<ItemValue> = {
 };
 
 type ListboxActions<ItemValue> = {
-  onItemMount(item: ListboxItemType<ItemValue>): void;
-  onItemCleanup(itemId: string): void;
+  setElementId(type: 'labelId', id: string): void;
+  addItem(item: ListboxItemType<ItemValue>): void;
+  removeItem(itemId: string): void;
   initializeActiveItem(): void;
   focusNextItem(): void;
   focusPreviousItem(): void;
@@ -74,6 +77,7 @@ export function ListboxProvider<ItemValue = any>(props: ListboxProviderProps<Ite
   props = mergeProps<typeof props[]>({ 'aria-orientation': 'vertical' }, props);
 
   const [listboxState, setListboxState] = createStore<ListboxState<ItemValue>>({
+    labelId: null,
     activeItemId: null,
     items: [],
   });
@@ -92,10 +96,13 @@ export function ListboxProvider<ItemValue = any>(props: ListboxProviderProps<Ite
   };
 
   const listboxActions: ListboxActions<ItemValue> = {
-    onItemMount(item) {
+    setElementId(elementType, id) {
+      setListboxState(elementType, id);
+    },
+    addItem(item) {
       setListboxState('items', (items) => [...items, item]);
     },
-    onItemCleanup(itemId) {
+    removeItem(itemId) {
       setListboxState('items', (items) => items.filter((item) => item.id !== itemId));
     },
     initializeActiveItem() {
@@ -169,11 +176,41 @@ export function ListboxProvider<ItemValue = any>(props: ListboxProviderProps<Ite
   );
 }
 
-type ListboxProps<ListboxElement extends HTMLElement> = BaseComponentProps<{
-  as?: DynamicComponent<{
-    'aria-activedescendent': string;
+type ListboxLabelProps<ListboxLabelElement extends HTMLElement> = BaseComponentProps<{
+  component?: DynamicComponent<{
     id: string;
-    onFocus: JSX.EventHandler<ListboxElement, FocusEvent>;
+  }>;
+  idPrefix?: string;
+}>;
+
+export function ListboxLabel<ListboxLabelElement extends HTMLElement = HTMLSpanElement>(
+  props: ListboxLabelProps<ListboxLabelElement>
+) {
+  props = mergeProps<typeof props[]>(
+    { component: 'span', idPrefix: 'solid-ui-listbox-label' },
+    props
+  );
+
+  const listboxActions = useListboxActions();
+
+  const id = useId(props.idPrefix);
+
+  onMount(() => {
+    listboxActions.setElementId('labelId', id);
+  });
+
+  const [localProps, otherProps] = splitProps(props, ['component']);
+
+  return (
+    <Dynamic {...otherProps} component={localProps.component} data-solid-ui-listbox-label id={id} />
+  );
+}
+
+type ListboxProps<ListboxElement extends HTMLElement> = BaseComponentProps<{
+  component?: DynamicComponent<{
+    'aria-activedescendent': string;
+    'aria-labelledby': string;
+    id: string;
     onKeyDown: JSX.EventHandler<ListboxElement, KeyboardEvent>;
     role: string;
     tabIndex: string | number;
@@ -186,7 +223,7 @@ export function Listbox<ItemValue, ListboxElement extends HTMLElement = HTMLULis
   props: ListboxProps<ListboxElement>
 ) {
   props = mergeProps<typeof props[]>(
-    { as: 'ul', idPrefix: 'solid-ui-listbox', role: 'listbox' },
+    { component: 'ul', idPrefix: 'solid-ui-listbox', role: 'listbox' },
     props
   );
 
@@ -196,7 +233,7 @@ export function Listbox<ItemValue, ListboxElement extends HTMLElement = HTMLULis
   const listboxSelectors = useListboxSelectors<ItemValue>();
   const listboxActions = useListboxActions<ItemValue>();
 
-  const [localProps, otherProps] = splitProps(props, ['as', 'idPrefix', 'role']);
+  const [localProps, otherProps] = splitProps(props, ['component', 'idPrefix', 'role']);
 
   let search = '';
   let resetSearch: NodeJS.Timeout;
@@ -205,11 +242,10 @@ export function Listbox<ItemValue, ListboxElement extends HTMLElement = HTMLULis
     <Dynamic
       {...otherProps}
       aria-activedescendent={listboxState.activeItemId}
-      component={localProps.as}
+      aria-labelledby={listboxState.labelId}
+      data-solid-ui-listbox=""
+      component={localProps.component}
       id={id}
-      onFocus={() => {
-        // listboxActions.initializeActiveItem();
-      }}
       onKeyDown={useKeyEventHandlers<ListboxElement>({
         ArrowUp(event) {
           if (listboxSelectors.orientation() === 'vertical') {
@@ -265,7 +301,7 @@ export type ListboxItemProps<
   ItemValue,
   ListboxItemElement extends HTMLElement
 > = BaseComponentProps<{
-  as?: DynamicComponent<{
+  component?: DynamicComponent<{
     id: string;
     // onClick: JSX.EventHandler<ListboxItemElement, MouseEvent>;
     onMouseEnter: JSX.EventHandler<ListboxItemElement, MouseEvent>;
@@ -281,26 +317,34 @@ export function ListboxItem<ItemValue, ListboxItemElement extends HTMLElement = 
   props: ListboxItemProps<ItemValue, ListboxItemElement>
 ) {
   props = mergeProps<typeof props[]>(
-    { as: 'li', idPrefix: 'solid-ui-listbox-item', role: 'option' },
+    { component: 'li', idPrefix: 'solid-ui-listbox-item', role: 'option' },
     props
   );
 
+  const listboxState = useListboxState<ItemValue>();
   const listboxSelectors = useListboxSelectors<ItemValue>();
   const listboxActions = useListboxActions<ItemValue>();
 
   const id = useId(props.idPrefix);
 
-  onMount(() => listboxActions.onItemMount({ id, value: props.value }));
-  onCleanup(() => listboxActions.onItemCleanup(id));
+  onMount(() => listboxActions.addItem({ id, value: props.value }));
+  onCleanup(() => listboxActions.removeItem(id));
 
-  const [localProps, otherProps] = splitProps(props, ['as', 'idPrefix', 'role']);
+  createEffect(() => {
+    if (listboxState.activeItemId === id) {
+      document.getElementById(id).scrollIntoView(false);
+    }
+  });
+
+  const [localProps, otherProps] = splitProps(props, ['component', 'idPrefix', 'role']);
 
   return (
     <Dynamic
       {...otherProps}
       aria-selected={listboxSelectors.isItemActive(id) || undefined}
       data-active={listboxSelectors.isItemActive(id) ? '' : undefined}
-      component={localProps.as}
+      data-solid-ui-listbox-item=""
+      component={localProps.component}
       id={id}
       onMouseEnter={() => {
         listboxActions.hoverItem(id);

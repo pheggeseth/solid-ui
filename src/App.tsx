@@ -7,7 +7,7 @@ import Switch from '~/components/Switch';
 import './App.css';
 import { ComboboxButton, ComboboxPanel } from './components2/Combobox';
 import { DialogProvider } from './components2/Dialog';
-import { Listbox, ListboxItem, ListboxProvider } from './components2/Listbox3';
+import { Listbox, ListboxItem, ListboxLabel, ListboxProvider } from './components2/Listbox3';
 // import { Listbox, ListboxItem, ListboxProvider } from './components2/Listbox2';
 import Popper from './components2/Popper';
 import CalendarDemo from './demo/Calendar';
@@ -164,6 +164,7 @@ const fruits = ['apple', 'apricot', 'orange', 'peach', 'pineapple', 'watermelon'
 function Listbox3() {
   return (
     <ListboxProvider>
+      <ListboxLabel>Favorite fruit:</ListboxLabel>
       <Listbox>
         <For each={fruits}>{(fruit) => <ListboxItem value={fruit}>{fruit}</ListboxItem>}</For>
       </Listbox>
