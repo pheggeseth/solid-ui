@@ -1,4 +1,4 @@
-import { Component, createSignal, JSX, PropsWithChildren } from 'solid-js';
+import { Component, createSignal } from 'solid-js';
 import { For } from 'solid-js/web';
 import { CacheProvider } from '~/Cache';
 import Disclosure from '~/components/Disclosure';
@@ -8,7 +8,6 @@ import './App.css';
 import { ComboboxButton, ComboboxPanel } from './components2/Combobox';
 import { DialogProvider } from './components2/Dialog';
 import { Listbox, ListboxItem, ListboxLabel, ListboxProvider } from './components2/Listbox3';
-// import { Listbox, ListboxItem, ListboxProvider } from './components2/Listbox2';
 import Popper from './components2/Popper';
 import CalendarDemo from './demo/Calendar';
 import ComboboxDemo from './demo/Combobox';
@@ -16,7 +15,6 @@ import ListboxDemo from './demo/Listbox';
 import MenuDemo from './demo/Menu';
 import PopoverDemo from './demo/Popover';
 import RadioGroupDemo from './demo/RadioGroup';
-// import { ListboxProvider, Listbox, ListboxOption } from './components2/Listbox';
 
 function MyDisclosure() {
   let ref;
@@ -128,42 +126,19 @@ function NewCombobox() {
   );
 }
 
-// const options = [1, 2, 3];
-// function NewListbox() {
-//   const [value, setValue] = createSignal(2);
-
-//   return (
-//     <ListboxProvider
-//       value={value()}
-//       onChange={(value) => {
-//         console.log('new value:', value);
-//         setValue(value);
-//       }}
-//     >
-//       <Listbox>
-//         <For each={options}>
-//           {(option) => <ListboxOption value={option}>{option}</ListboxOption>}
-//         </For>
-//       </Listbox>
-//     </ListboxProvider>
-//   );
-// }
-
 const fruits = ['apple', 'apricot', 'orange', 'peach', 'pineapple', 'watermelon'];
 
-// function Listbox2() {
-//   return (
-//     <ListboxProvider>
-//       <Listbox>
-//         <For each={fruits}>{(fruit) => <ListboxItem value={fruit}>{fruit}</ListboxItem>}</For>
-//       </Listbox>
-//     </ListboxProvider>
-//   );
-// }
-
 function Listbox3() {
+  const [value, setValue] = createSignal('apricot');
+
   return (
-    <ListboxProvider>
+    <ListboxProvider
+      value={value()}
+      onChange={(newValue) => {
+        setValue(newValue);
+        console.log(newValue);
+      }}
+    >
       <ListboxLabel>Favorite fruit:</ListboxLabel>
       <Listbox>
         <For each={fruits}>{(fruit) => <ListboxItem value={fruit}>{fruit}</ListboxItem>}</For>
@@ -175,18 +150,6 @@ function Listbox3() {
 const App: Component = () => {
   return (
     <CacheProvider>
-      <label>
-        Choose a fruit:
-        <input name="fruit" list="fruits" />
-        <datalist id="fruits">
-          <For each={fruits}>{(fruit) => <option>{fruit}</option>}</For>
-        </datalist>
-      </label>
-      <select role="menu" multiple style={{ width: '100px' }}>
-        <For each={fruits}>{(fruit) => <option role="menuitem">{fruit}</option>}</For>
-      </select>
-      {/* <NewListbox /> */}
-      {/* <Listbox2 /> */}
       <Listbox3 />
       <NewCombobox />
       <PopoverDemo />

@@ -23,23 +23,25 @@ type ListboxItemType<ItemValue> = {
   value?: ItemValue;
 };
 
-type ListboxState<ItemValue> = {
+type ListboxElementIds = {
   labelId: string;
+};
+
+type ListboxState<ItemValue> = ListboxElementIds & {
   activeItemId: string;
   items: ListboxItemType<ItemValue>[];
 };
 
-type ListboxSelectors<ItemValue> = {
+type ListboxSelectors = {
   isItemActive: (itemId: string) => boolean;
-  isItemSelected: (itemValue: ItemValue) => boolean;
   orientation: Accessor<ListboxOrientation>;
 };
 
 type ListboxActions<ItemValue> = {
-  setElementId(type: 'labelId', id: string): void;
+  setElementId(name: keyof ListboxElementIds, id: string): void;
   addItem(item: ListboxItemType<ItemValue>): void;
   removeItem(itemId: string): void;
-  initializeActiveItem(): void;
+  initializeItemFocus(): void;
   focusNextItem(): void;
   focusPreviousItem(): void;
   focusFirstItem(): void;
@@ -47,11 +49,13 @@ type ListboxActions<ItemValue> = {
   focusItemStartingWith(search: string): void;
   hoverItem(itemId: string): void;
   hoverItemClear(): void;
+  chooseFocusedItem(): void;
+  chooseItem(itemId: string): void;
 };
 
 const ListboxContext = createContext<{
   state: ListboxState<any>;
-  selectors: ListboxSelectors<any>;
+  selectors: ListboxSelectors;
   actions: ListboxActions<any>;
 }>();
 
@@ -60,7 +64,7 @@ function useListboxState<ItemValue>() {
 }
 
 function useListboxSelectors<ItemValue>() {
-  return useContext(ListboxContext).selectors as ListboxSelectors<ItemValue>;
+  return useContext(ListboxContext).selectors as ListboxSelectors;
 }
 
 function useListboxActions<ItemValue>() {
@@ -82,12 +86,11 @@ export function ListboxProvider<ItemValue = any>(props: ListboxProviderProps<Ite
     items: [],
   });
 
-  const getActiveItemIndex = () =>
-    listboxState.items.findIndex((item) => item.id === listboxState.activeItemId);
+  const isActiveItem = (item: ListboxItemType<ItemValue>) => item.id === listboxState.activeItemId;
+  const getActiveItemIndex = () => listboxState.items.findIndex(isActiveItem);
 
-  const listboxSelectors: ListboxSelectors<ItemValue> = {
+  const listboxSelectors: ListboxSelectors = {
     isItemActive: createSelector(() => listboxState.activeItemId),
-    isItemSelected: createSelector(() => props.value),
     orientation: createMemo(() => props['aria-orientation']),
   };
 
@@ -95,17 +98,19 @@ export function ListboxProvider<ItemValue = any>(props: ListboxProviderProps<Ite
     setListboxState({ activeItemId: item.id });
   };
 
+  const hasId = (itemId: string) => (item: { id: string }) => item.id === itemId;
+
   const listboxActions: ListboxActions<ItemValue> = {
-    setElementId(elementType, id) {
-      setListboxState(elementType, id);
+    setElementId(name, id) {
+      setListboxState(name, id);
     },
     addItem(item) {
       setListboxState('items', (items) => [...items, item]);
     },
     removeItem(itemId) {
-      setListboxState('items', (items) => items.filter((item) => item.id !== itemId));
+      setListboxState('items', (items) => items.filter((item) => !hasId(itemId)(item)));
     },
-    initializeActiveItem() {
+    initializeItemFocus() {
       if (listboxState.activeItemId) {
         return;
       }
@@ -155,11 +160,23 @@ export function ListboxProvider<ItemValue = any>(props: ListboxProviderProps<Ite
     },
     hoverItem(itemId) {
       setListboxState({
-        activeItemId: listboxState.items.find((item) => item.id === itemId)?.id || null,
+        activeItemId: listboxState.items.find(hasId(itemId))?.id || null,
       });
     },
     hoverItemClear() {
       setListboxState({ activeItemId: null });
+    },
+    chooseFocusedItem() {
+      const activeItem = listboxState.items.find(isActiveItem);
+      if (activeItem) {
+        props.onChange?.(activeItem.value as ItemValue);
+      }
+    },
+    chooseItem(itemId) {
+      const item = listboxState.items.find(hasId(itemId));
+      if (item) {
+        props.onChange?.(item.value as ItemValue);
+      }
     },
   };
 
@@ -211,6 +228,7 @@ type ListboxProps<ListboxElement extends HTMLElement> = BaseComponentProps<{
     'aria-activedescendent': string;
     'aria-labelledby': string;
     id: string;
+    onFocus: JSX.EventHandler<ListboxElement, FocusEvent>;
     onKeyDown: JSX.EventHandler<ListboxElement, KeyboardEvent>;
     role: string;
     tabIndex: string | number;
@@ -246,6 +264,9 @@ export function Listbox<ItemValue, ListboxElement extends HTMLElement = HTMLULis
       data-solid-ui-listbox=""
       component={localProps.component}
       id={id}
+      onFocus={() => {
+        listboxActions.initializeItemFocus();
+      }}
       onKeyDown={useKeyEventHandlers<ListboxElement>({
         ArrowUp(event) {
           if (listboxSelectors.orientation() === 'vertical') {
@@ -279,8 +300,21 @@ export function Listbox<ItemValue, ListboxElement extends HTMLElement = HTMLULis
           event.preventDefault();
           listboxActions.focusLastItem();
         },
+        Enter(event) {
+          event.preventDefault();
+          listboxActions.chooseFocusedItem();
+        },
+        [' '](event) {
+          if (search) {
+            this.default(event);
+          } else {
+            event.preventDefault();
+            listboxActions.chooseFocusedItem();
+          }
+        },
         default(event) {
           if (event.key.length === 1) {
+            event.preventDefault();
             clearTimeout(resetSearch);
             search += event.key;
             listboxActions.focusItemStartingWith(search);
@@ -303,7 +337,7 @@ export type ListboxItemProps<
 > = BaseComponentProps<{
   component?: DynamicComponent<{
     id: string;
-    // onClick: JSX.EventHandler<ListboxItemElement, MouseEvent>;
+    onClick: JSX.EventHandler<ListboxItemElement, MouseEvent>;
     onMouseEnter: JSX.EventHandler<ListboxItemElement, MouseEvent>;
     onMouseLeave: JSX.EventHandler<ListboxItemElement, MouseEvent>;
     role: string;
@@ -346,6 +380,9 @@ export function ListboxItem<ItemValue, ListboxItemElement extends HTMLElement = 
       data-solid-ui-listbox-item=""
       component={localProps.component}
       id={id}
+      onClick={() => {
+        listboxActions.chooseItem(id);
+      }}
       onMouseEnter={() => {
         listboxActions.hoverItem(id);
       }}
