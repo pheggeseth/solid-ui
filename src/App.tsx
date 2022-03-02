@@ -1,12 +1,10 @@
 import { Component, createSignal } from 'solid-js';
 import { For } from 'solid-js/web';
 import { CacheProvider } from '~/Cache';
-import Disclosure from '~/components/Disclosure';
 import Form from '~/components/Form';
 import Switch from '~/components/Switch';
 import './App.css';
-import { ComboboxButton, ComboboxPanel } from './components2/Combobox';
-import { DialogProvider } from './components2/Dialog';
+import { Disclosure, DisclosureButton, DisclosureProvider } from './components2/Disclosure';
 import { Listbox, ListboxItem, ListboxLabel, ListboxProvider } from './components2/Listbox3';
 import Popper from './components2/Popper';
 import CalendarDemo from './demo/Calendar';
@@ -15,22 +13,6 @@ import ListboxDemo from './demo/Listbox';
 import MenuDemo from './demo/Menu';
 import PopoverDemo from './demo/Popover';
 import RadioGroupDemo from './demo/RadioGroup';
-
-function MyDisclosure() {
-  let ref;
-
-  return (
-    <Disclosure>
-      <Disclosure.Button ref={ref} style={Disclosure.state.isOpen ? { background: 'red' } : {}}>
-        Open
-      </Disclosure.Button>
-      <Disclosure.Panel>
-        Stuff
-        <Disclosure.Button>Close</Disclosure.Button>
-      </Disclosure.Panel>
-    </Disclosure>
-  );
-}
 
 function MySwitch() {
   const [checked, setChecked] = createSignal(false);
@@ -110,21 +92,21 @@ function MyForm() {
   );
 }
 
-function NewCombobox() {
-  return (
-    <DialogProvider>
-      <Popper>
-        <span ref={Popper.AnchorRef}>Other thing</span>
-        <ComboboxButton>Open</ComboboxButton>
+// function NewCombobox() {
+//   return (
+//     <DialogProvider>
+//       <Popper>
+//         <span ref={Popper.AnchorRef}>Other thing</span>
+//         <ComboboxButton>Open</ComboboxButton>
 
-        <ComboboxPanel>
-          YO!!!
-          <ComboboxButton>Close</ComboboxButton>
-        </ComboboxPanel>
-      </Popper>
-    </DialogProvider>
-  );
-}
+//         <ComboboxPanel>
+//           YO!!!
+//           <ComboboxButton>Close</ComboboxButton>
+//         </ComboboxPanel>
+//       </Popper>
+//     </DialogProvider>
+//   );
+// }
 
 const fruits = ['apple', 'apricot', 'orange', 'peach', 'pineapple', 'watermelon'];
 
@@ -147,17 +129,28 @@ function Listbox3() {
   );
 }
 
+function MyDisclosure() {
+  return (
+    <DisclosureProvider>
+      {/* <Popper> */}
+      <DisclosureButton>Open</DisclosureButton>
+      <Disclosure>YO!!!</Disclosure>
+      {/* </Popper> */}
+    </DisclosureProvider>
+  );
+}
+
 const App: Component = () => {
   return (
     <CacheProvider>
       <Listbox3 />
-      <NewCombobox />
+      <MyDisclosure />
+      {/* <NewCombobox /> */}
       <PopoverDemo />
       <MenuDemo />
       <ListboxDemo />
       <ComboboxDemo />
       <CalendarDemo />
-      <MyDisclosure />
       <RadioGroupDemo />
       <MySwitch />
       <MyForm />
