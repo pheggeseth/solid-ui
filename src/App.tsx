@@ -6,7 +6,7 @@ import Switch from '~/components/Switch';
 import './App.css';
 import { Disclosure, DisclosureButton, DisclosureProvider } from './components2/Disclosure';
 import { Listbox, ListboxItem, ListboxLabel, ListboxProvider } from './components2/Listbox3';
-import Popper from './components2/Popper';
+import { PopoverButton, PopoverPanel, PopoverProvider } from './components2/Popover';
 import CalendarDemo from './demo/Calendar';
 import ComboboxDemo from './demo/Combobox';
 import ListboxDemo from './demo/Listbox';
@@ -129,7 +129,7 @@ function Listbox3() {
   );
 }
 
-function MyDisclosure() {
+function Disclosure2() {
   return (
     <DisclosureProvider>
       {/* <Popper> */}
@@ -140,11 +140,21 @@ function MyDisclosure() {
   );
 }
 
+function Popover2() {
+  return (
+    <PopoverProvider>
+      <PopoverButton>Open</PopoverButton>
+      <PopoverPanel>YO!!!!!</PopoverPanel>
+    </PopoverProvider>
+  );
+}
+
 const App: Component = () => {
   return (
     <CacheProvider>
       <Listbox3 />
-      <MyDisclosure />
+      <Disclosure2 />
+      <Popover2 />
       {/* <NewCombobox /> */}
       <PopoverDemo />
       <MenuDemo />

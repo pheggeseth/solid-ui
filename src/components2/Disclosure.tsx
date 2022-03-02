@@ -1,9 +1,11 @@
 import {
   Accessor,
+  Component,
   createContext,
   createEffect,
   JSX,
   mergeProps,
+  onCleanup,
   onMount,
   PropsWithChildren,
   Show,
@@ -44,7 +46,7 @@ const DisclosureContext = createContext<{ state: DisclosureState; actions: Discl
 export const useDisclosureState = () => useContext(DisclosureContext).state;
 export const useDisclosureActions = () => useContext(DisclosureContext).actions;
 
-type DisclosureProviderProps = PropsWithChildren;
+export type DisclosureProviderProps = PropsWithChildren;
 
 export function DisclosureProvider(props: DisclosureProviderProps) {
   const [state, setState] = createStore<DisclosureState>({
@@ -86,13 +88,14 @@ export function DisclosureProvider(props: DisclosureProviderProps) {
   );
 }
 
-type DisclosureButtonProps<DisclosureButtonElement extends HTMLElement> = BaseComponentProps<{
-  component?: DynamicComponent<{
-    id: string;
-    onClick: JSX.EventHandler<DisclosureButtonElement, MouseEvent>;
+export type DisclosureButtonProps<DisclosureButtonElement extends HTMLElement> =
+  BaseComponentProps<{
+    component?: DynamicComponent<{
+      id: string;
+      onClick: JSX.EventHandler<DisclosureButtonElement, MouseEvent>;
+    }>;
+    idPrefix?: string;
   }>;
-  idPrefix?: string;
-}>;
 
 export function DisclosureButton<DisclosureButtonElement extends HTMLElement = HTMLButtonElement>(
   props: DisclosureButtonProps<DisclosureButtonElement>
@@ -142,7 +145,42 @@ export function DisclosureButton<DisclosureButtonElement extends HTMLElement = H
   );
 }
 
-type DisclosureProps<DisclosureElement extends HTMLElement> = BaseComponentProps<{
+const OverlayPortal: Component = (props) => {
+  const actions = useDisclosureActions();
+
+  onMount(actions.openOverlay);
+  onCleanup(actions.closeOverlay);
+
+  return <Portal>{props.children}</Portal>;
+};
+
+export type DisclosureOverlayProps = BaseComponentProps<{
+  component?: DynamicComponent<{
+    id: string;
+  }>;
+  idPrefix?: string;
+  portal?: boolean;
+}>;
+
+export function DisclosureOverlay(props: DisclosureOverlayProps) {
+  props = mergeProps<typeof props[]>({ idPrefix: 'solid-ui-disclosure-overlay' }, props);
+
+  const actions = useDisclosureActions();
+
+  const id = useId(props.idPrefix);
+
+  onMount(() => {
+    actions.setElementId('overlayId', id);
+  });
+
+  const [localProps, otherProps] = splitProps(props, ['component', 'idPrefix', 'portal']);
+
+  const overlay = () => <Dynamic {...otherProps} component={localProps.component} id={id} />;
+
+  return localProps.portal ? <OverlayPortal>{overlay()}</OverlayPortal> : overlay();
+}
+
+export type DisclosureProps<DisclosureElement extends HTMLElement> = BaseComponentProps<{
   clickAway?:
     | boolean
     | {
@@ -178,18 +216,8 @@ export function Disclosure<DisclosureElement extends HTMLElement = HTMLDivElemen
 
   props = mergeProps<typeof props[]>(
     {
-      // clickAway: (element) =>
-      //   clickAway(element, () => ({
-      //     exceptions: [document.getElementById(disclosureState.buttonId)],
-      //     onClickAway: () => {
-      //       console.log('click away');
-      //       disclosureActions.closeDisclosure();
-      //     },
-      //   })),
       component: 'div',
       idPrefix: 'solid-ui-disclosure',
-      // manageFocus: (element) =>
-      //   manageFocus(element, () => ({ isOpen: () => disclosureState.isDisclosureOpen })),
     },
     props
   );
@@ -275,34 +303,4 @@ export function Disclosure<DisclosureElement extends HTMLElement = HTMLDivElemen
       {localProps.portal ? <Portal>{panel()}</Portal> : panel()}
     </Show>
   );
-}
-
-export function manageFocus<Element extends HTMLElement>(
-  element: Element,
-  config: Accessor<{
-    isOpen: Accessor<boolean>;
-    focusTrapRef?: HTMLElement;
-    initialFocusRef?: HTMLElement;
-  }>
-) {
-  const { isOpen, focusTrapRef, initialFocusRef } = config();
-
-  useFocusTrap(focusTrapRef || element, isOpen);
-  useFocusOnOpen(initialFocusRef || getFirstFocusableElement(element), isOpen);
-}
-
-export function clickAway<Element extends HTMLElement>(
-  element: Element,
-  config: Accessor<{
-    exceptions?: HTMLElement[];
-    onClickAway: () => void;
-    shouldContainActiveElement?: boolean;
-  }>
-) {
-  const { exceptions = [], onClickAway, shouldContainActiveElement } = config();
-
-  useOnClickAway(element, onClickAway, {
-    exceptions,
-    shouldContainActiveElement,
-  });
 }
