@@ -1,11 +1,10 @@
 import { Component, createSignal } from 'solid-js';
 import { For } from 'solid-js/web';
-import { CacheProvider } from '~/Cache';
 import Form from '~/components/Form';
 import Switch from '~/components/Switch';
 import './App.css';
+import { NewDemo } from './components2/demo';
 import { Disclosure, DisclosureButton, DisclosureProvider } from './components2/Disclosure';
-import { Listbox, ListboxItem, ListboxLabel, ListboxProvider } from './components2/Listbox3';
 import { PopoverButton, PopoverPanel, PopoverProvider } from './components2/Popover';
 import CalendarDemo from './demo/Calendar';
 import ComboboxDemo from './demo/Combobox';
@@ -92,43 +91,6 @@ function MyForm() {
   );
 }
 
-// function NewCombobox() {
-//   return (
-//     <DialogProvider>
-//       <Popper>
-//         <span ref={Popper.AnchorRef}>Other thing</span>
-//         <ComboboxButton>Open</ComboboxButton>
-
-//         <ComboboxPanel>
-//           YO!!!
-//           <ComboboxButton>Close</ComboboxButton>
-//         </ComboboxPanel>
-//       </Popper>
-//     </DialogProvider>
-//   );
-// }
-
-const fruits = ['apple', 'apricot', 'orange', 'peach', 'pineapple', 'watermelon'];
-
-function Listbox3() {
-  const [value, setValue] = createSignal('apricot');
-
-  return (
-    <ListboxProvider
-      value={value()}
-      onChange={(newValue) => {
-        setValue(newValue);
-        console.log(newValue);
-      }}
-    >
-      <ListboxLabel>Favorite fruit:</ListboxLabel>
-      <Listbox>
-        <For each={fruits}>{(fruit) => <ListboxItem value={fruit}>{fruit}</ListboxItem>}</For>
-      </Listbox>
-    </ListboxProvider>
-  );
-}
-
 function Disclosure2() {
   return (
     <DisclosureProvider>
@@ -151,8 +113,8 @@ function Popover2() {
 
 const App: Component = () => {
   return (
-    <CacheProvider>
-      <Listbox3 />
+    <>
+      <NewDemo />
       <Disclosure2 />
       <Popover2 />
       {/* <NewCombobox /> */}
@@ -164,10 +126,12 @@ const App: Component = () => {
       <RadioGroupDemo />
       <MySwitch />
       <MyForm />
-      {/* <Todo />
+      {/* <CacheProvider>
         <Todo />
-        <Todo /> */}
-    </CacheProvider>
+        <Todo />
+        <Todo />
+      </CacheProvider> */}
+    </>
   );
 };
 
