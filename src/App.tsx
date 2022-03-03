@@ -4,8 +4,6 @@ import Form from '~/components/Form';
 import Switch from '~/components/Switch';
 import './App.css';
 import { NewDemo } from './components2/demo';
-import { Disclosure, DisclosureButton, DisclosureProvider } from './components2/Disclosure';
-import { PopoverButton, PopoverPanel, PopoverProvider } from './components2/Popover';
 import CalendarDemo from './demo/Calendar';
 import ComboboxDemo from './demo/Combobox';
 import ListboxDemo from './demo/Listbox';
@@ -91,33 +89,10 @@ function MyForm() {
   );
 }
 
-function Disclosure2() {
-  return (
-    <DisclosureProvider>
-      {/* <Popper> */}
-      <DisclosureButton>Open</DisclosureButton>
-      <Disclosure>YO!!!</Disclosure>
-      {/* </Popper> */}
-    </DisclosureProvider>
-  );
-}
-
-function Popover2() {
-  return (
-    <PopoverProvider>
-      <PopoverButton>Open</PopoverButton>
-      <PopoverPanel>YO!!!!!</PopoverPanel>
-    </PopoverProvider>
-  );
-}
-
 const App: Component = () => {
   return (
     <>
       <NewDemo />
-      <Disclosure2 />
-      <Popover2 />
-      {/* <NewCombobox /> */}
       <PopoverDemo />
       <MenuDemo />
       <ListboxDemo />

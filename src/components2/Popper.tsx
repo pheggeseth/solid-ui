@@ -22,9 +22,12 @@ export function PopperProvider(props: PopperProviderProps) {
   return <PopperContext.Provider value={popper}>{localProps.children}</PopperContext.Provider>;
 }
 
-export function PopperAnchorRef<T extends HTMLElement>(element: T) {
-  const popper = usePopperContext();
-  popper.setRef('anchor', element);
+export function PopperAnchorRef<AnchorElement extends HTMLElement>(element: AnchorElement) {
+  usePopperContext()?.setRef('anchor', element);
+}
+
+export function PopperRef<PopperElement extends HTMLElement>(element: PopperElement) {
+  usePopperContext()?.setRef('popper', element);
 }
 
 export function usePopper(props: Partial<Options> = {}) {
@@ -66,10 +69,12 @@ export function usePopper(props: Partial<Options> = {}) {
 type PopperComponentType = {
   (props: PopperProviderProps): JSXElement;
   AnchorRef: typeof PopperAnchorRef;
+  PopperRef: typeof PopperRef;
 };
 
 const PopperComponent: PopperComponentType = Object.assign(PopperProvider, {
   AnchorRef: PopperAnchorRef,
+  PopperRef,
 });
 
 export default PopperComponent;

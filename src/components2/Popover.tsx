@@ -1,15 +1,19 @@
-import { mergeProps, splitProps } from 'solid-js';
+import { mergeProps, Show, splitProps } from 'solid-js';
+import { Dynamic, Portal } from 'solid-js/web';
+import { BaseComponentProps, ComponentRef, DynamicComponent } from '~/types';
 import {
-  DisclosureProvider,
-  DisclosureProviderProps,
-  DisclosureButton,
-  Disclosure,
-  DisclosureProps,
-  DisclosureButtonProps,
-} from './Disclosure';
+  createPanelButtonProps,
+  createPanelProps,
+  CreatePanelPropsConfig,
+  PanelButtonProps,
+  PanelProps,
+  PanelProvider,
+  PanelProviderProps,
+  usePanelState,
+} from './Panel';
 import { PopperProvider } from './Popper';
 
-export type PopoverProviderProps = DisclosureProviderProps & { popper?: boolean };
+export type PopoverProviderProps = PanelProviderProps & { popper?: boolean };
 
 export function PopoverProvider(props: PopoverProviderProps) {
   props = mergeProps<typeof props[]>({ popper: true }, props);
@@ -18,34 +22,83 @@ export function PopoverProvider(props: PopoverProviderProps) {
 
   return localProps.popper ? (
     <PopperProvider>
-      <DisclosureProvider {...otherProps} />
+      <PanelProvider {...otherProps} />
     </PopperProvider>
   ) : (
-    <DisclosureProvider {...otherProps} />
+    <PanelProvider {...otherProps} />
   );
 }
 
-export type PopoverButtonProps<PopoverButtonElement extends HTMLElement> =
-  DisclosureButtonProps<PopoverButtonElement>;
+export type PopoverButtonProps<PopoverButtonElement extends HTMLElement> = BaseComponentProps<{
+  component?: DynamicComponent<PanelButtonProps<PopoverButtonElement>>;
+  idPrefix?: string;
+  ref?: ComponentRef<PopoverButtonElement>;
+}>;
 
 export function PopoverButton<PopoverButtonElement extends HTMLElement = HTMLButtonElement>(
   props: PopoverButtonProps<PopoverButtonElement>
 ) {
-  props = mergeProps<typeof props[]>({ idPrefix: 'solid-ui-popover-button' }, props);
+  props = mergeProps<typeof props[]>(
+    { component: 'button', idPrefix: 'solid-ui-popover-button' },
+    props
+  );
 
-  return <DisclosureButton {...props} data-solid-ui-popover-button="" />;
+  const [localProps, otherProps] = splitProps(props, ['component', 'idPrefix']);
+
+  const buttonProps = createPanelButtonProps({
+    idPrefix: localProps.idPrefix,
+  });
+
+  return <Dynamic {...otherProps} {...buttonProps} component={localProps.component} />;
 }
 
-export type PopoverPanelProps<PopoverPanelElement extends HTMLElement> =
-  DisclosureProps<PopoverPanelElement>;
+export type PopoverPanelProps<PopoverPanelElement extends HTMLElement> = BaseComponentProps<
+  {
+    component?: DynamicComponent<PanelProps<PopoverPanelElement>>;
+    portal?: boolean;
+  } & Partial<CreatePanelPropsConfig<PopoverPanelElement>>
+>;
 
 export function PopoverPanel<PopoverPanelElement extends HTMLElement = HTMLDivElement>(
   props: PopoverPanelProps<PopoverPanelElement>
 ) {
   props = mergeProps<typeof props[]>(
-    { clickAway: true, idPrefix: 'solid-ui-popover-panel', manageFocus: true, portal: true },
+    {
+      clickAway: true,
+      component: 'div',
+      idPrefix: 'solid-ui-popover-panel',
+      manageFocus: true,
+      portal: true,
+    },
     props
   );
 
-  return <Disclosure {...props} data-solid-ui-popover-panel="" />;
+  const [localProps, otherProps] = splitProps(props, [
+    'clickAway',
+    'component',
+    'idPrefix',
+    'manageFocus',
+    'portal',
+    'ref',
+    'tabIndex',
+  ]);
+
+  const panelProps = createPanelProps(localProps as CreatePanelPropsConfig<PopoverPanelElement>);
+
+  const panel = () => (
+    <Dynamic
+      {...otherProps}
+      {...panelProps}
+      component={localProps.component}
+      data-solid-ui-popover-panel=""
+    />
+  );
+
+  const panelState = usePanelState();
+
+  return (
+    <Show when={panelState.isPanelOpen}>
+      {localProps.portal ? <Portal>{panel()}</Portal> : panel()}
+    </Show>
+  );
 }
