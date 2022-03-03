@@ -6,14 +6,14 @@ import {
   DisclosureProvider,
 } from './Disclosure';
 import { Listbox, ListboxItem, ListboxLabel, ListboxProvider } from './Listbox';
-import { PopoverButton, PopoverContext, PopoverPanel, PopoverProvider } from './Popover';
+import { PopupButton, PopupContext, PopupPanel, PopupProvider } from './Popup';
 
 export function NewDemo() {
   return (
     <>
       <ListboxDemo />
       <DisclosureDemo />
-      <PopoverDemo />
+      <PopupDemo />
     </>
   );
 }
@@ -50,7 +50,7 @@ function DisclosureDemo() {
       <h1>Disclosure</h1>
       <DisclosureProvider context={(ctx) => (context = ctx)}>
         <div>
-          <DisclosureButton>{context.isOpen() ? 'Close' : 'Open'}</DisclosureButton>
+          <DisclosureButton>Say Hello</DisclosureButton>
           <DisclosurePanel style={{ display: context.isOpen() ? 'block' : 'none' }}>
             YO!!!
           </DisclosurePanel>
@@ -60,21 +60,21 @@ function DisclosureDemo() {
   );
 }
 
-function PopoverDemo() {
-  let context: PopoverContext;
+function PopupDemo() {
+  let context: PopupContext;
 
   return (
     <section>
-      <h1>Popover</h1>
-      <PopoverProvider context={(ctx) => (context = ctx)}>
-        <PopoverButton>{context.isOpen() ? 'Close' : 'Open'}</PopoverButton>
-        {/* <PopoverOverlay style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.25)' }} /> */}
-        <PopoverPanel>
+      <h1>Popup</h1>
+      <PopupProvider context={(ctx) => (context = ctx)}>
+        <PopupButton>Links</PopupButton>
+        {/* <PopupOverlay style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.25)' }} /> */}
+        <PopupPanel portal={false}>
           <a href="">Link 1</a>
           <a href="">Link 2</a>
           <a href="">Link 3</a>
-        </PopoverPanel>
-      </PopoverProvider>
+        </PopupPanel>
+      </PopupProvider>
     </section>
   );
 }

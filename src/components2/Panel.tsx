@@ -21,7 +21,10 @@ type PanelElementIds = {
   overlayId: string;
 };
 
+export type PanelRole = 'menu' | 'listbox' | 'tree' | 'grid' | 'dialog';
+
 export type PanelState = PanelElementIds & {
+  role: PanelRole;
   shouldShowPanel: boolean;
   isPanelOpen: boolean;
   isOverlayOpen: boolean;
@@ -43,9 +46,9 @@ function createExternalContext(state: PanelState, actions: PanelActions) {
   } as const;
 }
 
-function exposePanelExternalContext(props: PanelExternalContextProp) {
-  props.context?.(useContext(PanelContext).context);
-}
+// function exposePanelExternalContext(props: PanelExternalContextProp) {
+//   props.context?.(useContext(PanelContext).context);
+// }
 
 export type PanelExternalContext = ReturnType<typeof createExternalContext>;
 
@@ -62,13 +65,20 @@ export function usePanelActions() {
   return useContext(PanelContext).actions;
 }
 
-export type PanelProviderProps = PropsWithChildren<PanelExternalContextProp>;
+export type PanelProviderProps = PropsWithChildren<
+  PanelExternalContextProp & {
+    role?: PanelRole;
+  }
+>;
 
 export function PanelProvider(props: PanelProviderProps) {
   const [state, setState] = createStore<PanelState>({
     buttonId: null,
-    panelId: null,
     overlayId: null,
+    panelId: null,
+    get role(): PanelRole {
+      return props.role;
+    },
     shouldShowPanel: false,
     get isPanelOpen(): boolean {
       return state.shouldShowPanel && (!state.overlayId || state.isOverlayOpen);
@@ -110,6 +120,7 @@ export function PanelProvider(props: PanelProviderProps) {
 export type PanelButtonProps<PanelButtonElement extends HTMLElement> = {
   'aria-controls': string;
   'aria-expanded': boolean;
+  'aria-haspopup': PanelRole;
   id: string;
   onClick: JSX.EventHandler<PanelButtonElement, MouseEvent>;
   onKeyDown: JSX.EventHandler<PanelButtonElement, KeyboardEvent>;
@@ -149,6 +160,9 @@ export function createPanelButtonProps<PanelButtonElement extends HTMLElement>(p
     get ['aria-expanded']() {
       return panelState.isPanelOpen;
     },
+    get ['aria-haspopup']() {
+      return panelState.role;
+    },
     id,
     onClick() {
       panelActions.togglePanel();
@@ -165,6 +179,7 @@ export type PanelProps<PanelElement extends HTMLElement> = {
   id: string;
   onKeyDown: JSX.EventHandler<PanelElement, KeyboardEvent>;
   ref: (element: PanelElement) => void;
+  role: PanelRole;
   tabIndex: string | number;
 };
 
@@ -189,18 +204,18 @@ export type CreatePanelPropsConfig<PanelElement extends HTMLElement> = {
 };
 
 export function createPanelProps<PanelElement extends HTMLElement>(
-  props: CreatePanelPropsConfig<PanelElement>
+  config: CreatePanelPropsConfig<PanelElement>
 ): PanelProps<PanelElement> {
-  const id = useId(props.idPrefix);
+  const id = useId(config.idPrefix);
 
   function ref(element: PanelElement) {
     usePopperContext()?.setRef('popper', element);
 
-    if (typeof props.manageFocus === 'function') {
-      props.manageFocus(element);
-    } else if (props.manageFocus) {
+    if (typeof config.manageFocus === 'function') {
+      config.manageFocus(element);
+    } else if (config.manageFocus) {
       const panelState = usePanelState();
-      const manageFocus = props.manageFocus === true ? {} : props.manageFocus;
+      const manageFocus = config.manageFocus === true ? {} : config.manageFocus;
 
       useFocusTrap(
         manageFocus.focusTrapRef || element,
@@ -213,12 +228,12 @@ export function createPanelProps<PanelElement extends HTMLElement>(
       );
     }
 
-    if (typeof props.clickAway === 'function') {
-      props.clickAway(element);
-    } else if (props.clickAway) {
+    if (typeof config.clickAway === 'function') {
+      config.clickAway(element);
+    } else if (config.clickAway) {
       const panelState = usePanelState();
       const panelActions = usePanelActions();
-      const clickAway = props.clickAway === true ? {} : props.clickAway;
+      const clickAway = config.clickAway === true ? {} : config.clickAway;
       const { exceptions = [], onClickAway } = clickAway;
 
       const button = document.getElementById(panelState.buttonId);
@@ -234,14 +249,15 @@ export function createPanelProps<PanelElement extends HTMLElement>(
         },
         {
           exceptions,
-          shouldContainActiveElement: !props.manageFocus,
+          shouldContainActiveElement: !config.manageFocus,
         }
       );
     }
 
-    setRef(props.ref, element);
+    setRef(config.ref, element);
   }
 
+  const panelState = usePanelState();
   const panelActions = usePanelActions();
 
   onMount(() => {
@@ -256,7 +272,10 @@ export function createPanelProps<PanelElement extends HTMLElement>(
       }
     },
     ref,
-    tabIndex: props.tabIndex ?? props.manageFocus ? 0 : undefined,
+    get role() {
+      return panelState.role;
+    },
+    tabIndex: config.tabIndex ?? config.manageFocus ? 0 : undefined,
   };
 }
 
@@ -269,9 +288,9 @@ export const OverlayPortal: Component = (props) => {
   return <Portal>{props.children}</Portal>;
 };
 
-export function createPanelOverlayProps(props: { idPrefix: string }) {
+export function createPanelOverlayProps(config: { idPrefix: string }) {
   const panelActions = usePanelActions();
-  const id = useId(props.idPrefix);
+  const id = useId(config.idPrefix);
 
   onMount(() => {
     panelActions.setElementId('overlayId', id);

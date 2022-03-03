@@ -16,12 +16,12 @@ import {
 } from './Panel';
 import { PopperProvider } from './Popper';
 
-export type PopoverContext = PanelExternalContext;
+export type PopupContext = PanelExternalContext;
 
-export type PopoverProviderProps = PanelProviderProps & { popper?: boolean };
+export type PopupProviderProps = PanelProviderProps & { popper?: boolean };
 
-export function PopoverProvider(props: PopoverProviderProps) {
-  props = mergeProps<typeof props[]>({ popper: true }, props);
+export function PopupProvider(props: PopupProviderProps) {
+  props = mergeProps<typeof props[]>({ popper: true, role: 'dialog' }, props);
 
   const [localProps, otherProps] = splitProps(props, ['popper']);
 
@@ -34,17 +34,17 @@ export function PopoverProvider(props: PopoverProviderProps) {
   );
 }
 
-export type PopoverButtonProps<PopoverButtonElement extends HTMLElement> = BaseComponentProps<{
-  component?: DynamicComponent<PanelButtonProps<PopoverButtonElement>>;
+export type PopupButtonProps<PopupButtonElement extends HTMLElement> = BaseComponentProps<{
+  component?: DynamicComponent<PanelButtonProps<PopupButtonElement>>;
   idPrefix?: string;
-  ref?: ComponentRef<PopoverButtonElement>;
+  ref?: ComponentRef<PopupButtonElement>;
 }>;
 
-export function PopoverButton<PopoverButtonElement extends HTMLElement = HTMLButtonElement>(
-  props: PopoverButtonProps<PopoverButtonElement>
+export function PopupButton<PopupButtonElement extends HTMLElement = HTMLButtonElement>(
+  props: PopupButtonProps<PopupButtonElement>
 ) {
   props = mergeProps<typeof props[]>(
-    { component: 'button', idPrefix: 'solid-ui-popover-button' },
+    { component: 'button', idPrefix: 'solid-ui-popup-button' },
     props
   );
 
@@ -57,17 +57,17 @@ export function PopoverButton<PopoverButtonElement extends HTMLElement = HTMLBut
   return <Dynamic {...otherProps} {...buttonProps} component={localProps.component} />;
 }
 
-export type PopoverOverlayProps = BaseComponentProps<{
+export type PopupOverlayProps = BaseComponentProps<{
   component?: DynamicComponent;
   idPrefix?: string;
   portal?: boolean;
 }>;
 
-export function PopoverOverlay<PopoverOverlayElement extends HTMLElement = HTMLDivElement>(
-  props: PopoverOverlayProps
+export function PopupOverlay<PopupOverlayElement extends HTMLElement = HTMLDivElement>(
+  props: PopupOverlayProps
 ) {
   props = mergeProps<typeof props[]>(
-    { component: 'div', idPrefix: 'solid-ui-popover-overlay', portal: true },
+    { component: 'div', idPrefix: 'solid-ui-popup-overlay', portal: true },
     props
   );
 
@@ -88,15 +88,15 @@ export function PopoverOverlay<PopoverOverlayElement extends HTMLElement = HTMLD
   );
 }
 
-export type PopoverPanelProps<PopoverPanelElement extends HTMLElement> = BaseComponentProps<
+export type PopupPanelProps<PopupPanelElement extends HTMLElement> = BaseComponentProps<
   {
-    component?: DynamicComponent<PanelProps<PopoverPanelElement>>;
+    component?: DynamicComponent<PanelProps<PopupPanelElement>>;
     portal?: boolean;
-  } & Partial<CreatePanelPropsConfig<PopoverPanelElement>>
+  } & Partial<CreatePanelPropsConfig<PopupPanelElement>>
 >;
 
-export function PopoverPanel<PopoverPanelElement extends HTMLElement = HTMLDivElement>(
-  props: PopoverPanelProps<PopoverPanelElement>
+export function PopupPanel<PopupPanelElement extends HTMLElement = HTMLDivElement>(
+  props: PopupPanelProps<PopupPanelElement>
 ) {
   const panelState = usePanelState();
 
@@ -104,7 +104,7 @@ export function PopoverPanel<PopoverPanelElement extends HTMLElement = HTMLDivEl
     {
       clickAway: true,
       component: 'div',
-      idPrefix: 'solid-ui-popover-panel',
+      idPrefix: 'solid-ui-popup-panel',
       get manageFocus() {
         return {
           initialFocusRef: document.getElementById(panelState.buttonId),
@@ -125,7 +125,7 @@ export function PopoverPanel<PopoverPanelElement extends HTMLElement = HTMLDivEl
     'tabIndex',
   ]);
 
-  const panelProps = createPanelProps(localProps as CreatePanelPropsConfig<PopoverPanelElement>);
+  const panelProps = createPanelProps(localProps as CreatePanelPropsConfig<PopupPanelElement>);
 
   const panel = () => {
     return (
@@ -133,7 +133,7 @@ export function PopoverPanel<PopoverPanelElement extends HTMLElement = HTMLDivEl
         {...otherProps}
         {...panelProps}
         component={localProps.component}
-        data-solid-ui-popover-panel=""
+        data-solid-ui-popup-panel=""
       />
     );
   };
