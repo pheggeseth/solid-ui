@@ -6,7 +6,7 @@ import {
   DisclosureProvider,
 } from './Disclosure';
 import { Listbox, ListboxItem, ListboxLabel, ListboxProvider } from './Listbox';
-import { PopoverButton, PopoverPanel, PopoverProvider } from './Popover';
+import { PopoverButton, PopoverContext, PopoverPanel, PopoverProvider } from './Popover';
 
 export function NewDemo() {
   return (
@@ -61,13 +61,14 @@ function DisclosureDemo() {
 }
 
 function PopoverDemo() {
-  let context;
+  let context: PopoverContext;
 
   return (
     <section>
       <h1>Popover</h1>
-      <PopoverProvider>
-        <PopoverButton>Open</PopoverButton>
+      <PopoverProvider context={(ctx) => (context = ctx)}>
+        <PopoverButton>{context.isOpen() ? 'Close' : 'Open'}</PopoverButton>
+        {/* <PopoverOverlay style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.25)' }} /> */}
         <PopoverPanel>
           <a href="">Link 1</a>
           <a href="">Link 2</a>

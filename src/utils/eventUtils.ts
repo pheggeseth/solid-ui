@@ -24,7 +24,7 @@ export function useOnClickAway(
     shouldContainActiveElement?: boolean;
   } = {}
 ) {
-  const { exceptions = [], shouldContainActiveElement = true } = options;
+  const { exceptions = [], shouldContainActiveElement } = options;
 
   createEffect(() => {
     function handleMouseUp(event: MouseEvent) {

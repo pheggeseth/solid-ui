@@ -17,36 +17,40 @@ export function useFocusOnClose(element: HTMLElement, isOpen: Accessor<boolean>)
 export const focusableElementsQuery =
   'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
 
-export function getAllFocusableElements(container: HTMLElement): NodeListOf<HTMLElement> {
-  return container.querySelectorAll(focusableElementsQuery);
+export function getAllFocusableElements(container: HTMLElement) {
+  return Array.from(container.querySelectorAll<HTMLElement>(focusableElementsQuery));
 }
 
 export function getFirstFocusableElement(container: HTMLElement): HTMLElement {
   return container.querySelector(focusableElementsQuery) || container;
 }
 
-export function useFocusTrap(container: HTMLElement, isActive: Accessor<boolean>) {
+export function useFocusTrap(
+  container: HTMLElement,
+  isActive: Accessor<boolean>,
+  initialFocusRef?: HTMLElement
+) {
   createEffect((prevIsActive) => {
     if (container && isActive()) {
       if (prevIsActive) return;
 
       const elements = getAllFocusableElements(container);
-      const firstElement = elements[0] as HTMLElement;
-      const lastElement = elements[elements.length - 1] as HTMLElement;
+      if (initialFocusRef && !elements.includes(initialFocusRef)) {
+        elements.unshift(initialFocusRef);
+      }
 
       function handleKeyDown(event: KeyboardEvent) {
-        if (event.key !== 'Tab') return;
+        if (event.key !== 'Tab' || !elements.includes(document.activeElement as HTMLElement))
+          return;
+
+        const activeIndex = elements.findIndex((el) => el === document.activeElement);
 
         if (event.shiftKey) {
-          if (document.activeElement === firstElement) {
-            lastElement.focus();
-            event.preventDefault();
-          }
+          elements[activeIndex <= 0 ? elements.length - 1 : activeIndex - 1]?.focus();
+          event.preventDefault();
         } else {
-          if (document.activeElement === lastElement) {
-            firstElement.focus();
-            event.preventDefault();
-          }
+          elements[activeIndex < elements.length - 1 ? activeIndex + 1 : 0]?.focus();
+          event.preventDefault();
         }
       }
 

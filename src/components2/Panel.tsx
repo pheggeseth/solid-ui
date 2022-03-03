@@ -112,6 +112,7 @@ export type PanelButtonProps<PanelButtonElement extends HTMLElement> = {
   'aria-expanded': boolean;
   id: string;
   onClick: JSX.EventHandler<PanelButtonElement, MouseEvent>;
+  onKeyDown: JSX.EventHandler<PanelButtonElement, KeyboardEvent>;
 };
 
 export function createPanelButtonProps<PanelButtonElement extends HTMLElement>(props: {
@@ -151,6 +152,11 @@ export function createPanelButtonProps<PanelButtonElement extends HTMLElement>(p
     id,
     onClick() {
       panelActions.togglePanel();
+    },
+    onKeyDown(event) {
+      if (event.key === 'Escape') {
+        panelActions.closePanel();
+      }
     },
   };
 }
@@ -196,7 +202,11 @@ export function createPanelProps<PanelElement extends HTMLElement>(
       const panelState = usePanelState();
       const manageFocus = props.manageFocus === true ? {} : props.manageFocus;
 
-      useFocusTrap(manageFocus.focusTrapRef || element, () => panelState.isPanelOpen);
+      useFocusTrap(
+        manageFocus.focusTrapRef || element,
+        () => panelState.isPanelOpen,
+        manageFocus.initialFocusRef
+      );
       useFocusOnOpen(
         manageFocus.initialFocusRef || getFirstFocusableElement(element),
         () => panelState.isPanelOpen
@@ -224,7 +234,7 @@ export function createPanelProps<PanelElement extends HTMLElement>(
         },
         {
           exceptions,
-          shouldContainActiveElement: !!props.manageFocus,
+          shouldContainActiveElement: !props.manageFocus,
         }
       );
     }
