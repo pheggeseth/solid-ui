@@ -25,13 +25,9 @@ export function PopupProvider(props: PopupProviderProps) {
 
   const [localProps, otherProps] = splitProps(props, ['popper']);
 
-  return localProps.popper ? (
-    <PopperProvider>
-      <PanelProvider {...otherProps} />
-    </PopperProvider>
-  ) : (
-    <PanelProvider {...otherProps} />
-  );
+  const provider = () => <PanelProvider {...otherProps} />;
+
+  return localProps.popper ? <PopperProvider>{provider()}</PopperProvider> : provider();
 }
 
 export type PopupButtonProps<PopupButtonElement extends HTMLElement> = BaseComponentProps<{
@@ -50,7 +46,7 @@ export function PopupButton<PopupButtonElement extends HTMLElement = HTMLButtonE
 
   const [localProps, otherProps] = splitProps(props, ['component', 'idPrefix']);
 
-  const buttonProps = createPanelButtonProps({
+  const buttonProps = createPanelButtonProps<PopupButtonElement>({
     idPrefix: localProps.idPrefix,
   });
 
@@ -63,9 +59,7 @@ export type PopupOverlayProps = BaseComponentProps<{
   portal?: boolean;
 }>;
 
-export function PopupOverlay<PopupOverlayElement extends HTMLElement = HTMLDivElement>(
-  props: PopupOverlayProps
-) {
+export function PopupOverlay(props: PopupOverlayProps) {
   props = mergeProps<typeof props[]>(
     { component: 'div', idPrefix: 'solid-ui-popup-overlay', portal: true },
     props
@@ -73,7 +67,9 @@ export function PopupOverlay<PopupOverlayElement extends HTMLElement = HTMLDivEl
 
   const [localProps, otherProps] = splitProps(props, ['component', 'idPrefix', 'portal']);
 
-  const overlayProps = createPanelOverlayProps({ idPrefix: localProps.idPrefix });
+  const overlayProps = createPanelOverlayProps({
+    idPrefix: localProps.idPrefix,
+  });
 
   const overlay = () => (
     <Dynamic {...otherProps} {...overlayProps} component={localProps.component} />
@@ -125,7 +121,9 @@ export function PopupPanel<PopupPanelElement extends HTMLElement = HTMLDivElemen
     'tabIndex',
   ]);
 
-  const panelProps = createPanelProps(localProps as CreatePanelPropsConfig<PopupPanelElement>);
+  const panelProps = createPanelProps<PopupPanelElement>(
+    localProps as CreatePanelPropsConfig<PopupPanelElement>
+  );
 
   const panel = () => {
     return (
