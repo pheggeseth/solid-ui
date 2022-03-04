@@ -18,7 +18,9 @@ export const focusableElementsQuery =
   'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
 
 export function getAllFocusableElements(container: HTMLElement) {
-  return Array.from(container.querySelectorAll<HTMLElement>(focusableElementsQuery));
+  return Array.from(container.querySelectorAll<HTMLElement>(focusableElementsQuery)).filter(
+    (element) => element.tabIndex !== -1
+  );
 }
 
 export function getFirstFocusableElement(container: HTMLElement): HTMLElement {
