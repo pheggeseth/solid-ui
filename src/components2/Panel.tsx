@@ -21,7 +21,7 @@ type PanelElementIds = {
   overlayId: string;
 };
 
-export type PanelRole = 'menu' | 'listbox' | 'tree' | 'grid' | 'dialog';
+export type PanelRole = 'menu' | 'listbox' | 'tree' | 'grid' | 'dialog' | 'none';
 
 export type PanelState = PanelElementIds & {
   role: PanelRole;
