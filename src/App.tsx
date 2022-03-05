@@ -4,6 +4,7 @@ import Form from '~/components/Form';
 import Switch from '~/components/Switch';
 import './App.css';
 import { NewDemo } from './components2/demo';
+import { Demo } from './components3/demo';
 import CalendarDemo from './demo/Calendar';
 import ComboboxDemo from './demo/Combobox';
 import ListboxDemo from './demo/Listbox';
@@ -92,7 +93,8 @@ function MyForm() {
 const App: Component = () => {
   return (
     <>
-      <NewDemo />
+      <Demo />
+      {/* <NewDemo />
       <section>
         <h1>Old</h1>
         <PopoverDemo />
@@ -103,12 +105,12 @@ const App: Component = () => {
         <RadioGroupDemo />
         <MySwitch />
         <MyForm />
-        {/* <CacheProvider>
-        <Todo />
-        <Todo />
-        <Todo />
-      </CacheProvider> */}
-      </section>
+        <CacheProvider>
+          <Todo />
+          <Todo />
+          <Todo />
+        </CacheProvider>
+      </section> */}
     </>
   );
 };

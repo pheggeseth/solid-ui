@@ -30,6 +30,7 @@ type ListState<ItemValue> = ListElementIds & {
   activeItemId: string;
   items: ListItem<ItemValue>[];
   orientation: ListboxOrientation;
+  shouldClickListItem: boolean;
 };
 
 type ListSelectors = {
@@ -73,6 +74,7 @@ function useListActions<ItemValue>() {
 export type ListProviderProps<ItemValue> = PropsWithChildren<{
   'aria-orientation'?: ListboxOrientation;
   onChange?: (newValue: ItemValue) => void;
+  shouldClickListItem?: boolean;
   value?: ItemValue;
 }>;
 
@@ -85,6 +87,9 @@ export function ListProvider<ItemValue>(props: ListProviderProps<ItemValue>) {
     items: [],
     get orientation(): ListboxOrientation {
       return props['aria-orientation'];
+    },
+    get shouldClickListItem(): boolean {
+      return props.shouldClickListItem;
     },
   });
 
@@ -169,10 +174,23 @@ export function ListProvider<ItemValue>(props: ListProviderProps<ItemValue>) {
     chooseFocusedItem() {
       const activeItem = state.items.find(isActiveItem);
       if (activeItem) {
-        props.onChange?.(activeItem.value as ItemValue);
+        if (state.shouldClickListItem) {
+          // document.getElementById(activeItem.id)?.click();
+        } else {
+          props.onChange?.(activeItem.value as ItemValue);
+        }
+
+        // const activeElement = document.getElementById(activeItem.id);
+
+        // if (['BUTTON', 'A'].includes(activeElement.tagName)) {
+        //   activeElement.click();
+        // } else {
+        //   props.onChange?.(activeItem.value as ItemValue);
+        // }
       }
     },
     chooseItem(itemId) {
+      console.log('chooseItem', itemId);
       const item = state.items.find(hasId(itemId));
       if (item) {
         props.onChange?.(item.value as ItemValue);
@@ -195,12 +213,16 @@ export type ListProps<ListElement extends HTMLElement> = {
   id: string;
   onFocus: JSX.EventHandler<ListElement, FocusEvent>;
   onKeyDown: JSX.EventHandler<ListElement, KeyboardEvent>;
-  tabIndex: 0;
+  tabIndex: string | number;
 };
 
-export function createListProps<ItemValue, ListContainerElement extends HTMLElement>(config: {
+export type CreateListPropsConfig = {
   idPrefix: string;
-}): ListProps<ListContainerElement> {
+};
+
+export function createListProps<ItemValue, ListContainerElement extends HTMLElement>(
+  config: CreateListPropsConfig
+): ListProps<ListContainerElement> {
   const labelState = useLabelState();
   const listState = useListState<ItemValue>();
   const listActions = useListActions<ItemValue>();
@@ -290,19 +312,23 @@ export type ListItemProps<ListItemElement extends HTMLElement> = {
   onClick: JSX.EventHandler<ListItemElement, MouseEvent>;
   onMouseEnter: JSX.EventHandler<ListItemElement, MouseEvent>;
   onMouseLeave: JSX.EventHandler<ListItemElement, MouseEvent>;
+  role: string;
+  tabIndex: string | number;
 };
 
-export function createListItemProps<ItemValue, ListItemElement extends HTMLElement>(confg: {
+export function createListItemProps<ItemValue, ListItemElement extends HTMLElement>(config: {
   idPrefix: string;
+  onClick?: JSX.EventHandler<ListItemElement, MouseEvent>;
+  role?: string;
   value?: ItemValue;
 }): ListItemProps<ListItemElement> {
   const listState = useListState<ItemValue>();
   const listSelectors = useListSelectors();
   const listActions = useListActions<ItemValue>();
 
-  const id = useId(confg.idPrefix);
+  const id = useId(config.idPrefix);
 
-  onMount(() => listActions.addItem({ id, value: confg.value }));
+  onMount(() => listActions.addItem({ id, value: config.value }));
   onCleanup(() => listActions.removeItem(id));
 
   createEffect(() => {
@@ -319,8 +345,11 @@ export function createListItemProps<ItemValue, ListItemElement extends HTMLEleme
       return listSelectors.isItemActive(id) ? '' : undefined;
     },
     id,
-    onClick() {
-      listActions.chooseItem(id);
+    get onClick() {
+      return (event) => {
+        listActions.chooseItem(id);
+        config.onClick?.(event);
+      };
     },
     onMouseEnter() {
       listActions.hoverItem(id);
@@ -328,5 +357,7 @@ export function createListItemProps<ItemValue, ListItemElement extends HTMLEleme
     onMouseLeave() {
       listActions.hoverItemClear();
     },
+    role: config.role,
+    tabIndex: -1,
   };
 }

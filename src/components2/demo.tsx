@@ -1,4 +1,17 @@
-import { createSignal, For } from 'solid-js';
+import {
+  createEffect,
+  createSignal,
+  For,
+  mergeProps,
+  PropsWithChildren,
+  splitProps,
+} from 'solid-js';
+import { useId } from '~/utils/componentUtils';
+import {
+  ActiveDescendentProvider,
+  createActiveDescendentContainerProps,
+  createActiveDescendentProps,
+} from './ActiveDescendent';
 import {
   DisclosureButton,
   DisclosureContext,
@@ -6,6 +19,7 @@ import {
   DisclosureProvider,
 } from './Disclosure';
 import { Listbox, ListboxItem, ListboxLabel, ListboxProvider } from './Listbox';
+import { MenuButton, MenuOption, MenuOptions, MenuProvider } from './Menu';
 import { PopupButton, PopupContext, PopupPanel, PopupProvider } from './Popup';
 
 export function NewDemo() {
@@ -14,6 +28,14 @@ export function NewDemo() {
       <ListboxDemo />
       <DisclosureDemo />
       <PopupDemo />
+      {/* <MenuDemo /> */}
+      <ActiveDescendentProvider>
+        <Container>
+          <Thing>1</Thing>
+          <Thing>1</Thing>
+          <Thing>1</Thing>
+        </Container>
+      </ActiveDescendentProvider>
     </>
   );
 }
@@ -78,3 +100,76 @@ function PopupDemo() {
     </section>
   );
 }
+
+function Container(props: PropsWithChildren) {
+  const id = useId('container');
+  const p = createActiveDescendentContainerProps({ id });
+  return (
+    <div {...p} id={id}>
+      {props.children}
+    </div>
+  );
+}
+
+function Thing(props: PropsWithChildren) {
+  const id = useId('descendent');
+  const p = createActiveDescendentProps({ id });
+  return (
+    <div {...p} id={id}>
+      {props.children}
+    </div>
+  );
+}
+
+// function MenuDemo() {
+//   return (
+//     <section>
+//       <h1>Menu</h1>
+//       <MenuProvider>
+//         <MenuButton>Menu</MenuButton>
+//         <MenuOptions>
+//           <For each={fruits}>
+//             {/* {(fruit) => (
+//               <MenuOption
+//                 component="button"
+//                 // component="a"
+//                 // href={`/${fruit}`}
+//                 onClick={() => {
+//                   console.log('chose:', fruit);
+//                 }}
+//               >
+//                 {fruit}
+//               </MenuOption>
+//             )} */}
+//             {(fruit) => {
+//               return (
+//                 <MenuOption>
+//                   {(props) => {
+//                     console.log('MenuOption');
+//                     // props = mergeProps(props, {
+//                     //   onClick: () => {
+//                     //     props.onClick();
+//                     //     console.log('button onClick');
+//                     //   },
+//                     // });
+
+//                     return (
+//                       <button
+//                         onClick={() => {
+//                           console.log('button onClick');
+//                         }}
+//                         {...props()}
+//                       >
+//                         {fruit}
+//                       </button>
+//                     );
+//                   }}
+//                 </MenuOption>
+//               );
+//             }}
+//           </For>
+//         </MenuOptions>
+//       </MenuProvider>
+//     </section>
+//   );
+// }
