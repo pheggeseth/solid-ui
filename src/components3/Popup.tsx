@@ -1,4 +1,4 @@
-import { createMemo, mergeProps, PropsWithChildren, Show, splitProps } from 'solid-js';
+import { mergeProps, Show, splitProps } from 'solid-js';
 import { Dynamic, Portal } from 'solid-js/web';
 import { BaseComponentProps, ComponentRef, DynamicComponent } from '~/types';
 import { useId } from '~/utils/componentUtils';
@@ -7,9 +7,11 @@ import {
   createPanelOverlayProps,
   createPanelProps,
   CreatePanelPropsConfig,
+  exposePanelExternalContext,
   OverlayPortal,
   PanelButtonProps,
   PanelExternalContext,
+  PanelExternalContextProp,
   PanelProps,
   PanelProvider,
   PanelProviderProps,
@@ -34,11 +36,13 @@ export function PopupProvider(props: PopupProviderProps) {
 type PopupButtonDynamicComponentProps<PopupButtonElement extends HTMLElement> =
   PanelButtonProps<PopupButtonElement> & { id: string };
 
-export type PopupButtonProps<PopupButtonElement extends HTMLElement> = BaseComponentProps<{
-  component?: DynamicComponent<PopupButtonDynamicComponentProps<PopupButtonElement>>;
-  idPrefix?: string;
-  ref?: ComponentRef<PopupButtonElement>;
-}>;
+export type PopupButtonProps<PopupButtonElement extends HTMLElement> = BaseComponentProps<
+  {
+    component?: DynamicComponent<PopupButtonDynamicComponentProps<PopupButtonElement>>;
+    idPrefix?: string;
+    ref?: ComponentRef<PopupButtonElement>;
+  } & PanelExternalContextProp
+>;
 
 export function PopupButton<PopupButtonElement extends HTMLElement = HTMLButtonElement>(
   props: PopupButtonProps<PopupButtonElement>
@@ -48,27 +52,32 @@ export function PopupButton<PopupButtonElement extends HTMLElement = HTMLButtonE
     props
   );
 
-  const [localProps, otherProps] = splitProps(props, ['idPrefix']);
+  const [localProps, otherProps] = splitProps(props, ['context', 'idPrefix']);
 
   const id = useId(localProps.idPrefix);
 
   const buttonProps = createPanelButtonProps<PopupButtonElement>({ id });
 
+  const finalProps = mergeProps(otherProps, buttonProps);
+
+  exposePanelExternalContext(localProps);
+
   return (
     <Dynamic<PopupButtonDynamicComponentProps<PopupButtonElement>>
-      {...otherProps}
-      {...buttonProps}
+      {...finalProps}
       id={id}
       data-solid-ui-popup-button=""
     />
   );
 }
 
-export type PopupOverlayProps = BaseComponentProps<{
-  component?: DynamicComponent<{ id: string }>;
-  idPrefix?: string;
-  portal?: boolean;
-}>;
+export type PopupOverlayProps = BaseComponentProps<
+  {
+    component?: DynamicComponent<{ id: string }>;
+    idPrefix?: string;
+    portal?: boolean;
+  } & PanelExternalContextProp
+>;
 
 export function PopupOverlay(props: PopupOverlayProps) {
   props = mergeProps<typeof props[]>(
@@ -76,7 +85,7 @@ export function PopupOverlay(props: PopupOverlayProps) {
     props
   );
 
-  const [localProps, otherProps] = splitProps(props, ['idPrefix', 'portal']);
+  const [localProps, otherProps] = splitProps(props, ['context', 'idPrefix', 'portal']);
 
   const id = useId(localProps.idPrefix);
 
@@ -87,6 +96,8 @@ export function PopupOverlay(props: PopupOverlayProps) {
   );
 
   const panelState = usePanelState();
+
+  exposePanelExternalContext(localProps);
 
   return (
     <Show when={panelState.shouldShowPanel}>
@@ -103,7 +114,8 @@ export type PopupPanelProps<PopupPanelElement extends HTMLElement> = BaseCompone
     component?: DynamicComponent<PopupPanelDynamicComponentProps<PopupPanelElement>>;
     portal?: boolean;
     idPrefix?: string;
-  } & Omit<CreatePanelPropsConfig<PopupPanelElement>, 'id'>
+  } & Omit<CreatePanelPropsConfig<PopupPanelElement>, 'id'> &
+    PanelExternalContextProp
 >;
 
 export function PopupPanel<PopupPanelElement extends HTMLElement = HTMLDivElement>(
@@ -128,6 +140,7 @@ export function PopupPanel<PopupPanelElement extends HTMLElement = HTMLDivElemen
 
   const [localProps, otherProps] = splitProps(props, [
     'clickAway',
+    'context',
     'idPrefix',
     'manageFocus',
     'portal',
@@ -157,6 +170,8 @@ export function PopupPanel<PopupPanelElement extends HTMLElement = HTMLDivElemen
       />
     );
   };
+
+  exposePanelExternalContext(localProps);
 
   return (
     <Show when={panelState.isPanelOpen}>

@@ -1,5 +1,5 @@
 import { MenuButton, MenuItem, MenuList, MenuProvider } from './Menu';
-import { PopupButton, PopupPanel, PopupProvider } from './Popup';
+import { PopupButton, PopupContext, PopupOverlay, PopupPanel, PopupProvider } from './Popup';
 
 export function Demo() {
   return (
@@ -11,13 +11,17 @@ export function Demo() {
 }
 
 function PopupDemo() {
+  let context: PopupContext;
+
   return (
     <section>
       <h1>Popup</h1>
       <PopupProvider>
         <PopupButton>Open</PopupButton>
-        <PopupPanel>
+        <PopupOverlay />
+        <PopupPanel context={(ctx) => (context = ctx)}>
           <h2>Links</h2>
+          <button onClick={context.close}>Close</button>
           <ul>
             <li>
               <a href="/">Link 1</a>

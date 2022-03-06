@@ -39,16 +39,17 @@ export type PanelActions = {
   closeOverlay(): void;
 };
 
-function createExternalContext(state: PanelState, actions: PanelActions) {
+export function createExternalContext(state: PanelState, actions: PanelActions) {
   return {
     isOpen: () => state.isPanelOpen,
+    open: () => actions.openPanel(),
     close: () => actions.closePanel(),
   } as const;
 }
 
-// function exposePanelExternalContext(props: PanelExternalContextProp) {
-//   props.context?.(useContext(PanelContext).context);
-// }
+export function exposePanelExternalContext(props: PanelExternalContextProp) {
+  props.context?.(useContext(PanelContext).context);
+}
 
 export type PanelExternalContext = ReturnType<typeof createExternalContext>;
 
