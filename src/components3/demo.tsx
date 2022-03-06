@@ -1,9 +1,11 @@
+import { MenuButton, MenuItem, MenuList, MenuPanel, MenuProvider } from './Menu';
 import { PopupButton, PopupPanel, PopupProvider } from './Popup';
 
 export function Demo() {
   return (
     <>
       <PopupDemo />
+      <MenuDemo />
     </>
   );
 }
@@ -29,6 +31,25 @@ function PopupDemo() {
           </ul>
         </PopupPanel>
       </PopupProvider>
+    </section>
+  );
+}
+
+function MenuDemo() {
+  return (
+    <section>
+      <h1>Menu</h1>
+      <MenuProvider>
+        <MenuButton>Menu</MenuButton>
+        {/* <MenuPanel>
+          Panel */}
+        <MenuList>
+          <MenuItem action={() => console.log('Item 1')}>Item 1</MenuItem>
+          <MenuItem action={() => console.log('Item 2')}>Item 2</MenuItem>
+          <MenuItem action={() => console.log('Item 3')}>Item 3</MenuItem>
+        </MenuList>
+        {/* </MenuPanel> */}
+      </MenuProvider>
     </section>
   );
 }

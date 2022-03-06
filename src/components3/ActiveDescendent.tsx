@@ -16,6 +16,7 @@ type State = {
   activeDescendentId: string;
   descendents: string[];
   orientation: ListboxOrientation;
+  search: string;
 };
 
 type Selectors = {
@@ -29,7 +30,7 @@ type Actions = {
   focusPreviousDescendent(): void;
   focusFirstDescendent(): void;
   focusLastDescendent(): void;
-  focusDescendentStartingWith(search: string): void;
+  focusTypeaheadDescendent(key: string): void;
   hoverDescendent(itemId: string): void;
   hoverDescendentClear(): void;
 };
@@ -59,6 +60,7 @@ export function ActiveDescendentProvider(props: ActiveDescendentProviderProps) {
     get orientation(): ListboxOrientation {
       return props.orientation;
     },
+    search: '',
   });
 
   const selectors: Selectors = {
@@ -67,6 +69,8 @@ export function ActiveDescendentProvider(props: ActiveDescendentProviderProps) {
 
   const getActiveDescendentIndex = () =>
     state.descendents.findIndex((id) => id === state.activeDescendentId);
+
+  let resetSearch: NodeJS.Timeout;
 
   const actions: Actions = {
     addDescendent(descendent) {
@@ -96,13 +100,16 @@ export function ActiveDescendentProvider(props: ActiveDescendentProviderProps) {
     focusLastDescendent() {
       setState('activeDescendentId', state.descendents[state.descendents.length - 1]);
     },
-    focusDescendentStartingWith(search: string) {
+    focusTypeaheadDescendent(key: string) {
+      clearTimeout(resetSearch);
+      setState('search', (search) => search + key);
+
       const activeItemIndex = getActiveDescendentIndex();
       const wrappedDescendents = state.descendents
-        .slice(Math.min(activeItemIndex + 1, state.descendents.length - 1))
+        .slice(activeItemIndex + 1)
         .concat(state.descendents.slice(0, activeItemIndex));
 
-      const searchTerm = search.toLocaleLowerCase();
+      const searchTerm = state.search.toLocaleLowerCase();
       const matchingDescendentId = wrappedDescendents.find((id) =>
         document.getElementById(id).textContent.toLocaleLowerCase().startsWith(searchTerm)
       );
@@ -110,6 +117,10 @@ export function ActiveDescendentProvider(props: ActiveDescendentProviderProps) {
       if (matchingDescendentId) {
         setState('activeDescendentId', matchingDescendentId);
       }
+
+      resetSearch = setTimeout(() => {
+        setState('search', '');
+      }, 500);
     },
     hoverDescendent(descendentId) {
       setState('activeDescendentId', descendentId);
@@ -135,9 +146,6 @@ export function createActiveDescendentContainerProps<ContainerElement extends HT
 ) {
   const state = useActiveDescendentState();
   const actions = useActiveDescendentActions();
-
-  let search: string;
-  let resetSearch: NodeJS.Timeout;
 
   return {
     get ['aria-activedescendent']() {
@@ -177,15 +185,12 @@ export function createActiveDescendentContainerProps<ContainerElement extends HT
         actions.focusLastDescendent();
       },
       default(event) {
-        if (event.key.length === 1 && event.key !== ' ') {
-          event.preventDefault();
-          clearTimeout(resetSearch);
-          search += event.key;
-          actions.focusDescendentStartingWith(search);
-
-          resetSearch = setTimeout(() => {
-            search = '';
-          }, 500);
+        if (event.key.length === 1) {
+          if (!state.search && event.key === ' ') {
+            return;
+          } else {
+            actions.focusTypeaheadDescendent(event.key);
+          }
         }
       },
     }),

@@ -267,7 +267,7 @@ export function createPanelProps<PanelElement extends HTMLElement>(
     get role() {
       return panelState.role;
     },
-    tabIndex: config.tabIndex ?? config.manageFocus ? 0 : undefined,
+    tabIndex: config.tabIndex ?? (config.manageFocus ? 0 : undefined),
   };
 }
 
