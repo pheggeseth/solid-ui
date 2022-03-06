@@ -1,4 +1,4 @@
-import { MenuButton, MenuItem, MenuList, MenuPanel, MenuProvider } from './Menu';
+import { MenuButton, MenuItem, MenuList, MenuProvider } from './Menu';
 import { PopupButton, PopupPanel, PopupProvider } from './Popup';
 
 export function Demo() {

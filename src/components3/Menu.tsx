@@ -123,7 +123,7 @@ export function MenuPanel<MenuPanelElement extends HTMLElement = HTMLDivElement>
 }
 
 export type MenuListProps<MenuListElement extends HTMLElement> = BaseComponentProps<{
-  component?: DynamicComponent<{ role?: 'menu' }>;
+  component?: DynamicComponent<{ id: string; role?: 'menu' }>;
   idPrefix?: string;
   portal?: boolean;
 }>;
@@ -146,23 +146,34 @@ export function MenuList<MenuListElement extends HTMLElement = HTMLUListElement>
 
   const panelState = usePanelState();
 
+  const panelProps = !panelState.panelId
+    ? createPanelProps<MenuListElement>({
+        clickAway: true,
+        id,
+        manageFocus: true,
+        tabIndex: 0,
+      })
+    : ({} as { onKeyDown: never });
+
   const onKeyDown: JSX.EventHandler<MenuListElement, KeyboardEvent> = (event) => {
     containerProps.onKeyDown(event);
     menuContainerProps.onKeyDown(event);
+    panelProps?.onKeyDown(event);
   };
 
-  const menuList = () => (
-    <Dynamic
-      {...otherProps}
-      {...containerProps}
-      {...menuContainerProps}
-      {...{ onKeyDown }}
-      data-solid-ui-menu-list=""
-      role="menu"
-    />
-  );
+  const finalProps = mergeProps(otherProps, containerProps, menuContainerProps, panelProps, {
+    onKeyDown,
+  });
 
-  return !panelState.panelId ? <MenuPanel>{menuList()}</MenuPanel> : menuList();
+  const menuList = () => <Dynamic {...finalProps} data-solid-ui-menu-list="" id={id} role="menu" />;
+
+  return !panelState.panelId ? (
+    <Show when={panelState.isPanelOpen}>
+      {localProps.portal ? <Portal>{menuList()}</Portal> : menuList()}
+    </Show>
+  ) : (
+    menuList()
+  );
 }
 
 export type MenuItemProps<MenuOptionElement extends HTMLElement> = BaseComponentProps<{

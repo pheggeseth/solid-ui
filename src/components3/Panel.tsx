@@ -201,56 +201,63 @@ export type CreatePanelPropsConfig<PanelElement extends HTMLElement> = {
 export function createPanelProps<PanelElement extends HTMLElement>(
   config: CreatePanelPropsConfig<PanelElement>
 ): PanelProps<PanelElement> {
-  function ref(element: PanelElement) {
-    usePopperContext()?.setRef('popper', element);
+  const panelState = usePanelState();
 
-    if (typeof config.manageFocus === 'function') {
-      config.manageFocus(element);
-    } else if (config.manageFocus) {
-      const panelState = usePanelState();
-      const manageFocus = config.manageFocus === true ? {} : config.manageFocus;
+  let panelRef: PanelElement;
 
-      useFocusTrap(
-        manageFocus.focusTrapRef || element,
-        () => panelState.isPanelOpen,
-        manageFocus.initialFocusRef
-      );
-      useFocusOnOpen(
-        manageFocus.initialFocusRef || getFirstFocusableElement(element),
-        () => panelState.isPanelOpen
-      );
-    }
+  createEffect(() => {
+    if (panelState.isPanelOpen) {
+      if (typeof config.manageFocus === 'function') {
+        config.manageFocus(panelRef);
+      } else if (config.manageFocus) {
+        const panelState = usePanelState();
+        const manageFocus = config.manageFocus === true ? {} : config.manageFocus;
 
-    if (typeof config.clickAway === 'function') {
-      config.clickAway(element);
-    } else if (config.clickAway) {
-      const panelState = usePanelState();
-      const panelActions = usePanelActions();
-      const clickAway = config.clickAway === true ? {} : config.clickAway;
-      const { exceptions = [], onClickAway } = clickAway;
-
-      const button = document.getElementById(panelState.buttonId);
-      if (button) {
-        exceptions.push(button);
+        useFocusTrap(
+          manageFocus.focusTrapRef || panelRef,
+          () => panelState.isPanelOpen,
+          manageFocus.initialFocusRef
+        );
+        useFocusOnOpen(
+          manageFocus.initialFocusRef || getFirstFocusableElement(panelRef),
+          () => panelState.isPanelOpen
+        );
       }
 
-      useOnClickAway(
-        element,
-        () => {
-          panelActions.closePanel();
-          onClickAway?.();
-        },
-        {
-          exceptions,
-          shouldContainActiveElement: !config.manageFocus,
-        }
-      );
-    }
+      if (typeof config.clickAway === 'function') {
+        config.clickAway(panelRef);
+      } else if (config.clickAway) {
+        const panelState = usePanelState();
+        const panelActions = usePanelActions();
+        const clickAway = config.clickAway === true ? {} : config.clickAway;
+        const { exceptions = [], onClickAway } = clickAway;
 
+        const button = document.getElementById(panelState.buttonId);
+        if (button) {
+          exceptions.push(button);
+        }
+
+        useOnClickAway(
+          panelRef,
+          () => {
+            panelActions.closePanel();
+            onClickAway?.();
+          },
+          {
+            exceptions,
+            shouldContainActiveElement: !config.manageFocus,
+          }
+        );
+      }
+    }
+  });
+
+  function ref(element: PanelElement) {
+    usePopperContext()?.setRef('popper', element);
+    panelRef = element;
     setRef(config.ref, element);
   }
 
-  const panelState = usePanelState();
   const panelActions = usePanelActions();
 
   onMount(() => {
