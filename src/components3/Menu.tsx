@@ -1,4 +1,4 @@
-import { createSelector, JSX, mergeProps, Show, splitProps } from 'solid-js';
+import { JSX, mergeProps, Show, splitProps } from 'solid-js';
 import { Dynamic, Portal } from 'solid-js/web';
 import { BaseComponentProps, ComponentRef, DynamicComponent, ListboxOrientation } from '~/types';
 import { useId } from '~/utils/componentUtils';
@@ -13,7 +13,6 @@ import {
   createPanelButtonProps,
   createPanelProps,
   PanelButtonProps,
-  PanelExternalContext,
   PanelProps,
   PanelProvider,
   PanelProviderProps,
@@ -21,7 +20,6 @@ import {
   usePanelState,
 } from './Panel';
 import Popper from './Popper';
-import { PopupPanelProps } from './Popup';
 
 function createExternalContext(config: { id?: string } = {}) {
   const activeDescendentState = useActiveDescendentState();
@@ -59,16 +57,16 @@ export function MenuProvider(props: MenuProviderProps) {
   ]);
 
   const provider = () => (
-    <ActiveDescendentProvider orientation={localProps.orientation}>
-      <MenuActionProvider>
-        <PanelProvider {...otherProps} role="menu">
+    <PanelProvider {...otherProps} role="menu">
+      <ActiveDescendentProvider orientation={localProps.orientation}>
+        <MenuActionProvider>
           {(() => {
             localProps.context?.(createExternalContext());
             return localProps.children;
           })()}
-        </PanelProvider>
-      </MenuActionProvider>
-    </ActiveDescendentProvider>
+        </MenuActionProvider>
+      </ActiveDescendentProvider>
+    </PanelProvider>
   );
 
   return localProps.popper ? <Popper>{provider()}</Popper> : provider();

@@ -2,6 +2,7 @@ import { createContext, onCleanup, onMount, PropsWithChildren, useContext } from
 import { createStore } from 'solid-js/store';
 import { useKeyEventHandlers } from '~/utils/eventUtils';
 import { useActiveDescendentState } from './ActiveDescendent';
+import { usePanelActions } from './Panel';
 
 type State = {
   menuActions: { [id: string]: () => void };
@@ -26,6 +27,8 @@ export function MenuActionProvider(props: PropsWithChildren) {
     menuActions: {},
   });
 
+  const panelActions = usePanelActions();
+
   const actions: Actions = {
     addAction(id: string, action: () => void) {
       setState('menuActions', { [id]: action });
@@ -36,6 +39,7 @@ export function MenuActionProvider(props: PropsWithChildren) {
     performMenuAction(id: string) {
       if (state.menuActions[id]) {
         state.menuActions[id]();
+        panelActions?.closePanel();
       } else {
         const element = document.getElementById(id);
         if (element.onclick || ['BUTTON', 'A'].includes(element.tagName)) {
