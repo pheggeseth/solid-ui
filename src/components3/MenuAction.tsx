@@ -1,8 +1,13 @@
-import { createContext, onCleanup, onMount, PropsWithChildren, useContext } from 'solid-js';
+import {
+  Accessor,
+  createContext,
+  onCleanup,
+  onMount,
+  PropsWithChildren,
+  useContext,
+} from 'solid-js';
 import { createStore } from 'solid-js/store';
 import { useKeyEventHandlers } from '~/utils/eventUtils';
-import { useActiveDescendentState } from './ActiveDescendent';
-import { usePanelActions } from './Panel';
 
 type State = {
   menuActions: { [id: string]: () => void };
@@ -22,12 +27,14 @@ function useActions() {
   return useContext(MenuActionContext).actions;
 }
 
-export function MenuActionProvider(props: PropsWithChildren) {
+export type MenuActionProviderProps = {
+  onPerformAction?: (menuItemId: string) => void;
+};
+
+export function MenuActionProvider(props: PropsWithChildren<MenuActionProviderProps>) {
   const [state, setState] = createStore<State>({
     menuActions: {},
   });
-
-  const panelActions = usePanelActions();
 
   const actions: Actions = {
     addAction(id: string, action: () => void) {
@@ -39,11 +46,12 @@ export function MenuActionProvider(props: PropsWithChildren) {
     performMenuAction(id: string) {
       if (state.menuActions[id]) {
         state.menuActions[id]();
-        panelActions?.closePanel();
+        props.onPerformAction?.(id);
       } else {
         const element = document.getElementById(id);
         if (element.onclick || ['BUTTON', 'A'].includes(element.tagName)) {
           element.click();
+          props.onPerformAction?.(id);
         }
       }
     },
@@ -56,29 +64,31 @@ export function MenuActionProvider(props: PropsWithChildren) {
   );
 }
 
-export function createMenuContainerProps<MenuContainerElement extends HTMLElement>() {
-  const activeDescendentState = useActiveDescendentState();
+export function createMenuActionContainerProps<MenuContainerElement extends HTMLElement>(config: {
+  activeId: Accessor<string>;
+  search: Accessor<string>;
+}) {
   const actions = useActions();
 
   return {
     onKeyDown: useKeyEventHandlers<MenuContainerElement>({
       Enter(event) {
-        if (activeDescendentState.activeDescendentId) {
+        if (config.activeId()) {
           event.preventDefault();
-          actions.performMenuAction(activeDescendentState.activeDescendentId);
+          actions.performMenuAction(config.activeId());
         }
       },
       [' '](event) {
-        if (activeDescendentState.activeDescendentId && !activeDescendentState.search) {
+        if (config.activeId() && !config.search()) {
           event.preventDefault();
-          actions.performMenuAction(activeDescendentState.activeDescendentId);
+          actions.performMenuAction(config.activeId());
         }
       },
     }),
   };
 }
 
-export function createMenuItemProps(config: { action: () => void; id: string }) {
+export function createMenuActionItemProps(config: { action: () => void; id: string }) {
   const actions = useActions();
 
   onMount(() => actions.addAction(config.id, config.action));

@@ -8,11 +8,12 @@ import {
   createActiveDescendentProps,
   useActiveDescendentState,
 } from './ActiveDescendent';
-import { createMenuContainerProps, createMenuItemProps, MenuActionProvider } from './MenuAction';
+import { createMenuActionContainerProps, createMenuActionItemProps, MenuActionProvider } from './MenuAction';
 import {
   createPanelButtonProps,
   createPanelProps,
   PanelButtonProps,
+  PanelExternalContext,
   PanelProps,
   PanelProvider,
   PanelProviderProps,
@@ -56,10 +57,12 @@ export function MenuProvider(props: MenuProviderProps) {
     'popper',
   ]);
 
+  let panelContext: PanelExternalContext;
+
   const provider = () => (
-    <PanelProvider {...otherProps} role="menu">
+    <PanelProvider {...otherProps} context={(ctx) => (panelContext = ctx)} role="menu">
       <ActiveDescendentProvider orientation={localProps.orientation}>
-        <MenuActionProvider>
+        <MenuActionProvider onPerformAction={panelContext.close}>
           {(() => {
             localProps.context?.(createExternalContext());
             return localProps.children;
@@ -194,7 +197,12 @@ export function MenuList<MenuListElement extends HTMLElement = HTMLUListElement>
 
   const containerProps = createActiveDescendentContainerProps({ id });
 
-  const menuContainerProps = createMenuContainerProps<MenuListElement>();
+  const activeDescendentState = useActiveDescendentState();
+
+  const menuContainerProps = createMenuActionContainerProps<MenuListElement>({
+    activeId: () => activeDescendentState.activeDescendentId,
+    search: () => activeDescendentState.search,
+  });
 
   const panelState = usePanelState();
 
@@ -266,7 +274,7 @@ export function MenuItem<MenuItemElement extends HTMLElement = HTMLLIElement>(
   const id = useId(localProps.idPrefix);
 
   const descendentProps = createActiveDescendentProps({ id });
-  const menuItemProps = createMenuItemProps({ action: localProps.action, id });
+  const menuItemProps = createMenuActionItemProps({ action: localProps.action, id });
 
   const finalProps = mergeProps(otherProps, descendentProps, menuItemProps);
 
