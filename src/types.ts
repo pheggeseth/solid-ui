@@ -19,7 +19,7 @@ export type DynamicComponent<T = {}> = keyof JSX.IntrinsicElements | BaseCompone
 
 export type ComponentRef<T extends HTMLElement> = T | ((element: T) => void);
 
-export type ListboxOrientation = 'vertical' | 'horizontal';
+export type ListOrientation = 'vertical' | 'horizontal';
 
 export type ListboxFocusManagement = 'roving tabindex' | 'aria-activedescendent';
 

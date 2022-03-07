@@ -1,6 +1,6 @@
 import { JSX, mergeProps, Show, splitProps } from 'solid-js';
 import { Dynamic, Portal } from 'solid-js/web';
-import { BaseComponentProps, ComponentRef, DynamicComponent, ListboxOrientation } from '~/types';
+import { BaseComponentProps, DynamicComponent, ListOrientation } from '~/types';
 import { useId } from '~/utils/componentUtils';
 import {
   ActiveDescendentProvider,
@@ -8,7 +8,11 @@ import {
   createActiveDescendentProps,
   useActiveDescendentState,
 } from './ActiveDescendent';
-import { createMenuActionContainerProps, createMenuActionItemProps, MenuActionProvider } from './MenuAction';
+import {
+  createMenuActionContainerProps,
+  createMenuActionItemProps,
+  MenuActionProvider,
+} from './MenuAction';
 import {
   createPanelButtonProps,
   createPanelProps,
@@ -44,7 +48,7 @@ export type MenuContext = ReturnType<typeof createExternalContext>;
 
 export type MenuProviderProps = Omit<PanelProviderProps, 'context' | 'role'> & {
   popper?: boolean;
-  orientation?: ListboxOrientation;
+  orientation?: ListOrientation;
 } & MenuExternalContextProp;
 
 export function MenuProvider(props: MenuProviderProps) {
@@ -75,15 +79,11 @@ export function MenuProvider(props: MenuProviderProps) {
   return localProps.popper ? <Popper>{provider()}</Popper> : provider();
 }
 
-type MenuButtonDynamicComponentProps<MenuButtonElement extends HTMLElement> =
-  PanelButtonProps<MenuButtonElement> & { id: string };
-
 export type MenuButtonProps<MenuButtonElement extends HTMLElement = HTMLButtonElement> =
   BaseComponentProps<
     {
-      component?: DynamicComponent<MenuButtonDynamicComponentProps<MenuButtonElement>>;
+      component?: DynamicComponent<PanelButtonProps<MenuButtonElement> & { id: string }>;
       idPrefix?: string;
-      ref?: ComponentRef<MenuButtonElement>;
     } & MenuExternalContextProp
   >;
 
@@ -106,7 +106,7 @@ export function MenuButton<MenuButtonElement extends HTMLElement = HTMLButtonEle
   localProps.context?.(createExternalContext());
 
   return (
-    <Dynamic<MenuButtonDynamicComponentProps<MenuButtonElement>>
+    <Dynamic
       {...finalProps}
       component={localProps.component}
       data-solid-ui-menu-button=""
@@ -165,7 +165,9 @@ export function MenuPanel<MenuPanelElement extends HTMLElement = HTMLDivElement>
 
   return (
     <Show when={panelState.isPanelOpen}>
-      {localProps.portal ? <Portal>{panel()}</Portal> : panel()}
+      <Show when={localProps.portal} fallback={panel()}>
+        <Portal>{panel()}</Portal>
+      </Show>
     </Show>
   );
 }
@@ -246,16 +248,15 @@ export function MenuList<MenuListElement extends HTMLElement = HTMLUListElement>
   );
 }
 
-export type MenuItemProps<MenuOptionElement extends HTMLElement = HTMLLIElement> =
-  BaseComponentProps<
-    {
-      action?: () => void;
-      component?: DynamicComponent<{ id: string; role: 'menuitem' }>;
-      idPrefix?: string;
-      onClick?: JSX.EventHandler<MenuOptionElement, MouseEvent>;
-      onSelect?: () => void;
-    } & MenuExternalContextProp
-  >;
+export type MenuItemProps<MenuItemElement extends HTMLElement = HTMLLIElement> = BaseComponentProps<
+  {
+    action?: () => void;
+    component?: DynamicComponent<{ id: string; role: 'menuitem' }>;
+    idPrefix?: string;
+    onClick?: JSX.EventHandler<MenuItemElement, MouseEvent>;
+    onSelect?: () => void;
+  } & MenuExternalContextProp
+>;
 
 export function MenuItem<MenuItemElement extends HTMLElement = HTMLLIElement>(
   props: MenuItemProps<MenuItemElement>
@@ -284,7 +285,7 @@ export function MenuItem<MenuItemElement extends HTMLElement = HTMLLIElement>(
     <Dynamic
       {...finalProps}
       component={localProps.component}
-      data-solid-ui-menu-item
+      data-solid-ui-menu-item=""
       id={id}
       role="menuitem"
     />

@@ -12,7 +12,7 @@ import {
   useContext,
 } from 'solid-js';
 import { createStore, DeepReadonly } from 'solid-js/store';
-import { ListboxOrientation } from '~/types';
+import { ListOrientation } from '~/types';
 import { useId } from '~/utils/componentUtils';
 import { useKeyEventHandlers } from '~/utils/eventUtils';
 import { LabelProvider, useLabelState } from './Label';
@@ -29,7 +29,7 @@ type ListElementIds = {
 type ListState<ItemValue> = ListElementIds & {
   activeItemId: string;
   items: ListItem<ItemValue>[];
-  orientation: ListboxOrientation;
+  orientation: ListOrientation;
   shouldClickListItem: boolean;
 };
 
@@ -72,7 +72,7 @@ function useListActions<ItemValue>() {
 }
 
 export type ListProviderProps<ItemValue> = PropsWithChildren<{
-  'aria-orientation'?: ListboxOrientation;
+  'aria-orientation'?: ListOrientation;
   onChange?: (newValue: ItemValue) => void;
   shouldClickListItem?: boolean;
   value?: ItemValue;
@@ -85,7 +85,7 @@ export function ListProvider<ItemValue>(props: ListProviderProps<ItemValue>) {
     labelId: null,
     activeItemId: null,
     items: [],
-    get orientation(): ListboxOrientation {
+    get orientation(): ListOrientation {
       return props['aria-orientation'];
     },
     get shouldClickListItem(): boolean {

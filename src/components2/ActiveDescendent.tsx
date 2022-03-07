@@ -9,13 +9,13 @@ import {
   useContext,
 } from 'solid-js';
 import { createStore } from 'solid-js/store';
-import { ListboxOrientation } from '~/types';
+import { ListOrientation } from '~/types';
 import { useKeyEventHandlers } from '~/utils/eventUtils';
 
 type State = {
   activeDescendentId: string;
   descendents: string[];
-  orientation: ListboxOrientation;
+  orientation: ListOrientation;
 };
 
 type Selectors = {
@@ -47,7 +47,7 @@ export function useActiveDescendentActions() {
 }
 
 export type ActiveDescendentProviderProps = PropsWithChildren<{
-  orientation?: ListboxOrientation;
+  orientation?: ListOrientation;
 }>;
 
 export function ActiveDescendentProvider(props: ActiveDescendentProviderProps) {
@@ -56,7 +56,7 @@ export function ActiveDescendentProvider(props: ActiveDescendentProviderProps) {
   const [state, setState] = createStore<State>({
     activeDescendentId: null,
     descendents: [],
-    get orientation(): ListboxOrientation {
+    get orientation(): ListOrientation {
       return props.orientation;
     },
   });

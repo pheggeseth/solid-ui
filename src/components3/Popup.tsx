@@ -33,12 +33,9 @@ export function PopupProvider(props: PopupProviderProps) {
   return localProps.popper ? <PopperProvider>{provider()}</PopperProvider> : provider();
 }
 
-type PopupButtonDynamicComponentProps<PopupButtonElement extends HTMLElement> =
-  PanelButtonProps<PopupButtonElement> & { id: string };
-
 export type PopupButtonProps<PopupButtonElement extends HTMLElement> = BaseComponentProps<
   {
-    component?: DynamicComponent<PopupButtonDynamicComponentProps<PopupButtonElement>>;
+    component?: DynamicComponent<PanelButtonProps<PopupButtonElement> & { id: string }>;
     idPrefix?: string;
     ref?: ComponentRef<PopupButtonElement>;
   } & PanelExternalContextProp
@@ -52,7 +49,7 @@ export function PopupButton<PopupButtonElement extends HTMLElement = HTMLButtonE
     props
   );
 
-  const [localProps, otherProps] = splitProps(props, ['context', 'idPrefix']);
+  const [localProps, otherProps] = splitProps(props, ['component', 'context', 'idPrefix']);
 
   const id = useId(localProps.idPrefix);
 
@@ -63,8 +60,9 @@ export function PopupButton<PopupButtonElement extends HTMLElement = HTMLButtonE
   exposePanelExternalContext(localProps);
 
   return (
-    <Dynamic<PopupButtonDynamicComponentProps<PopupButtonElement>>
+    <Dynamic
       {...finalProps}
+      component={localProps.component}
       id={id}
       data-solid-ui-popup-button=""
     />
@@ -106,12 +104,9 @@ export function PopupOverlay(props: PopupOverlayProps) {
   );
 }
 
-type PopupPanelDynamicComponentProps<PopupPanelElement extends HTMLElement> =
-  PanelProps<PopupPanelElement> & { id: string };
-
 export type PopupPanelProps<PopupPanelElement extends HTMLElement> = BaseComponentProps<
   {
-    component?: DynamicComponent<PopupPanelDynamicComponentProps<PopupPanelElement>>;
+    component?: DynamicComponent<PanelProps<PopupPanelElement> & { id: string }>;
     portal?: boolean;
     idPrefix?: string;
   } & Omit<CreatePanelPropsConfig<PopupPanelElement>, 'id'> &
@@ -140,6 +135,7 @@ export function PopupPanel<PopupPanelElement extends HTMLElement = HTMLDivElemen
 
   const [localProps, otherProps] = splitProps(props, [
     'clickAway',
+    'component',
     'context',
     'idPrefix',
     'manageFocus',
@@ -160,11 +156,13 @@ export function PopupPanel<PopupPanelElement extends HTMLElement = HTMLDivElemen
     tabIndex: localProps.tabIndex,
   });
 
+  const finalProps = mergeProps(otherProps, panelProps);
+
   const panel = () => {
     return (
-      <Dynamic<PopupPanelDynamicComponentProps<PopupPanelElement>>
-        {...otherProps}
-        {...panelProps}
+      <Dynamic
+        {...finalProps}
+        component={localProps.component}
         id={id}
         data-solid-ui-popup-panel=""
       />
@@ -175,7 +173,9 @@ export function PopupPanel<PopupPanelElement extends HTMLElement = HTMLDivElemen
 
   return (
     <Show when={panelState.isPanelOpen}>
-      {localProps.portal ? <Portal>{panel()}</Portal> : panel()}
+      <Show when={localProps.portal} fallback={panel}>
+        <Portal>{panel()}</Portal>
+      </Show>
     </Show>
   );
 }
