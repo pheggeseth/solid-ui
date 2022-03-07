@@ -1,4 +1,5 @@
-import { MenuButton, MenuItem, MenuList, MenuProvider } from './Menu';
+import { Component } from 'solid-js';
+import { MenuButton, MenuContext, MenuItem, MenuItemProps, MenuList, MenuProvider } from './Menu';
 import { PopupButton, PopupContext, PopupOverlay, PopupPanel, PopupProvider } from './Popup';
 
 export function Demo() {
@@ -40,20 +41,36 @@ function PopupDemo() {
 }
 
 function MenuDemo() {
+  let context: MenuContext;
+
   return (
     <section>
       <h1>Menu</h1>
-      <MenuProvider>
-        <MenuButton>Menu</MenuButton>
+      <MenuProvider context={(ctx) => (context = ctx)}>
+        <MenuButton context={(ctx) => (context = ctx)}>Menu</MenuButton>
         {/* <MenuPanel>
           Panel */}
-        <MenuList>
-          <MenuItem action={() => console.log('Item 1')}>Item 1</MenuItem>
-          <MenuItem action={() => console.log('Item 2')}>Item 2</MenuItem>
-          <MenuItem action={() => console.log('Item 3')}>Item 3</MenuItem>
+        <MenuList context={(ctx) => (context = ctx)}>
+          <Item action={() => console.log('Item 1')}>Item 1</Item>
+          <Item action={() => console.log('Item 2')}>Item 2</Item>
+          <Item action={() => console.log('Item 3')}>Item 3</Item>
         </MenuList>
         {/* </MenuPanel> */}
       </MenuProvider>
     </section>
   );
 }
+
+const Item: Component<MenuItemProps> = (props) => {
+  let context: MenuContext;
+
+  return (
+    <MenuItem
+      {...props}
+      context={(ctx) => (context = ctx)}
+      style={{ background: context.isActive() ? 'red' : 'inherit' }}
+    >
+      {props.children}
+    </MenuItem>
+  );
+};
