@@ -3,11 +3,11 @@ import { Dynamic, Portal } from 'solid-js/web';
 import { BaseComponentProps, ComponentRef, DynamicComponent } from '~/types';
 import { useId } from '~/utils/componentUtils';
 import {
+  createExternalContext,
   createPanelButtonProps,
   createPanelOverlayProps,
   createPanelProps,
   CreatePanelPropsConfig,
-  exposePanelExternalContext,
   OverlayPortal,
   PanelButtonProps,
   PanelContext,
@@ -57,7 +57,7 @@ export function PopupButton<PopupButtonElement extends HTMLElement = HTMLButtonE
 
   const finalProps = mergeProps(otherProps, buttonProps);
 
-  exposePanelExternalContext(localProps);
+  localProps.context?.(createExternalContext());
 
   return (
     <Dynamic
@@ -95,7 +95,7 @@ export function PopupOverlay(props: PopupOverlayProps) {
 
   const panelState = usePanelState();
 
-  exposePanelExternalContext(localProps);
+  localProps.context?.(createExternalContext());
 
   return (
     <Show when={panelState.shouldShowPanel}>
@@ -169,7 +169,7 @@ export function PopupPanel<PopupPanelElement extends HTMLElement = HTMLDivElemen
     );
   };
 
-  exposePanelExternalContext(localProps);
+  localProps.context?.(createExternalContext());
 
   return (
     <Show when={panelState.isPanelOpen}>

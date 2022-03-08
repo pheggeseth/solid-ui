@@ -8,6 +8,7 @@ import {
   useContext,
 } from 'solid-js';
 import { createStore } from 'solid-js/store';
+import { getCreateComponentContext } from '~/utils/componentUtils';
 import { useKeyEventHandlers } from '~/utils/eventUtils';
 
 type State<Value> = {
@@ -25,26 +26,30 @@ type Actions<Value> = {
   chooseValue(id: string): void;
 };
 
-const ListboxValueContext =
+const ListboxValueComponentContext =
   createContext<{ state: State<any>; selectors: Selectors<any>; actions: Actions<any> }>();
 function useListboxValueState<Value>() {
-  return useContext(ListboxValueContext).state as State<Value>;
+  return useContext(ListboxValueComponentContext).state as State<Value>;
 }
 export function useListboxValueSelectors<Value>() {
-  return useContext(ListboxValueContext).selectors as Selectors<Value>;
+  return useContext(ListboxValueComponentContext).selectors as Selectors<Value>;
 }
 function useActions<Value>() {
-  return useContext(ListboxValueContext).actions as Actions<Value>;
+  return useContext(ListboxValueComponentContext).actions as Actions<Value>;
 }
 
-export type ListboxValueExternalContext<Value> = {
+export type ListboxValueContext<Value> = {
   values: Accessor<State<Value>['values']>;
 };
+
+export function createListboxValueContext<Value>() {
+  return getCreateComponentContext<ListboxValueContext<Value>>()();
+}
 
 export type ListboxValueProviderProps<Value> = PropsWithChildren<{
   value?: Value;
   onChange?: (newValue: Value) => void;
-  context?: (ctx: ListboxValueExternalContext<Value>) => void;
+  context?: (ctx: ListboxValueContext<Value>) => void;
 }>;
 
 export function ListboxValueProvider<Value>(props: ListboxValueProviderProps<Value>) {
@@ -76,9 +81,9 @@ export function ListboxValueProvider<Value>(props: ListboxValueProviderProps<Val
   props.context?.({ values: () => state.values as State<Value>['values'] });
 
   return (
-    <ListboxValueContext.Provider value={{ state, selectors, actions }}>
+    <ListboxValueComponentContext.Provider value={{ state, selectors, actions }}>
       {props.children}
-    </ListboxValueContext.Provider>
+    </ListboxValueComponentContext.Provider>
   );
 }
 

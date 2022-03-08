@@ -1,7 +1,7 @@
-import { JSX, mergeProps, Show, splitProps } from 'solid-js';
+import { Accessor, JSX, mergeProps, Show, splitProps } from 'solid-js';
 import { Dynamic, Portal } from 'solid-js/web';
 import { BaseComponentProps, DynamicComponent, ListOrientation } from '~/types';
-import { useId } from '~/utils/componentUtils';
+import { getCreateComponentContext, useId } from '~/utils/componentUtils';
 import {
   ActiveDescendentProvider,
   createActiveDescendentContainerProps,
@@ -26,30 +26,38 @@ import {
 } from './base/Panel';
 import Popper from './Popper';
 
-function createExternalContext(config: { id?: string } = {}) {
+export type MenuContext = Readonly<{
+  activeDescendentId: Accessor<string>;
+  isActive: (id?: string) => boolean;
+  isOpen: Accessor<boolean>;
+  open: () => void;
+  close: () => void;
+}>;
+
+function createExternalContext(config: { id?: string } = {}): MenuContext {
   const activeDescendentState = useActiveDescendentState();
   const panelState = usePanelState();
   const panelActions = usePanelActions();
 
   return {
     activeDescendentId: () => activeDescendentState.activeDescendentId,
-    isActive: () => activeDescendentState.activeDescendentId === config.id,
+    isActive: (id?: string) => activeDescendentState.activeDescendentId === (id ?? config.id),
     isOpen: () => panelState.isPanelOpen,
     open: () => panelActions.openPanel,
     close: () => panelActions.closePanel,
   } as const;
 }
 
-type MenuExternalContextProp = {
+type MenuContextProp = {
   context?: (ctx: MenuContext) => void;
 };
 
-export type MenuContext = ReturnType<typeof createExternalContext>;
+export const createMenuContext = getCreateComponentContext<MenuContext>();
 
 export type MenuProviderProps = Omit<PanelProviderProps, 'context' | 'role'> & {
   popper?: boolean;
   orientation?: ListOrientation;
-} & MenuExternalContextProp;
+} & MenuContextProp;
 
 export function MenuProvider(props: MenuProviderProps) {
   props = mergeProps<typeof props[]>({ popper: true }, props);
@@ -84,7 +92,7 @@ export type MenuButtonProps<MenuButtonElement extends HTMLElement = HTMLButtonEl
     {
       component?: DynamicComponent<PanelButtonProps<MenuButtonElement> & { id: string }>;
       idPrefix?: string;
-    } & MenuExternalContextProp
+    } & MenuContextProp
   >;
 
 export function MenuButton<MenuButtonElement extends HTMLElement = HTMLButtonElement>(
@@ -121,7 +129,7 @@ export type MenuPanelProps<MenuPanelElement extends HTMLElement = HTMLDivElement
       component?: DynamicComponent<PanelProps<MenuPanelElement> & { id: string; role: 'none' }>;
       idPrefix?: string;
       portal?: boolean;
-    } & MenuExternalContextProp
+    } & MenuContextProp
   >;
 
 export function MenuPanel<MenuPanelElement extends HTMLElement = HTMLDivElement>(
@@ -177,7 +185,7 @@ export type MenuListProps = BaseComponentProps<
     component?: DynamicComponent<{ id: string; role?: 'menu' }>;
     idPrefix?: string;
     portal?: boolean;
-  } & MenuExternalContextProp
+  } & MenuContextProp
 >;
 
 export function MenuList<MenuListElement extends HTMLElement = HTMLUListElement>(
@@ -255,7 +263,7 @@ export type MenuItemProps<MenuItemElement extends HTMLElement = HTMLLIElement> =
     idPrefix?: string;
     onClick?: JSX.EventHandler<MenuItemElement, MouseEvent>;
     onSelect?: () => void;
-  } & MenuExternalContextProp
+  } & MenuContextProp
 >;
 
 export function MenuItem<MenuItemElement extends HTMLElement = HTMLLIElement>(

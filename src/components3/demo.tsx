@@ -7,6 +7,7 @@ import {
   DisclosureProvider,
 } from './Disclosure';
 import {
+  createListboxContext,
   ListboxButton,
   ListboxContext,
   ListboxOption,
@@ -14,6 +15,7 @@ import {
   ListboxProvider,
 } from './Listbox';
 import {
+  createMenuContext,
   MenuButton,
   MenuContext,
   MenuItem,
@@ -36,7 +38,7 @@ export function Demo() {
 }
 
 function DisclosureDemo() {
-  let context = createDisclosureContext();
+  const context = createDisclosureContext();
 
   return (
     <section>
@@ -54,7 +56,6 @@ function DisclosureDemo() {
 const fruits = ['apple', 'apricot', 'orange', 'peach', 'pineapple', 'watermelon'];
 function ListboxDemo() {
   const [value, setValue] = createSignal('apricot');
-  let context: ListboxContext;
 
   return (
     <section>
@@ -62,7 +63,21 @@ function ListboxDemo() {
       <ListboxProvider value={value()} onChange={setValue}>
         <ListboxButton>{value()}</ListboxButton>
         <ListboxOptions>
-          <For each={fruits}>{(fruit) => <ListboxOption value={fruit}>{fruit}</ListboxOption>}</For>
+          <For each={fruits}>
+            {(fruit) => {
+              const context = createListboxContext<string>();
+
+              return (
+                <ListboxOption
+                  value={fruit}
+                  context={context}
+                  style={context.isSelected() ? { background: 'pink' } : {}}
+                >
+                  {fruit}
+                </ListboxOption>
+              );
+            }}
+          </For>
         </ListboxOptions>
       </ListboxProvider>
     </section>
@@ -70,16 +85,14 @@ function ListboxDemo() {
 }
 
 function MenuDemo() {
-  let context: MenuContext;
-
   return (
     <section>
       <h1>Menu</h1>
-      <MenuProvider context={(ctx) => (context = ctx)}>
-        <MenuButton context={(ctx) => (context = ctx)}>Menu</MenuButton>
+      <MenuProvider>
+        <MenuButton>Menu</MenuButton>
         {/* <MenuPanel>
           Panel */}
-        <MenuList context={(ctx) => (context = ctx)}>
+        <MenuList>
           <Item action={() => console.log('Item 1')}>Item 1</Item>
           <Item action={() => console.log('Item 2')}>Item 2</Item>
           <Item action={() => console.log('Item 3')}>Item 3</Item>
@@ -91,13 +104,13 @@ function MenuDemo() {
 }
 
 const Item: Component<MenuItemProps> = (props) => {
-  let context: MenuContext;
+  const context = createMenuContext();
 
   return (
     <MenuItem
       {...props}
-      context={(ctx) => (context = ctx)}
-      style={{ background: context.isActive() ? 'red' : 'inherit' }}
+      context={context}
+      style={{ background: context.isActive() ? 'orange' : 'inherit' }}
     >
       {props.children}
     </MenuItem>

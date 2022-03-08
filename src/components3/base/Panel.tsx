@@ -1,4 +1,5 @@
 import {
+  Accessor,
   Component,
   createContext,
   createEffect,
@@ -10,7 +11,7 @@ import {
 } from 'solid-js';
 import { createStore } from 'solid-js/store';
 import { Portal } from 'solid-js/web';
-import { setRef, useId } from '~/utils/componentUtils';
+import { getCreateComponentContext, setRef, useId } from '~/utils/componentUtils';
 import { useOnClickAway } from '~/utils/eventUtils';
 import { getFirstFocusableElement, useFocusOnOpen, useFocusTrap } from '~/utils/focusUtils';
 import { usePopperContext } from '../Popper';
@@ -39,7 +40,18 @@ export type PanelActions = {
   closeOverlay(): void;
 };
 
-export function createExternalContext(state: PanelState, actions: PanelActions) {
+export type PanelContext = Readonly<{
+  isOpen: Accessor<boolean>;
+  open: () => void;
+  close: () => void;
+}>;
+
+export const createPanelContext = getCreateComponentContext<PanelContext>();
+
+export function createExternalContext(): PanelContext {
+  const state = usePanelState();
+  const actions = usePanelActions();
+
   return {
     isOpen: () => state.isPanelOpen,
     open: () => actions.openPanel(),
@@ -47,18 +59,11 @@ export function createExternalContext(state: PanelState, actions: PanelActions) 
   } as const;
 }
 
-export function exposePanelExternalContext(props: PanelContextProp) {
-  props.context?.(useContext(PanelComponentContext).context);
-}
-
-export type PanelContext = ReturnType<typeof createExternalContext>;
-
 export type PanelContextProp = {
   context?: (ctx: PanelContext) => void;
 };
 
-const PanelComponentContext =
-  createContext<{ state: PanelState; actions: PanelActions; context: PanelContext }>();
+const PanelComponentContext = createContext<{ state: PanelState; actions: PanelActions }>();
 export function usePanelState() {
   return useContext(PanelComponentContext).state;
 }
@@ -108,12 +113,12 @@ export function PanelProvider(props: PanelProviderProps) {
     },
   };
 
-  const context = createExternalContext(state, actions);
-  props.context?.(context);
-
   return (
-    <PanelComponentContext.Provider value={{ state, actions, context }}>
-      {props.children}
+    <PanelComponentContext.Provider value={{ state, actions }}>
+      {(() => {
+        props.context?.(createExternalContext());
+        return props.children;
+      })()}
     </PanelComponentContext.Provider>
   );
 }

@@ -1,7 +1,7 @@
-import { JSX, mergeProps, Show, splitProps } from 'solid-js';
+import { Accessor, JSX, mergeProps, Show, splitProps } from 'solid-js';
 import { Dynamic, Portal } from 'solid-js/web';
 import { BaseComponentProps, DynamicComponent, ListOrientation } from '~/types';
-import { useId } from '~/utils/componentUtils';
+import { getCreateComponentContext, useId } from '~/utils/componentUtils';
 import {
   ActiveDescendentProvider,
   createActiveDescendentContainerProps,
@@ -12,13 +12,15 @@ import {
 import { createLabelProps, createLabelTargetProps, LabelProvider } from './base/Label';
 import {
   createListboxValueContainerProps,
+  createListboxValueContext,
   createListboxValueItemProps,
-  ListboxValueExternalContext,
+  ListboxValueContext,
   ListboxValueProvider,
   useListboxValueSelectors,
 } from './base/ListboxValue';
 import {
   createPanelButtonProps,
+  createPanelContext,
   createPanelProps,
   PanelButtonProps,
   PanelContext,
@@ -30,25 +32,37 @@ import {
 } from './base/Panel';
 import Popper from './Popper';
 
-function createExternalContext<Value>(config: { id?: string; value?: Value } = {}) {
+export type ListboxContext<Value> = Readonly<{
+  isActive: Accessor<boolean>;
+  isSelected: (value?: Value) => boolean;
+  isOpen: Accessor<boolean>;
+  open: () => void;
+  close: () => void;
+}>;
+
+function createExternalContext<Value>(
+  config: { id?: string; value?: Value } = {}
+): ListboxContext<Value> {
   const activeDescendentSelectors = useActiveDescendentSelectors();
   const panelState = usePanelState();
   const panelActions = usePanelActions();
-  const listboxValueSelectors = useListboxValueSelectors();
+  const listboxValueSelectors = useListboxValueSelectors<Value>();
 
   return {
     isActive: () => activeDescendentSelectors.isDescendentActive(config.id),
-    isSelected: () => listboxValueSelectors.isSelected(config.value),
+    isSelected: (value?: Value) => listboxValueSelectors.isSelected(value ?? config.value),
     isOpen: () => panelState.isPanelOpen,
     open: () => panelActions.openPanel,
     close: () => panelActions.closePanel,
   } as const;
 }
 
-export type ListboxContext = ReturnType<typeof createExternalContext>;
+export function createListboxContext<Value>() {
+  return getCreateComponentContext<ListboxContext<Value>>()();
+}
 
-type ListboxExternalContextProp = {
-  context?: (ctx: ListboxContext) => void;
+type ListboxContextProp<Value> = {
+  context?: (ctx: ListboxContext<Value>) => void;
 };
 
 export type ListboxProviderProps<Value> = Omit<PanelProviderProps, 'context' | 'role'> & {
@@ -56,7 +70,7 @@ export type ListboxProviderProps<Value> = Omit<PanelProviderProps, 'context' | '
   orientation?: ListOrientation;
   value?: Value;
   onChange?: (newValue: Value) => void;
-} & ListboxExternalContextProp;
+} & ListboxContextProp<Value>;
 
 export function ListboxProvider<Value>(props: ListboxProviderProps<Value>) {
   props = mergeProps<typeof props[]>({ popper: true }, props);
@@ -70,27 +84,26 @@ export function ListboxProvider<Value>(props: ListboxProviderProps<Value>) {
     'onChange',
   ]);
 
-  let panelContext: PanelContext;
-
-  let listboxValueContext: ListboxValueExternalContext<Value>;
+  const panelContext = createPanelContext();
+  const listboxValueContext = createListboxValueContext<Value>();
 
   const provider = () => (
     <LabelProvider>
-      <PanelProvider {...otherProps} context={(ctx) => (panelContext = ctx)} role="listbox">
-        <ListboxValueProvider
+      <PanelProvider {...otherProps} context={panelContext} role="listbox">
+        <ListboxValueProvider<Value>
           value={localProps.value}
           onChange={(newValue) => {
             panelContext.close();
             localProps.onChange(newValue);
           }}
-          context={(ctx) => (listboxValueContext = ctx)}
+          context={listboxValueContext}
         >
           <ActiveDescendentProvider
             orientation={localProps.orientation}
             shouldHaveInitialFocus={(id) => listboxValueContext.values()[id] === props.value}
           >
             {(() => {
-              localProps.context?.(createExternalContext());
+              localProps.context?.(createExternalContext<Value>());
               return localProps.children;
             })()}
           </ActiveDescendentProvider>
@@ -99,19 +112,17 @@ export function ListboxProvider<Value>(props: ListboxProviderProps<Value>) {
     </LabelProvider>
   );
 
-  localProps.context?.(createExternalContext());
-
   return localProps.popper ? <Popper>{provider()}</Popper> : provider();
 }
 
-export type ListboxLabelProps = BaseComponentProps<
+export type ListboxLabelProps<Value> = BaseComponentProps<
   {
     component?: DynamicComponent<{ id: string }>;
     idPrefix?: string;
-  } & ListboxExternalContextProp
+  } & ListboxContextProp<Value>
 >;
 
-export function ListboxLabel(props: ListboxLabelProps) {
+export function ListboxLabel<Value>(props: ListboxLabelProps<Value>) {
   props = mergeProps<typeof props[]>({ component: 'span', idPrefix: 'solid-ui-listbox-label' });
 
   const [localProps, otherProps] = splitProps(props, ['component', 'context', 'idPrefix']);
@@ -120,7 +131,7 @@ export function ListboxLabel(props: ListboxLabelProps) {
 
   const finalProps = mergeProps(otherProps, labelProps);
 
-  localProps.context?.(createExternalContext());
+  localProps.context?.(createExternalContext<Value>());
 
   return (
     <Dynamic
@@ -132,16 +143,18 @@ export function ListboxLabel(props: ListboxLabelProps) {
   );
 }
 
-export type ListboxButtonProps<ListboxButtonElement extends HTMLElement = HTMLButtonElement> =
-  BaseComponentProps<
-    {
-      component?: DynamicComponent<PanelButtonProps<ListboxButtonElement> & { id: string }>;
-      idPrefix?: string;
-    } & ListboxExternalContextProp
-  >;
+export type ListboxButtonProps<
+  Value,
+  ListboxButtonElement extends HTMLElement = HTMLButtonElement
+> = BaseComponentProps<
+  {
+    component?: DynamicComponent<PanelButtonProps<ListboxButtonElement> & { id: string }>;
+    idPrefix?: string;
+  } & ListboxContextProp<Value>
+>;
 
-export function ListboxButton<ListboxButtonElement extends HTMLElement = HTMLButtonElement>(
-  props: ListboxButtonProps<ListboxButtonElement>
+export function ListboxButton<Value, ListboxButtonElement extends HTMLElement = HTMLButtonElement>(
+  props: ListboxButtonProps<Value, ListboxButtonElement>
 ) {
   props = mergeProps<typeof props[]>(
     { component: 'button', idPrefix: 'solid-ui-listbox-button' },
@@ -156,7 +169,7 @@ export function ListboxButton<ListboxButtonElement extends HTMLElement = HTMLBut
 
   const finalProps = mergeProps(otherProps, buttonProps);
 
-  localProps.context?.(createExternalContext());
+  localProps.context?.(createExternalContext<Value>());
 
   return (
     <Dynamic
@@ -168,17 +181,19 @@ export function ListboxButton<ListboxButtonElement extends HTMLElement = HTMLBut
   );
 }
 
-export type ListboxPanelProps<ListboxPanelElement extends HTMLElement = HTMLDivElement> =
-  BaseComponentProps<
-    {
-      component?: DynamicComponent<PanelProps<ListboxPanelElement> & { id: string; role: 'none' }>;
-      idPrefix?: string;
-      portal?: boolean;
-    } & ListboxExternalContextProp
-  >;
+export type ListboxPanelProps<
+  Value,
+  ListboxPanelElement extends HTMLElement = HTMLDivElement
+> = BaseComponentProps<
+  {
+    component?: DynamicComponent<PanelProps<ListboxPanelElement> & { id: string; role: 'none' }>;
+    idPrefix?: string;
+    portal?: boolean;
+  } & ListboxContextProp<Value>
+>;
 
-export function ListboxPanel<ListboxPanelElement extends HTMLElement = HTMLDivElement>(
-  props: ListboxPanelProps<ListboxPanelElement>
+export function ListboxPanel<Value, ListboxPanelElement extends HTMLElement = HTMLDivElement>(
+  props: ListboxPanelProps<Value, ListboxPanelElement>
 ) {
   props = mergeProps<typeof props[]>(
     { component: 'div', idPrefix: 'solid-ui-listbox-panel' },
@@ -217,7 +232,7 @@ export function ListboxPanel<ListboxPanelElement extends HTMLElement = HTMLDivEl
 
   const panelState = usePanelState();
 
-  localProps.context?.(createExternalContext());
+  localProps.context?.(createExternalContext<Value>());
 
   return (
     <Show when={panelState.isPanelOpen}>
@@ -228,16 +243,16 @@ export function ListboxPanel<ListboxPanelElement extends HTMLElement = HTMLDivEl
   );
 }
 
-export type ListboxOptionsProps = BaseComponentProps<
+export type ListboxOptionsProps<Value> = BaseComponentProps<
   {
     component?: DynamicComponent<{ id: string; role?: 'listbox' }>;
     idPrefix?: string;
     portal?: boolean;
-  } & ListboxExternalContextProp
+  } & ListboxContextProp<Value>
 >;
 
 export function ListboxOptions<Value, ListboxOptionsElement extends HTMLElement = HTMLUListElement>(
-  props: ListboxOptionsProps
+  props: ListboxOptionsProps<Value>
 ) {
   props = mergeProps<typeof props[]>(
     { component: 'ul', idPrefix: 'solid-ui-listbox-options', portal: true },
@@ -323,7 +338,7 @@ export type ListboxOptionProps<
     component?: DynamicComponent<{ id: string; role: 'option' }>;
     idPrefix?: string;
     value?: Value;
-  } & ListboxExternalContextProp
+  } & ListboxContextProp<Value>
 >;
 
 export function ListboxOption<Value, ListboxOptionElement extends HTMLElement = HTMLLIElement>(
@@ -339,7 +354,10 @@ export function ListboxOption<Value, ListboxOptionElement extends HTMLElement = 
   const id = useId(localProps.idPrefix);
 
   const descendentProps = createActiveDescendentProps({ id });
-  const listboxValueItemProps = createListboxValueItemProps<Value>({ id, value: localProps.value });
+  const listboxValueItemProps = createListboxValueItemProps<Value>({
+    id,
+    value: localProps.value,
+  });
 
   const finalProps = mergeProps(otherProps, descendentProps, listboxValueItemProps);
 

@@ -3,9 +3,9 @@ import { Dynamic } from 'solid-js/web';
 import { BaseComponentProps, ComponentRef, DynamicComponent } from '~/types';
 import { getCreateComponentContext, useId } from '~/utils/componentUtils';
 import {
+  createExternalContext,
   createPanelButtonProps,
   createPanelProps,
-  exposePanelExternalContext,
   PanelButtonProps,
   PanelContext,
   PanelContextProp,
@@ -50,7 +50,7 @@ export function DisclosureButton<DisclosureButtonElement extends HTMLElement = H
 
   const finalProps = mergeProps(otherProps, panelButtonProps);
 
-  exposePanelExternalContext(localProps);
+  localProps.context?.(createExternalContext());
 
   return (
     <Dynamic
@@ -88,9 +88,9 @@ export function DisclosurePanel<DisclosurePanelElement extends HTMLElement = HTM
 
   const finalProps = mergeProps(otherProps, panelProps);
 
-  exposePanelExternalContext(localProps);
-
   const panelState = usePanelState();
+
+  localProps.context?.(createExternalContext());
 
   return (
     <Dynamic
