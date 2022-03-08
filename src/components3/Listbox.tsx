@@ -8,15 +8,15 @@ import {
   createActiveDescendentProps,
   useActiveDescendentSelectors,
   useActiveDescendentState,
-} from './ActiveDescendent';
-import { createLabelProps, createLabelTargetProps, LabelProvider } from './Label';
+} from './base/ActiveDescendent';
+import { createLabelProps, createLabelTargetProps, LabelProvider } from './base/Label';
 import {
   createListboxValueContainerProps,
   createListboxValueItemProps,
   ListboxValueExternalContext,
   ListboxValueProvider,
   useListboxValueSelectors,
-} from './ListboxValue';
+} from './base/ListboxValue';
 import {
   createPanelButtonProps,
   createPanelProps,

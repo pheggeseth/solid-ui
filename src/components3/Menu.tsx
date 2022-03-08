@@ -7,12 +7,12 @@ import {
   createActiveDescendentContainerProps,
   createActiveDescendentProps,
   useActiveDescendentState,
-} from './ActiveDescendent';
+} from './base/ActiveDescendent';
 import {
   createMenuActionContainerProps,
   createMenuActionItemProps,
   MenuActionProvider,
-} from './MenuAction';
+} from './base/MenuAction';
 import {
   createPanelButtonProps,
   createPanelProps,
