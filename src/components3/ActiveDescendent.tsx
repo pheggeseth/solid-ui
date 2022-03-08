@@ -26,6 +26,7 @@ type Selectors = {
 type Actions = {
   addDescendent(id: string): void;
   removeDescendent(id: string): void;
+  initializeDescendentFocus(): void;
   focusNextDescendent(): void;
   focusPreviousDescendent(): void;
   focusFirstDescendent(): void;
@@ -49,6 +50,7 @@ export function useActiveDescendentActions() {
 
 export type ActiveDescendentProviderProps = PropsWithChildren<{
   orientation?: ListOrientation;
+  shouldHaveInitialFocus?: (descendentId: string) => boolean;
 }>;
 
 export function ActiveDescendentProvider(props: ActiveDescendentProviderProps) {
@@ -78,6 +80,15 @@ export function ActiveDescendentProvider(props: ActiveDescendentProviderProps) {
     },
     removeDescendent(descendentId) {
       setState('descendents', (descendents) => descendents.filter((id) => id !== descendentId));
+    },
+    initializeDescendentFocus() {
+      if (props.shouldHaveInitialFocus) {
+        const id = state.descendents.find(props.shouldHaveInitialFocus);
+
+        if (id) {
+          setState('activeDescendentId', id);
+        }
+      }
     },
     focusNextDescendent() {
       const activeItemIndex = getActiveDescendentIndex();
@@ -150,6 +161,9 @@ export function createActiveDescendentContainerProps<ContainerElement extends HT
   return {
     get ['aria-activedescendent']() {
       return state.activeDescendentId;
+    },
+    onFocus() {
+      actions.initializeDescendentFocus();
     },
     onKeyDown: useKeyEventHandlers<ContainerElement>({
       ArrowUp(event) {

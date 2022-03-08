@@ -37,9 +37,14 @@ function useActions<Value>() {
   return useContext(ListboxValueContext).actions as Actions<Value>;
 }
 
+export type ListboxValueExternalContext<Value> = {
+  values: Accessor<State<Value>['values']>;
+};
+
 export type ListboxValueProviderProps<Value> = PropsWithChildren<{
   value?: Value;
   onChange?: (newValue: Value) => void;
+  context?: (ctx: ListboxValueExternalContext<Value>) => void;
 }>;
 
 export function ListboxValueProvider<Value>(props: ListboxValueProviderProps<Value>) {
@@ -67,6 +72,8 @@ export function ListboxValueProvider<Value>(props: ListboxValueProviderProps<Val
       }
     },
   };
+
+  props.context?.({ values: () => state.values as State<Value>['values'] });
 
   return (
     <ListboxValueContext.Provider value={{ state, selectors, actions }}>

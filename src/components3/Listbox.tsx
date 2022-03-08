@@ -13,6 +13,7 @@ import { createLabelProps, createLabelTargetProps, LabelProvider } from './Label
 import {
   createListboxValueContainerProps,
   createListboxValueItemProps,
+  ListboxValueExternalContext,
   ListboxValueProvider,
   useListboxValueSelectors,
 } from './ListboxValue';
@@ -71,23 +72,29 @@ export function ListboxProvider<Value>(props: ListboxProviderProps<Value>) {
 
   let panelContext: PanelExternalContext;
 
+  let listboxValueContext: ListboxValueExternalContext<Value>;
+
   const provider = () => (
     <LabelProvider>
       <PanelProvider {...otherProps} context={(ctx) => (panelContext = ctx)} role="listbox">
-        <ActiveDescendentProvider orientation={localProps.orientation}>
-          <ListboxValueProvider
-            value={localProps.value}
-            onChange={(newValue) => {
-              panelContext.close();
-              localProps.onChange(newValue);
-            }}
+        <ListboxValueProvider
+          value={localProps.value}
+          onChange={(newValue) => {
+            panelContext.close();
+            localProps.onChange(newValue);
+          }}
+          context={(ctx) => (listboxValueContext = ctx)}
+        >
+          <ActiveDescendentProvider
+            orientation={localProps.orientation}
+            shouldHaveInitialFocus={(id) => listboxValueContext.values()[id] === props.value}
           >
             {(() => {
               localProps.context?.(createExternalContext());
               return localProps.children;
             })()}
-          </ListboxValueProvider>
-        </ActiveDescendentProvider>
+          </ActiveDescendentProvider>
+        </ListboxValueProvider>
       </PanelProvider>
     </LabelProvider>
   );
