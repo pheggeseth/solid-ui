@@ -17,3 +17,17 @@ export function setRef<T extends HTMLElement>(ref: ComponentRef<T>, element: T) 
     }
   }
 }
+
+export function getCreateComponentContext<ComponentContext>() {
+  return () => {
+    const context = (ctx: ComponentContext) => {
+      Object.entries(ctx).forEach(
+        ([contextKey, contextValue]) => (context[contextKey] = contextValue)
+      );
+    };
+
+    return context as {
+      (ctx: ComponentContext): void;
+    } & ComponentContext;
+  };
+}

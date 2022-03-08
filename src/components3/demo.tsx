@@ -1,4 +1,11 @@
-import { Component, createSignal, For } from 'solid-js';
+import { Accessor, Component, createSignal, For } from 'solid-js';
+import {
+  createDisclosureContext,
+  DisclosureButton,
+  DisclosureContext,
+  DisclosurePanel,
+  DisclosureProvider,
+} from './Disclosure';
 import {
   ListboxButton,
   ListboxContext,
@@ -23,7 +30,24 @@ export function Demo() {
       <PopupDemo />
       <MenuDemo />
       <ListboxDemo />
+      <DisclosureDemo />
     </>
+  );
+}
+
+function DisclosureDemo() {
+  let context = createDisclosureContext();
+
+  return (
+    <section>
+      <h1>Disclosure</h1>
+      <DisclosureProvider context={context}>
+        <DisclosureButton>Show Details</DisclosureButton>
+        <DisclosurePanel style={{ display: context.isOpen() ? 'block' : 'none' }}>
+          <p>Here are the details.</p>
+        </DisclosurePanel>
+      </DisclosureProvider>
+    </section>
   );
 }
 

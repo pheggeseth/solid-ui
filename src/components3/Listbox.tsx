@@ -21,7 +21,7 @@ import {
   createPanelButtonProps,
   createPanelProps,
   PanelButtonProps,
-  PanelExternalContext,
+  PanelContext,
   PanelProps,
   PanelProvider,
   PanelProviderProps,
@@ -70,7 +70,7 @@ export function ListboxProvider<Value>(props: ListboxProviderProps<Value>) {
     'onChange',
   ]);
 
-  let panelContext: PanelExternalContext;
+  let panelContext: PanelContext;
 
   let listboxValueContext: ListboxValueExternalContext<Value>;
 

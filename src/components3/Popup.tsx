@@ -10,8 +10,8 @@ import {
   exposePanelExternalContext,
   OverlayPortal,
   PanelButtonProps,
-  PanelExternalContext,
-  PanelExternalContextProp,
+  PanelContext,
+  PanelContextProp,
   PanelProps,
   PanelProvider,
   PanelProviderProps,
@@ -19,7 +19,7 @@ import {
 } from './Panel';
 import { PopperProvider } from './Popper';
 
-export type PopupContext = PanelExternalContext;
+export type PopupContext = PanelContext;
 
 export type PopupProviderProps = PanelProviderProps & { popper?: boolean };
 
@@ -38,7 +38,7 @@ export type PopupButtonProps<PopupButtonElement extends HTMLElement> = BaseCompo
     component?: DynamicComponent<PanelButtonProps<PopupButtonElement> & { id: string }>;
     idPrefix?: string;
     ref?: ComponentRef<PopupButtonElement>;
-  } & PanelExternalContextProp
+  } & PanelContextProp
 >;
 
 export function PopupButton<PopupButtonElement extends HTMLElement = HTMLButtonElement>(
@@ -74,7 +74,7 @@ export type PopupOverlayProps = BaseComponentProps<
     component?: DynamicComponent<{ id: string }>;
     idPrefix?: string;
     portal?: boolean;
-  } & PanelExternalContextProp
+  } & PanelContextProp
 >;
 
 export function PopupOverlay(props: PopupOverlayProps) {
@@ -110,7 +110,7 @@ export type PopupPanelProps<PopupPanelElement extends HTMLElement> = BaseCompone
     portal?: boolean;
     idPrefix?: string;
   } & Omit<CreatePanelPropsConfig<PopupPanelElement>, 'id'> &
-    PanelExternalContextProp
+    PanelContextProp
 >;
 
 export function PopupPanel<PopupPanelElement extends HTMLElement = HTMLDivElement>(

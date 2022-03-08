@@ -47,27 +47,27 @@ export function createExternalContext(state: PanelState, actions: PanelActions) 
   } as const;
 }
 
-export function exposePanelExternalContext(props: PanelExternalContextProp) {
-  props.context?.(useContext(PanelContext).context);
+export function exposePanelExternalContext(props: PanelContextProp) {
+  props.context?.(useContext(PanelComponentContext).context);
 }
 
-export type PanelExternalContext = ReturnType<typeof createExternalContext>;
+export type PanelContext = ReturnType<typeof createExternalContext>;
 
-export type PanelExternalContextProp = {
-  context?: (ctx: PanelExternalContext) => void;
+export type PanelContextProp = {
+  context?: (ctx: PanelContext) => void;
 };
 
-const PanelContext =
-  createContext<{ state: PanelState; actions: PanelActions; context: PanelExternalContext }>();
+const PanelComponentContext =
+  createContext<{ state: PanelState; actions: PanelActions; context: PanelContext }>();
 export function usePanelState() {
-  return useContext(PanelContext).state;
+  return useContext(PanelComponentContext).state;
 }
 export function usePanelActions() {
-  return useContext(PanelContext).actions;
+  return useContext(PanelComponentContext).actions;
 }
 
 export type PanelProviderProps = PropsWithChildren<
-  PanelExternalContextProp & {
+  PanelContextProp & {
     role?: PanelRole;
   }
 >;
@@ -112,9 +112,9 @@ export function PanelProvider(props: PanelProviderProps) {
   props.context?.(context);
 
   return (
-    <PanelContext.Provider value={{ state, actions, context }}>
+    <PanelComponentContext.Provider value={{ state, actions, context }}>
       {props.children}
-    </PanelContext.Provider>
+    </PanelComponentContext.Provider>
   );
 }
 

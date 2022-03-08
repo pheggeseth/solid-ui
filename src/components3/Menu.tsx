@@ -17,7 +17,7 @@ import {
   createPanelButtonProps,
   createPanelProps,
   PanelButtonProps,
-  PanelExternalContext,
+  PanelContext,
   PanelProps,
   PanelProvider,
   PanelProviderProps,
@@ -61,7 +61,7 @@ export function MenuProvider(props: MenuProviderProps) {
     'popper',
   ]);
 
-  let panelContext: PanelExternalContext;
+  let panelContext: PanelContext;
 
   const provider = () => (
     <PanelProvider {...otherProps} context={(ctx) => (panelContext = ctx)} role="menu">
