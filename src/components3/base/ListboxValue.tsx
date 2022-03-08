@@ -8,7 +8,7 @@ import {
   useContext,
 } from 'solid-js';
 import { createStore } from 'solid-js/store';
-import { getCreateComponentContext } from '~/utils/componentUtils';
+import { createComponentContext } from '~/utils/componentUtils';
 import { useKeyEventHandlers } from '~/utils/eventUtils';
 
 type State<Value> = {
@@ -43,7 +43,7 @@ export type ListboxValueContext<Value> = {
 };
 
 export function createListboxValueContext<Value>() {
-  return getCreateComponentContext<ListboxValueContext<Value>>()();
+  return createComponentContext<ListboxValueContext<Value>>();
 }
 
 export type ListboxValueProviderProps<Value> = PropsWithChildren<{

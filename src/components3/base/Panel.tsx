@@ -11,7 +11,7 @@ import {
 } from 'solid-js';
 import { createStore } from 'solid-js/store';
 import { Portal } from 'solid-js/web';
-import { getCreateComponentContext, setRef, useId } from '~/utils/componentUtils';
+import { createComponentContext, setRef, useId } from '~/utils/componentUtils';
 import { useOnClickAway } from '~/utils/eventUtils';
 import { getFirstFocusableElement, useFocusOnOpen, useFocusTrap } from '~/utils/focusUtils';
 import { usePopperContext } from '../Popper';
@@ -46,7 +46,7 @@ export type PanelContext = Readonly<{
   close: () => void;
 }>;
 
-export const createPanelContext = getCreateComponentContext<PanelContext>();
+export const createPanelContext = () => createComponentContext<PanelContext>();
 
 export function createExternalContext(): PanelContext {
   const state = usePanelState();

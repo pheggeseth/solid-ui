@@ -1,7 +1,7 @@
 import { Accessor, mergeProps, PropsWithChildren, splitProps } from 'solid-js';
 import { Dynamic } from 'solid-js/web';
 import { BaseComponentProps, ComponentRef, DynamicComponent } from '~/types';
-import { getCreateComponentContext, useId } from '~/utils/componentUtils';
+import { createComponentContext, getDataProp, useId } from '~/utils/componentUtils';
 import {
   createExternalContext,
   createPanelButtonProps,
@@ -17,7 +17,7 @@ import {
 
 export type DisclosureContext = PanelContext;
 
-export const createDisclosureContext = getCreateComponentContext<DisclosureContext>();
+export const createDisclosureContext = () => createComponentContext<DisclosureContext>();
 
 type DisclosureContextProp = PanelContextProp;
 
@@ -48,18 +48,11 @@ export function DisclosureButton<DisclosureButtonElement extends HTMLElement = H
 
   const panelButtonProps = createPanelButtonProps<DisclosureButtonElement>({ id });
 
-  const finalProps = mergeProps(otherProps, panelButtonProps);
+  const finalProps = mergeProps(otherProps, panelButtonProps, getDataProp(localProps.idPrefix));
 
   localProps.context?.(createExternalContext());
 
-  return (
-    <Dynamic
-      {...finalProps}
-      component={localProps.component}
-      data-solid-ui-disclosure-button=""
-      id={id}
-    />
-  );
+  return <Dynamic {...finalProps} component={localProps.component} id={id} />;
 }
 
 export type DisclosureProps<DisclosureElement extends HTMLElement> = BaseComponentProps<
@@ -86,7 +79,7 @@ export function DisclosurePanel<DisclosurePanelElement extends HTMLElement = HTM
 
   const panelProps = createPanelProps({ id });
 
-  const finalProps = mergeProps(otherProps, panelProps);
+  const finalProps = mergeProps(otherProps, panelProps, getDataProp(localProps.idPrefix));
 
   const panelState = usePanelState();
 
@@ -97,7 +90,6 @@ export function DisclosurePanel<DisclosurePanelElement extends HTMLElement = HTM
       {...finalProps}
       component={localProps.component}
       data-hidden={!panelState.isPanelOpen ? '' : undefined}
-      data-solid-ui-disclosure-panel=""
       id={id}
     />
   );

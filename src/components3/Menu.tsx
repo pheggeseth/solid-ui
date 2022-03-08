@@ -1,7 +1,7 @@
 import { Accessor, JSX, mergeProps, Show, splitProps } from 'solid-js';
 import { Dynamic, Portal } from 'solid-js/web';
 import { BaseComponentProps, DynamicComponent, ListOrientation } from '~/types';
-import { getCreateComponentContext, useId } from '~/utils/componentUtils';
+import { createComponentContext, getDataProp, useId } from '~/utils/componentUtils';
 import {
   ActiveDescendentProvider,
   createActiveDescendentContainerProps,
@@ -52,7 +52,7 @@ type MenuContextProp = {
   context?: (ctx: MenuContext) => void;
 };
 
-export const createMenuContext = getCreateComponentContext<MenuContext>();
+export const createMenuContext = () => createComponentContext<MenuContext>();
 
 export type MenuProviderProps = Omit<PanelProviderProps, 'context' | 'role'> & {
   popper?: boolean;
@@ -109,18 +109,11 @@ export function MenuButton<MenuButtonElement extends HTMLElement = HTMLButtonEle
 
   const buttonProps = createPanelButtonProps<MenuButtonElement>({ id });
 
-  const finalProps = mergeProps(otherProps, buttonProps);
+  const finalProps = mergeProps(otherProps, buttonProps, getDataProp(localProps.idPrefix));
 
   localProps.context?.(createExternalContext());
 
-  return (
-    <Dynamic
-      {...finalProps}
-      component={localProps.component}
-      data-solid-ui-menu-button=""
-      id={id}
-    />
-  );
+  return <Dynamic {...finalProps} component={localProps.component} id={id} />;
 }
 
 export type MenuPanelProps<MenuPanelElement extends HTMLElement = HTMLDivElement> =
@@ -153,14 +146,13 @@ export function MenuPanel<MenuPanelElement extends HTMLElement = HTMLDivElement>
     tabIndex: -1,
   });
 
-  const finalProps = mergeProps(otherProps, panelProps);
+  const finalProps = mergeProps(otherProps, panelProps, getDataProp(localProps.idPrefix));
 
   const panel = () => (
     <Dynamic
       {...finalProps}
       component={localProps.component}
       id={id}
-      data-solid-ui-menu-panel=""
       // if we render this panel, we also need to render options,
       // so options need to have role="menu", not the panel
       role="none"
@@ -231,18 +223,19 @@ export function MenuList<MenuListElement extends HTMLElement = HTMLUListElement>
     panelProps?.onKeyDown(event);
   };
 
-  const finalProps = mergeProps(otherProps, containerProps, menuContainerProps, panelProps, {
-    onKeyDown,
-  });
+  const finalProps = mergeProps(
+    otherProps,
+    containerProps,
+    menuContainerProps,
+    panelProps,
+    {
+      onKeyDown,
+    },
+    getDataProp(localProps.idPrefix)
+  );
 
   const menuList = () => (
-    <Dynamic
-      {...finalProps}
-      component={localProps.component}
-      data-solid-ui-menu-list=""
-      id={id}
-      role="menu"
-    />
+    <Dynamic {...finalProps} component={localProps.component} id={id} role="menu" />
   );
 
   localProps.context?.(createExternalContext());
@@ -285,17 +278,14 @@ export function MenuItem<MenuItemElement extends HTMLElement = HTMLLIElement>(
   const descendentProps = createActiveDescendentProps({ id });
   const menuItemProps = createMenuActionItemProps({ action: localProps.action, id });
 
-  const finalProps = mergeProps(otherProps, descendentProps, menuItemProps);
+  const finalProps = mergeProps(
+    otherProps,
+    descendentProps,
+    menuItemProps,
+    getDataProp(localProps.idPrefix)
+  );
 
   localProps.context?.(createExternalContext({ id }));
 
-  return (
-    <Dynamic
-      {...finalProps}
-      component={localProps.component}
-      data-solid-ui-menu-item=""
-      id={id}
-      role="menuitem"
-    />
-  );
+  return <Dynamic {...finalProps} component={localProps.component} id={id} role="menuitem" />;
 }
