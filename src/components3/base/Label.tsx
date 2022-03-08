@@ -39,7 +39,7 @@ export function createLabelTargetProps(config: { fallbackLabelId?: Accessor<stri
 
   return {
     get ['aria-labelledby']() {
-      return state.labelId || config?.fallbackLabelId();
+      return state.labelId || config.fallbackLabelId?.();
     },
   };
 }

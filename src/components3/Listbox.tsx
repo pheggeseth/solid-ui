@@ -14,7 +14,6 @@ import {
   createListboxValueContainerProps,
   createListboxValueContext,
   createListboxValueItemProps,
-  ListboxValueContext,
   ListboxValueProvider,
   useListboxValueSelectors,
 } from './base/ListboxValue';
@@ -23,7 +22,6 @@ import {
   createPanelContext,
   createPanelProps,
   PanelButtonProps,
-  PanelContext,
   PanelProps,
   PanelProvider,
   PanelProviderProps,
@@ -123,7 +121,10 @@ export type ListboxLabelProps<Value> = BaseComponentProps<
 >;
 
 export function ListboxLabel<Value>(props: ListboxLabelProps<Value>) {
-  props = mergeProps<typeof props[]>({ component: 'span', idPrefix: 'solid-ui-listbox-label' });
+  props = mergeProps<typeof props[]>(
+    { component: 'span', idPrefix: 'solid-ui-listbox-label' },
+    props
+  );
 
   const [localProps, otherProps] = splitProps(props, ['component', 'context', 'idPrefix']);
   const id = useId(localProps.idPrefix);
@@ -166,8 +167,9 @@ export function ListboxButton<Value, ListboxButtonElement extends HTMLElement = 
   const id = useId(localProps.idPrefix);
 
   const buttonProps = createPanelButtonProps<ListboxButtonElement>({ id });
+  const labelTargetProps = createLabelTargetProps();
 
-  const finalProps = mergeProps(otherProps, buttonProps);
+  const finalProps = mergeProps(otherProps, buttonProps, labelTargetProps);
 
   localProps.context?.(createExternalContext<Value>());
 
@@ -243,7 +245,7 @@ export function ListboxPanel<Value, ListboxPanelElement extends HTMLElement = HT
   );
 }
 
-export type ListboxOptionsProps<Value> = BaseComponentProps<
+export type ListboxListProps<Value> = BaseComponentProps<
   {
     component?: DynamicComponent<{ id: string; role?: 'listbox' }>;
     idPrefix?: string;
@@ -251,11 +253,11 @@ export type ListboxOptionsProps<Value> = BaseComponentProps<
   } & ListboxContextProp<Value>
 >;
 
-export function ListboxOptions<Value, ListboxOptionsElement extends HTMLElement = HTMLUListElement>(
-  props: ListboxOptionsProps<Value>
+export function ListboxList<Value, ListboxListElement extends HTMLElement = HTMLUListElement>(
+  props: ListboxListProps<Value>
 ) {
   props = mergeProps<typeof props[]>(
-    { component: 'ul', idPrefix: 'solid-ui-listbox-options', portal: true },
+    { component: 'ul', idPrefix: 'solid-ui-listbox-list', portal: true },
     props
   );
 
@@ -272,7 +274,7 @@ export function ListboxOptions<Value, ListboxOptionsElement extends HTMLElement 
 
   const activeDescendentState = useActiveDescendentState();
 
-  const listboxContainerProps = createListboxValueContainerProps<Value, ListboxOptionsElement>({
+  const listboxContainerProps = createListboxValueContainerProps<Value, ListboxListElement>({
     activeId: () => activeDescendentState.activeDescendentId,
     search: () => activeDescendentState.search,
   });
@@ -280,7 +282,7 @@ export function ListboxOptions<Value, ListboxOptionsElement extends HTMLElement 
   const panelState = usePanelState();
 
   const panelProps = !panelState.panelId
-    ? createPanelProps<ListboxOptionsElement>({
+    ? createPanelProps<ListboxListElement>({
         clickAway: true,
         id,
         manageFocus: true,
@@ -290,7 +292,7 @@ export function ListboxOptions<Value, ListboxOptionsElement extends HTMLElement 
 
   const labelTargetProps = createLabelTargetProps({ fallbackLabelId: () => panelState.buttonId });
 
-  const onKeyDown: JSX.EventHandler<ListboxOptionsElement, KeyboardEvent> = (event) => {
+  const onKeyDown: JSX.EventHandler<ListboxListElement, KeyboardEvent> = (event) => {
     containerProps.onKeyDown(event);
     listboxContainerProps.onKeyDown(event);
     panelProps?.onKeyDown(event);
@@ -307,11 +309,11 @@ export function ListboxOptions<Value, ListboxOptionsElement extends HTMLElement 
     }
   );
 
-  const listboxOptions = () => (
+  const listboxList = () => (
     <Dynamic
       {...finalProps}
       component={localProps.component}
-      data-solid-ui-listbox-options=""
+      data-solid-ui-listbox-list=""
       id={id}
       role="listbox"
     />
@@ -321,12 +323,12 @@ export function ListboxOptions<Value, ListboxOptionsElement extends HTMLElement 
 
   return !panelState.panelId ? (
     <Show when={panelState.isPanelOpen}>
-      <Show when={localProps.portal} fallback={listboxOptions}>
-        <Portal>{listboxOptions}</Portal>
+      <Show when={localProps.portal} fallback={listboxList}>
+        <Portal>{listboxList}</Portal>
       </Show>
     </Show>
   ) : (
-    listboxOptions()
+    listboxList()
   );
 }
 

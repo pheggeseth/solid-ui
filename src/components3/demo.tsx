@@ -1,27 +1,24 @@
-import { Accessor, Component, createSignal, For } from 'solid-js';
+import { Component, createSignal, For } from 'solid-js';
 import {
   createDisclosureContext,
   DisclosureButton,
-  DisclosureContext,
   DisclosurePanel,
   DisclosureProvider,
 } from './Disclosure';
 import {
   createListboxContext,
   ListboxButton,
-  ListboxContext,
+  ListboxLabel,
+  ListboxList,
   ListboxOption,
-  ListboxOptions,
   ListboxProvider,
 } from './Listbox';
 import {
   createMenuContext,
   MenuButton,
-  MenuContext,
   MenuItem,
   MenuItemProps,
   MenuList,
-  MenuPanel,
   MenuProvider,
 } from './Menu';
 import { PopupButton, PopupContext, PopupOverlay, PopupPanel, PopupProvider } from './Popup';
@@ -61,8 +58,9 @@ function ListboxDemo() {
     <section>
       <h1>Listbox</h1>
       <ListboxProvider value={value()} onChange={setValue}>
+        <ListboxLabel>Choose a fruit:</ListboxLabel>
         <ListboxButton>{value()}</ListboxButton>
-        <ListboxOptions>
+        <ListboxList>
           <For each={fruits}>
             {(fruit) => {
               const context = createListboxContext<string>();
@@ -78,7 +76,7 @@ function ListboxDemo() {
               );
             }}
           </For>
-        </ListboxOptions>
+        </ListboxList>
       </ListboxProvider>
     </section>
   );
