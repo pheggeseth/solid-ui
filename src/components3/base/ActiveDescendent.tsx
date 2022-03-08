@@ -39,13 +39,13 @@ type Actions = {
 const ActiveDescendentContext =
   createContext<{ state: State; selectors: Selectors; actions: Actions }>();
 export function useActiveDescendentState() {
-  return useContext(ActiveDescendentContext).state;
+  return useContext(ActiveDescendentContext)?.state;
 }
 export function useActiveDescendentSelectors() {
-  return useContext(ActiveDescendentContext).selectors;
+  return useContext(ActiveDescendentContext)?.selectors;
 }
 export function useActiveDescendentActions() {
-  return useContext(ActiveDescendentContext).actions;
+  return useContext(ActiveDescendentContext)?.actions;
 }
 
 export type ActiveDescendentProviderProps = PropsWithChildren<{
@@ -149,14 +149,71 @@ export function ActiveDescendentProvider(props: ActiveDescendentProviderProps) {
 }
 
 export type CreateActiveDescendentContainerPropsConfig = {
-  id: string;
+  disableTypeahead?: boolean;
+  excludeAriaProps?: boolean;
+  tabIndex?: string | number;
 };
 
+export function createActiveDescendentContainerOnKeyDown<
+  ContainerElement extends HTMLElement
+>(config: { disableTypeahead?: boolean }) {
+  const state = useActiveDescendentState();
+  const actions = useActiveDescendentActions();
+
+  return useKeyEventHandlers<ContainerElement>({
+    ArrowUp(event) {
+      if (state.orientation === 'vertical') {
+        event.preventDefault();
+        actions.focusPreviousDescendent();
+      }
+    },
+    ArrowDown(event) {
+      if (state.orientation === 'vertical') {
+        event.preventDefault();
+        actions.focusNextDescendent();
+      }
+    },
+    ArrowLeft(event) {
+      if (state.orientation === 'horizontal') {
+        event.preventDefault();
+        actions.focusPreviousDescendent();
+      }
+    },
+    ArrowRight(event) {
+      if (state.orientation === 'horizontal') {
+        event.preventDefault();
+        actions.focusNextDescendent();
+      }
+    },
+    Home(event) {
+      event.preventDefault();
+      actions.focusFirstDescendent();
+    },
+    End(event) {
+      event.preventDefault();
+      actions.focusLastDescendent();
+    },
+    default(event) {
+      if (event.key.length === 1 && !config.disableTypeahead) {
+        if (!state.search && event.key === ' ') {
+          return;
+        } else {
+          actions.focusTypeaheadDescendent(event.key);
+        }
+      }
+    },
+  });
+}
+
 export function createActiveDescendentContainerProps<ContainerElement extends HTMLElement>(
-  config: CreateActiveDescendentContainerPropsConfig
+  config: CreateActiveDescendentContainerPropsConfig = {}
 ) {
   const state = useActiveDescendentState();
   const actions = useActiveDescendentActions();
+
+  const onKeyDown = createActiveDescendentContainerOnKeyDown({
+    disableTypeahead: config.disableTypeahead,
+  });
 
   return {
     get ['aria-activedescendent']() {
@@ -165,50 +222,8 @@ export function createActiveDescendentContainerProps<ContainerElement extends HT
     onFocus() {
       actions.initializeDescendentFocus();
     },
-    onKeyDown: useKeyEventHandlers<ContainerElement>({
-      ArrowUp(event) {
-        if (state.orientation === 'vertical') {
-          event.preventDefault();
-          actions.focusPreviousDescendent();
-        }
-      },
-      ArrowDown(event) {
-        if (state.orientation === 'vertical') {
-          event.preventDefault();
-          actions.focusNextDescendent();
-        }
-      },
-      ArrowLeft(event) {
-        if (state.orientation === 'horizontal') {
-          event.preventDefault();
-          actions.focusPreviousDescendent();
-        }
-      },
-      ArrowRight(event) {
-        if (state.orientation === 'horizontal') {
-          event.preventDefault();
-          actions.focusNextDescendent();
-        }
-      },
-      Home(event) {
-        event.preventDefault();
-        actions.focusFirstDescendent();
-      },
-      End(event) {
-        event.preventDefault();
-        actions.focusLastDescendent();
-      },
-      default(event) {
-        if (event.key.length === 1) {
-          if (!state.search && event.key === ' ') {
-            return;
-          } else {
-            actions.focusTypeaheadDescendent(event.key);
-          }
-        }
-      },
-    }),
-    tabIndex: 0,
+    onKeyDown,
+    tabIndex: config.tabIndex ?? 0,
   };
 }
 

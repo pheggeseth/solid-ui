@@ -28,18 +28,19 @@ type Actions<Value> = {
 
 const ListboxValueComponentContext =
   createContext<{ state: State<any>; selectors: Selectors<any>; actions: Actions<any> }>();
-function useListboxValueState<Value>() {
+export function useListboxValueState<Value>() {
   return useContext(ListboxValueComponentContext).state as State<Value>;
 }
 export function useListboxValueSelectors<Value>() {
   return useContext(ListboxValueComponentContext).selectors as Selectors<Value>;
 }
-function useActions<Value>() {
+export function useListboxValueActions<Value>() {
   return useContext(ListboxValueComponentContext).actions as Actions<Value>;
 }
 
 export type ListboxValueContext<Value> = {
   values: Accessor<State<Value>['values']>;
+  selectedValue: Accessor<Value>;
 };
 
 export function createListboxValueContext<Value>() {
@@ -78,7 +79,10 @@ export function ListboxValueProvider<Value>(props: ListboxValueProviderProps<Val
     },
   };
 
-  props.context?.({ values: () => state.values as State<Value>['values'] });
+  props.context?.({
+    values: () => state.values as State<Value>['values'],
+    selectedValue: () => state.selectedValue as Value,
+  });
 
   return (
     <ListboxValueComponentContext.Provider value={{ state, selectors, actions }}>
@@ -91,7 +95,7 @@ export function createListboxValueContainerProps<
   Value,
   ListboxValueContainerElement extends HTMLElement
 >(config: { activeId: Accessor<string>; search: Accessor<string> }) {
-  const actions = useActions<Value>();
+  const actions = useListboxValueActions<Value>();
 
   return {
     onKeyDown: useKeyEventHandlers<ListboxValueContainerElement>({
@@ -113,7 +117,7 @@ export function createListboxValueContainerProps<
 
 export function createListboxValueItemProps<Value>(config: { id: string; value: Value }) {
   const selectors = useListboxValueSelectors<Value>();
-  const actions = useActions<Value>();
+  const actions = useListboxValueActions<Value>();
 
   onMount(() => actions.addValue(config.id, config.value));
   onCleanup(() => actions.removeValue(config.id));

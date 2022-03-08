@@ -165,8 +165,8 @@ export function MenuPanel<MenuPanelElement extends HTMLElement = HTMLDivElement>
 
   return (
     <Show when={panelState.isPanelOpen}>
-      <Show when={localProps.portal} fallback={panel()}>
-        <Portal>{panel()}</Portal>
+      <Show when={localProps.portal} fallback={panel}>
+        <Portal>{panel}</Portal>
       </Show>
     </Show>
   );
@@ -197,7 +197,7 @@ export function MenuList<MenuListElement extends HTMLElement = HTMLUListElement>
 
   const id = useId(localProps.idPrefix);
 
-  const containerProps = createActiveDescendentContainerProps({ id });
+  const containerProps = createActiveDescendentContainerProps();
 
   const activeDescendentState = useActiveDescendentState();
 
@@ -242,7 +242,9 @@ export function MenuList<MenuListElement extends HTMLElement = HTMLUListElement>
 
   return !panelState.panelId ? (
     <Show when={panelState.isPanelOpen}>
-      {localProps.portal ? <Portal>{menuList()}</Portal> : menuList()}
+      <Show when={localProps.portal} fallback={menuList}>
+        <Portal>{menuList}</Portal>
+      </Show>
     </Show>
   ) : (
     menuList()

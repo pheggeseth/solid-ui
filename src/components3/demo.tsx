@@ -1,5 +1,12 @@
 import { Component, createSignal, For } from 'solid-js';
 import {
+  ComboboxButton,
+  ComboboxInput,
+  ComboboxList,
+  ComboboxOption,
+  ComboboxProvider,
+} from './Combobox';
+import {
   createDisclosureContext,
   DisclosureButton,
   DisclosurePanel,
@@ -30,7 +37,25 @@ export function Demo() {
       <MenuDemo />
       <ListboxDemo />
       <DisclosureDemo />
+      <ComboboxDemo />
     </>
+  );
+}
+
+function ComboboxDemo() {
+  return (
+    <section>
+      <h1>Combobox</h1>
+      <ComboboxProvider>
+        <ComboboxInput />
+        <ComboboxButton>Open</ComboboxButton>
+        <ComboboxList>
+          <For each={fruits}>
+            {(fruit) => <ComboboxOption value={fruit}>{fruit}</ComboboxOption>}
+          </For>
+        </ComboboxList>
+      </ComboboxProvider>
+    </section>
   );
 }
 

@@ -15,6 +15,7 @@ import { createComponentContext, setRef, useId } from '~/utils/componentUtils';
 import { useOnClickAway } from '~/utils/eventUtils';
 import { getFirstFocusableElement, useFocusOnOpen, useFocusTrap } from '~/utils/focusUtils';
 import { usePopperContext } from '../Popper';
+import { useActiveDescendentState } from './ActiveDescendent';
 
 type PanelElementIds = {
   buttonId: string;
@@ -131,30 +132,52 @@ export type PanelButtonProps<PanelButtonElement extends HTMLElement> = {
   onKeyDown: JSX.EventHandler<PanelButtonElement, KeyboardEvent>;
 };
 
-export function createPanelButtonProps<PanelButtonElement extends HTMLElement>(config: {
-  id: string;
-}): PanelButtonProps<PanelButtonElement> {
+export function createPanelButtonAriaProps() {
+  const panelState = usePanelState();
+
+  return {
+    get ['aria-controls']() {
+      return panelState.panelId;
+    },
+    get ['aria-expanded']() {
+      return panelState.isPanelOpen;
+    },
+    get ['aria-haspopup']() {
+      return panelState.role;
+    },
+  };
+}
+
+export function createPanelButtonProps<PanelButtonElement extends HTMLElement>(
+  config: {
+    id?: string;
+  } = {}
+): PanelButtonProps<PanelButtonElement> {
   const panelState = usePanelState();
   const panelActions = usePanelActions();
 
-  onMount(() => {
-    if (!panelState.buttonId) {
-      panelActions.setElementId('buttonId', config.id);
-    }
+  if (config.id) {
+    onMount(() => {
+      if (!panelState.buttonId) {
+        panelActions.setElementId('buttonId', config.id);
+      }
 
-    const popper = usePopperContext();
+      const popper = usePopperContext();
 
-    if (!popper?.refs.anchor && config.id === panelState.buttonId) {
-      popper?.setRef('anchor', document.getElementById(config.id));
-    }
-  });
+      if (!popper?.refs.anchor && config.id === panelState.buttonId) {
+        popper?.setRef('anchor', document.getElementById(config.id));
+      }
+    });
 
-  createEffect<typeof panelState.isPanelOpen>((wasPanelOpen) => {
-    if (wasPanelOpen && !panelState.isPanelOpen && config.id === panelState.buttonId) {
-      document.getElementById(config.id)?.focus();
-    }
-    return panelState.isPanelOpen;
-  });
+    createEffect<typeof panelState.isPanelOpen>((wasPanelOpen) => {
+      if (wasPanelOpen && !panelState.isPanelOpen && config.id === panelState.buttonId) {
+        document.getElementById(config.id)?.focus();
+      }
+      return panelState.isPanelOpen;
+    });
+  }
+
+  const activeDescendentState = useActiveDescendentState();
 
   return {
     get ['aria-controls']() {
@@ -172,6 +195,8 @@ export function createPanelButtonProps<PanelButtonElement extends HTMLElement>(c
     onKeyDown(event) {
       if (event.key === 'Escape') {
         panelActions.closePanel();
+      } else if (activeDescendentState && (event.key === 'ArrowDown' || event.key === 'ArrowUp')) {
+        panelActions.openPanel();
       }
     },
   };

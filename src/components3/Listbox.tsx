@@ -64,10 +64,10 @@ type ListboxContextProp<Value> = {
 };
 
 export type ListboxProviderProps<Value> = Omit<PanelProviderProps, 'context' | 'role'> & {
-  popper?: boolean;
-  orientation?: ListOrientation;
-  value?: Value;
   onChange?: (newValue: Value) => void;
+  orientation?: ListOrientation;
+  popper?: boolean;
+  value?: Value;
 } & ListboxContextProp<Value>;
 
 export function ListboxProvider<Value>(props: ListboxProviderProps<Value>) {
@@ -76,10 +76,10 @@ export function ListboxProvider<Value>(props: ListboxProviderProps<Value>) {
   const [localProps, otherProps] = splitProps(props, [
     'children',
     'context',
+    'onChange',
     'orientation',
     'popper',
     'value',
-    'onChange',
   ]);
 
   const panelContext = createPanelContext();
@@ -98,7 +98,7 @@ export function ListboxProvider<Value>(props: ListboxProviderProps<Value>) {
         >
           <ActiveDescendentProvider
             orientation={localProps.orientation}
-            shouldHaveInitialFocus={(id) => listboxValueContext.values()[id] === props.value}
+            shouldHaveInitialFocus={(id) => listboxValueContext.values()[id] === localProps.value}
           >
             {(() => {
               localProps.context?.(createExternalContext<Value>());
@@ -110,7 +110,11 @@ export function ListboxProvider<Value>(props: ListboxProviderProps<Value>) {
     </LabelProvider>
   );
 
-  return localProps.popper ? <Popper>{provider()}</Popper> : provider();
+  return (
+    <Show when={localProps.popper} fallback={provider()}>
+      <Popper>{provider()}</Popper>
+    </Show>
+  );
 }
 
 export type ListboxLabelProps<Value> = BaseComponentProps<
@@ -260,7 +264,7 @@ export function ListboxList<Value, ListboxListElement extends HTMLElement = HTML
 
   const id = useId(localProps.idPrefix);
 
-  const containerProps = createActiveDescendentContainerProps({ id });
+  const containerProps = createActiveDescendentContainerProps();
 
   const activeDescendentState = useActiveDescendentState();
 
