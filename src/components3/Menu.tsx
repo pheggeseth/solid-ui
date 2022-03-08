@@ -15,9 +15,9 @@ import {
 } from './base/MenuAction';
 import {
   createPanelButtonProps,
+  createPanelContext,
   createPanelProps,
   PanelButtonProps,
-  PanelContext,
   PanelProps,
   PanelProvider,
   PanelProviderProps,
@@ -69,10 +69,10 @@ export function MenuProvider(props: MenuProviderProps) {
     'popper',
   ]);
 
-  let panelContext: PanelContext;
+  const panelContext = createPanelContext();
 
   const provider = () => (
-    <PanelProvider {...otherProps} context={(ctx) => (panelContext = ctx)} role="menu">
+    <PanelProvider {...otherProps} context={panelContext} role="menu">
       <ActiveDescendentProvider orientation={localProps.orientation}>
         <MenuActionProvider onPerformAction={panelContext.close}>
           {(() => {
