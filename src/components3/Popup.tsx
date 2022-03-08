@@ -16,7 +16,7 @@ import {
   PanelProvider,
   PanelProviderProps,
   usePanelState,
-} from './Panel';
+} from './base/Panel';
 import { PopperProvider } from './Popper';
 
 export type PopupContext = PanelContext;

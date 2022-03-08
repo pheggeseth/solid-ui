@@ -23,7 +23,7 @@ import {
   PanelProviderProps,
   usePanelActions,
   usePanelState,
-} from './Panel';
+} from './base/Panel';
 import Popper from './Popper';
 
 function createExternalContext(config: { id?: string } = {}) {

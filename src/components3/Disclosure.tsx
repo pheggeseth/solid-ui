@@ -13,7 +13,7 @@ import {
   PanelProvider,
   PanelProviderProps,
   usePanelState,
-} from './Panel';
+} from './base/Panel';
 
 export type DisclosureContext = PanelContext;
 
