@@ -101,8 +101,8 @@ export function RadioGroup<Value, RadioGroupElement extends HTMLElement = HTMLDi
     isOptionSelected: createSelector(() => props.value),
   };
 
-  const getSelectedOptionIndex = () =>
-    state.options.findIndex((option) => option.value === props.value);
+  const getActiveOptionIndex = () =>
+    state.options.findIndex((option) => option.id === state.activeOptionId);
 
   const actions: Actions<Value> = {
     addOption(id, value) {
@@ -112,7 +112,7 @@ export function RadioGroup<Value, RadioGroupElement extends HTMLElement = HTMLDi
       setState('options', (options) => options.filter((option) => option.id !== id));
     },
     selectNextOption() {
-      let index = getSelectedOptionIndex();
+      let index = getActiveOptionIndex();
       if (index === state.options.length - 1) {
         index = -1;
       }
@@ -122,7 +122,7 @@ export function RadioGroup<Value, RadioGroupElement extends HTMLElement = HTMLDi
       document.getElementById(state.options[index + 1].id)?.focus();
     },
     selectPreviousOption() {
-      let index = getSelectedOptionIndex();
+      let index = getActiveOptionIndex();
       if (index === 0) {
         index = state.options.length;
       }
