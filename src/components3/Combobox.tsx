@@ -4,6 +4,7 @@ import {
   createSignal,
   JSX,
   mergeProps,
+  onMount,
   PropsWithChildren,
   Show,
   splitProps,
@@ -37,7 +38,7 @@ import {
   usePanelActions,
   usePanelState,
 } from './base/Panel';
-import Popper from './Popper';
+import Popper, { usePopperContext } from './Popper';
 
 export type ComboboxContext<Value> = Readonly<{
   isActive: Accessor<boolean>;
@@ -86,7 +87,7 @@ export type ComboboxProviderProps<Value> = PropsWithChildren<
 >;
 
 export function ComboboxProvider<Value>(props: ComboboxProviderProps<Value>) {
-  props = mergeProps<typeof props[]>({ orientation: 'vertical' }, props);
+  props = mergeProps<typeof props[]>({ orientation: 'vertical', popper: true }, props);
   const [localProps, otherProps] = splitProps(props, [
     'children',
     'context',
@@ -255,6 +256,11 @@ export function ComboboxInput<
 
   localProps.context?.(createComboboxContext());
 
+  onMount(() => {
+    const popper = usePopperContext();
+    popper?.setRef('anchor', document.getElementById(id));
+  });
+
   return (
     <Dynamic
       {...finalProps}
@@ -370,7 +376,7 @@ export function ComboboxList<Value, ComboboxListElement extends HTMLElement = HT
   props: ComboboxListProps<Value>
 ) {
   props = mergeProps<typeof props[]>(
-    { component: 'ul', idPrefix: 'solid-ui-combobox-list' },
+    { component: 'ul', idPrefix: 'solid-ui-combobox-list', portal: true },
     props
   );
 
