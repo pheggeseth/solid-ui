@@ -191,6 +191,7 @@ export type RadioOptionProps<Value, RadioOptionElement extends HTMLElement> = Ba
       onBlur: JSX.EventHandler<RadioOptionElement, FocusEvent>;
       onClick: JSX.EventHandler<RadioOptionElement, MouseEvent>;
       onFocus: JSX.EventHandler<RadioOptionElement, FocusEvent>;
+      onKeyDown: JSX.EventHandler<RadioOptionElement, KeyboardEvent>;
       onMouseDown: JSX.EventHandler<RadioOptionElement, MouseEvent>;
       role: 'radio';
       tabIndex: string | number;
@@ -227,6 +228,16 @@ export function RadioOption<Value, RadioOptionElement extends HTMLElement = HTML
     radioGroupActions.setActiveOption(id);
   };
 
+  const onKeyDown = useKeyEventHandlers<RadioOptionElement>({
+    Enter() {
+      radioGroupActions.selectOption(id);
+    },
+    [' '](event) {
+      event.preventDefault();
+      radioGroupActions.selectOption(id);
+    },
+  });
+
   const onMouseDown: JSX.EventHandler<RadioOptionElement, MouseEvent> = (event) => {
     radioGroupActions.setActiveOption(id);
   };
@@ -250,6 +261,7 @@ export function RadioOption<Value, RadioOptionElement extends HTMLElement = HTML
       onBlur={onBlur}
       onClick={onClick}
       onFocus={onFocus}
+      onKeyDown={onKeyDown}
       onMouseDown={onMouseDown}
       role="radio"
       tabIndex={
