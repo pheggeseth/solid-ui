@@ -15,7 +15,7 @@ import { createComponentContext, setRef, useId } from '~/utils/componentUtils';
 import { useOnClickAway } from '~/utils/eventUtils';
 import { getFirstFocusableElement, useFocusOnOpen, useFocusTrap } from '~/utils/focusUtils';
 import { usePopperContext } from '../Popper';
-import { useActiveDescendentState } from './ActiveDescendent';
+import { useActiveItemState } from './ActiveItem';
 
 type PanelElementIds = {
   buttonId: string;
@@ -177,7 +177,7 @@ export function createPanelButtonProps<PanelButtonElement extends HTMLElement>(
     });
   }
 
-  const activeDescendentState = useActiveDescendentState();
+  const activeDescendentState = useActiveItemState();
 
   return {
     get ['aria-controls']() {

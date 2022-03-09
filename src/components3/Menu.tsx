@@ -3,11 +3,11 @@ import { Dynamic, Portal } from 'solid-js/web';
 import { BaseComponentProps, DynamicComponent, ListOrientation } from '~/types';
 import { createComponentContext, getDataProp, useId } from '~/utils/componentUtils';
 import {
-  ActiveDescendentProvider,
+  ActiveItemProvider,
   createActiveDescendentContainerProps,
   createActiveDescendentProps,
-  useActiveDescendentState,
-} from './base/ActiveDescendent';
+  useActiveItemState,
+} from './base/ActiveItem';
 import {
   createMenuActionContainerProps,
   createMenuActionItemProps,
@@ -35,13 +35,13 @@ export type MenuContext = Readonly<{
 }>;
 
 function createExternalContext(config: { id?: string } = {}): MenuContext {
-  const activeDescendentState = useActiveDescendentState();
+  const activeDescendentState = useActiveItemState();
   const panelState = usePanelState();
   const panelActions = usePanelActions();
 
   return {
-    activeDescendentId: () => activeDescendentState.activeDescendentId,
-    isActive: (id?: string) => activeDescendentState.activeDescendentId === (id ?? config.id),
+    activeDescendentId: () => activeDescendentState.activeItemId,
+    isActive: (id?: string) => activeDescendentState.activeItemId === (id ?? config.id),
     isOpen: () => panelState.isPanelOpen,
     open: () => panelActions.openPanel,
     close: () => panelActions.closePanel,
@@ -73,14 +73,14 @@ export function MenuProvider(props: MenuProviderProps) {
 
   const provider = () => (
     <PanelProvider {...otherProps} context={panelContext} role="menu">
-      <ActiveDescendentProvider orientation={localProps.orientation}>
+      <ActiveItemProvider orientation={localProps.orientation}>
         <MenuActionProvider onPerformAction={panelContext.close}>
           {(() => {
             localProps.context?.(createExternalContext());
             return localProps.children;
           })()}
         </MenuActionProvider>
-      </ActiveDescendentProvider>
+      </ActiveItemProvider>
     </PanelProvider>
   );
 
@@ -199,10 +199,10 @@ export function MenuList<MenuListElement extends HTMLElement = HTMLUListElement>
 
   const containerProps = createActiveDescendentContainerProps();
 
-  const activeDescendentState = useActiveDescendentState();
+  const activeDescendentState = useActiveItemState();
 
   const menuContainerProps = createMenuActionContainerProps<MenuListElement>({
-    activeId: () => activeDescendentState.activeDescendentId,
+    activeId: () => activeDescendentState.activeItemId,
     search: () => activeDescendentState.search,
   });
 

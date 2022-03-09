@@ -3,12 +3,12 @@ import { Dynamic, Portal } from 'solid-js/web';
 import { BaseComponentProps, DynamicComponent, ListOrientation } from '~/types';
 import { createComponentContext, getDataProp, useId } from '~/utils/componentUtils';
 import {
-  ActiveDescendentProvider,
+  ActiveItemProvider,
   createActiveDescendentContainerProps,
   createActiveDescendentProps,
-  useActiveDescendentSelectors,
-  useActiveDescendentState,
-} from './base/ActiveDescendent';
+  useActiveItemSelectors,
+  useActiveItemState,
+} from './base/ActiveItem';
 import { createLabelProps, createLabelTargetProps, LabelProvider } from './base/Label';
 import {
   createListboxValueContainerProps,
@@ -41,13 +41,13 @@ export type ListboxContext<Value> = Readonly<{
 function createExternalContext<Value>(
   config: { id?: string; value?: Value } = {}
 ): ListboxContext<Value> {
-  const activeDescendentSelectors = useActiveDescendentSelectors();
+  const activeDescendentSelectors = useActiveItemSelectors();
   const panelState = usePanelState();
   const panelActions = usePanelActions();
   const listboxValueSelectors = useListboxValueSelectors<Value>();
 
   return {
-    isActive: () => activeDescendentSelectors.isDescendentActive(config.id),
+    isActive: () => activeDescendentSelectors.isItemActive(config.id),
     isSelected: (value?: Value) => listboxValueSelectors.isSelected(value ?? config.value),
     isOpen: () => panelState.isPanelOpen,
     open: () => panelActions.openPanel,
@@ -96,7 +96,7 @@ export function ListboxProvider<Value>(props: ListboxProviderProps<Value>) {
           }}
           context={listboxValueContext}
         >
-          <ActiveDescendentProvider
+          <ActiveItemProvider
             orientation={localProps.orientation}
             shouldHaveInitialFocus={(id) => listboxValueContext.values()[id] === localProps.value}
           >
@@ -104,7 +104,7 @@ export function ListboxProvider<Value>(props: ListboxProviderProps<Value>) {
               localProps.context?.(createExternalContext<Value>());
               return localProps.children;
             })()}
-          </ActiveDescendentProvider>
+          </ActiveItemProvider>
         </ListboxValueProvider>
       </PanelProvider>
     </LabelProvider>
@@ -266,10 +266,10 @@ export function ListboxList<Value, ListboxListElement extends HTMLElement = HTML
 
   const containerProps = createActiveDescendentContainerProps();
 
-  const activeDescendentState = useActiveDescendentState();
+  const activeDescendentState = useActiveItemState();
 
   const listboxContainerProps = createListboxValueContainerProps<Value, ListboxListElement>({
-    activeId: () => activeDescendentState.activeDescendentId,
+    activeId: () => activeDescendentState.activeItemId,
     search: () => activeDescendentState.search,
   });
 

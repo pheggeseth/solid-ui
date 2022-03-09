@@ -12,13 +12,13 @@ import { Dynamic, Portal } from 'solid-js/web';
 import { BaseComponentProps, DynamicComponent, ListOrientation } from '~/types';
 import { createComponentContext, getDataProp, useId } from '~/utils/componentUtils';
 import {
-  ActiveDescendentProvider,
-  createActiveDescendentContainerOnKeyDown,
+  ActiveItemProvider,
+  createActiveItemContainerOnKeyDown,
   createActiveDescendentProps,
-  useActiveDescendentActions,
-  useActiveDescendentSelectors,
-  useActiveDescendentState,
-} from './base/ActiveDescendent';
+  useActiveItemActions,
+  useActiveItemSelectors,
+  useActiveItemState,
+} from './base/ActiveItem';
 import { LabelProvider } from './base/Label';
 import {
   createListboxValueContainerProps,
@@ -50,13 +50,13 @@ export type ComboboxContext<Value> = Readonly<{
 function createExternalContext<Value>(
   config: { id?: string; value?: Value } = {}
 ): ComboboxContext<Value> {
-  const activeDescendentSelectors = useActiveDescendentSelectors();
+  const activeDescendentSelectors = useActiveItemSelectors();
   const panelState = usePanelState();
   const panelActions = usePanelActions();
   const listboxValueSelectors = useListboxValueSelectors<Value>();
 
   return {
-    isActive: () => activeDescendentSelectors.isDescendentActive(config.id),
+    isActive: () => activeDescendentSelectors.isItemActive(config.id),
     isSelected: (value?: Value) => listboxValueSelectors.isSelected(value ?? config.value),
     isOpen: () => panelState.isPanelOpen,
     open: () => panelActions.openPanel,
@@ -117,7 +117,7 @@ export function ComboboxProvider<Value>(props: ComboboxProviderProps<Value>) {
             localProps.onChange?.(newValue);
           }}
         >
-          <ActiveDescendentProvider
+          <ActiveItemProvider
             orientation={localProps.orientation}
             shouldHaveInitialFocus={(id) =>
               listboxValueContext.values()[id] === listboxValueContext.selectedValue()
@@ -127,7 +127,7 @@ export function ComboboxProvider<Value>(props: ComboboxProviderProps<Value>) {
               localProps.context?.(createExternalContext());
               return localProps.children;
             })()}
-          </ActiveDescendentProvider>
+          </ActiveItemProvider>
         </ListboxValueProvider>
       </PanelProvider>
     </LabelProvider>
@@ -190,17 +190,17 @@ export function ComboboxInput<
 
   const id = useId(localProps.idPrefix);
 
-  const activeDescendentOnKeyDown = createActiveDescendentContainerOnKeyDown({
+  const activeDescendentOnKeyDown = createActiveItemContainerOnKeyDown({
     disableTypeahead: true,
   });
   const panelActions = usePanelActions();
-  const activeDescendentState = useActiveDescendentState();
-  const activeDescendentActions = useActiveDescendentActions();
+  const activeDescendentState = useActiveItemState();
+  const activeDescendentActions = useActiveItemActions();
   const listboxValueActions = useListboxValueActions<Value>();
 
   const closeList = () => {
     panelActions.closePanel();
-    activeDescendentActions.hoverDescendentClear();
+    activeDescendentActions.clearItemFocus();
   };
 
   const listboxValueState = useListboxValueState<Value>();
@@ -224,17 +224,17 @@ export function ComboboxInput<
     activeDescendentOnKeyDown(event);
     if (event.key === 'ArrowUp') {
       panelActions.openPanel();
-      if (!activeDescendentState.activeDescendentId) {
-        activeDescendentActions.focusLastDescendent();
+      if (!activeDescendentState.activeItemId) {
+        activeDescendentActions.focusLastItem();
       }
     } else if (event.key === 'ArrowDown') {
       panelActions.openPanel();
-      if (!activeDescendentState.activeDescendentId) {
+      if (!activeDescendentState.activeItemId) {
         activeDescendentActions.focusFirstDescendent();
       }
     } else if (event.key === 'Enter') {
-      if (activeDescendentState.activeDescendentId) {
-        listboxValueActions.chooseValue(activeDescendentState.activeDescendentId);
+      if (activeDescendentState.activeItemId) {
+        listboxValueActions.chooseValue(activeDescendentState.activeItemId);
         closeList();
       }
     } else if (event.key === 'Escape') {
@@ -258,7 +258,7 @@ export function ComboboxInput<
   return (
     <Dynamic
       {...finalProps}
-      aria-activedescendent={activeDescendentState.activeDescendentId}
+      aria-activedescendent={activeDescendentState.activeItemId}
       aria-autocomplete="list"
       component={localProps.component}
       id={id}
@@ -383,11 +383,11 @@ export function ComboboxList<Value, ComboboxListElement extends HTMLElement = HT
 
   const id = useId(localProps.idPrefix);
 
-  const activeDescendentState = useActiveDescendentState();
-  const activeDescendentActions = useActiveDescendentActions();
+  const activeDescendentState = useActiveItemState();
+  const activeDescendentActions = useActiveItemActions();
 
   const listboxContainerProps = createListboxValueContainerProps<Value, ComboboxListElement>({
-    activeId: () => activeDescendentState.activeDescendentId,
+    activeId: () => activeDescendentState.activeItemId,
     search: () => activeDescendentState.search,
   });
 
@@ -421,7 +421,7 @@ export function ComboboxList<Value, ComboboxListElement extends HTMLElement = HT
 
   createEffect(() => {
     if (panelState.isPanelOpen) {
-      activeDescendentActions.initializeDescendentFocus();
+      activeDescendentActions.initializeItemFocus();
     }
   });
 
