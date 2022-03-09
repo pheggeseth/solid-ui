@@ -1,4 +1,4 @@
-import { Component, createSignal, For } from 'solid-js';
+import { Component, createEffect, createSignal, For } from 'solid-js';
 import {
   ComboboxButton,
   ComboboxInput,
@@ -29,6 +29,7 @@ import {
   MenuProvider,
 } from './Menu';
 import { PopupButton, PopupContext, PopupOverlay, PopupPanel, PopupProvider } from './Popup';
+import { RadioGroup, RadioOption } from './RadioGroup';
 
 export function Demo() {
   return (
@@ -38,7 +39,27 @@ export function Demo() {
       <ListboxDemo />
       <DisclosureDemo />
       <ComboboxDemo />
+      <RadioGroupDemo />
     </>
+  );
+}
+
+function RadioGroupDemo() {
+  const [value, setValue] = createSignal('');
+
+  createEffect(() => {
+    console.log(value());
+  });
+
+  return (
+    <section>
+      <h1>Radio Group</h1>
+      <RadioGroup value={value()} onChange={setValue}>
+        <RadioOption value={'Option 1'}>Option 1</RadioOption>
+        <RadioOption value={'Option 2'}>Option 2</RadioOption>
+        <RadioOption value={'Option 3'}>Option 3</RadioOption>
+      </RadioGroup>
+    </section>
   );
 }
 
