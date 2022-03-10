@@ -1,5 +1,6 @@
 import {
   Accessor,
+  createContext,
   createEffect,
   createSignal,
   JSX,
@@ -8,14 +9,16 @@ import {
   PropsWithChildren,
   Show,
   splitProps,
+  useContext,
 } from 'solid-js';
+import { createStore } from 'solid-js/store';
 import { Dynamic, Portal } from 'solid-js/web';
 import { BaseComponentProps, DynamicComponent, ListOrientation } from '~/types';
 import { createComponentContext, getDataProp, useId } from '~/utils/componentUtils';
 import {
   ActiveItemProvider,
   createActiveItemContainerOnKeyDown,
-  createActiveDescendentProps,
+  createActiveItemProps,
   useActiveItemActions,
   useActiveItemSelectors,
   useActiveItemState,
@@ -77,6 +80,24 @@ function useComboboxValue<Value>() {
   return () => useListboxValueState<Value>().selectedValue;
 }
 
+type State = {
+  inputId: string;
+};
+
+type Actions = {
+  setElementId(key: 'inputId', id: string): void;
+};
+
+const ComboboxComponentContext = createContext<{ state: State; actions: Actions }>();
+
+function useComboboxState() {
+  return useContext(ComboboxComponentContext).state;
+}
+
+function useComboboxActions() {
+  return useContext(ComboboxComponentContext).actions;
+}
+
 export type ComboboxProviderProps<Value> = PropsWithChildren<
   {
     onChange?: (newValue: Value) => void;
@@ -88,6 +109,17 @@ export type ComboboxProviderProps<Value> = PropsWithChildren<
 
 export function ComboboxProvider<Value>(props: ComboboxProviderProps<Value>) {
   props = mergeProps<typeof props[]>({ orientation: 'vertical', popper: true }, props);
+
+  const [state, setState] = createStore<State>({
+    inputId: null,
+  });
+
+  const actions: Actions = {
+    setElementId(key, id) {
+      setState({ [key]: id });
+    },
+  };
+
   const [localProps, otherProps] = splitProps(props, [
     'children',
     'context',
@@ -107,31 +139,33 @@ export function ComboboxProvider<Value>(props: ComboboxProviderProps<Value>) {
   const listboxValueContext = createListboxValueContext<Value>();
 
   const provider = () => (
-    <LabelProvider>
-      <PanelProvider {...otherProps} context={panelContext}>
-        <ListboxValueProvider<Value>
-          context={listboxValueContext}
-          value={value()}
-          onChange={(newValue) => {
-            panelContext.close();
-            setValue(() => newValue);
-            localProps.onChange?.(newValue);
-          }}
-        >
-          <ActiveItemProvider
-            orientation={localProps.orientation}
-            shouldHaveInitialFocus={(id) =>
-              listboxValueContext.values()[id] === listboxValueContext.selectedValue()
-            }
+    <ComboboxComponentContext.Provider value={{ state, actions }}>
+      <LabelProvider>
+        <PanelProvider {...otherProps} context={panelContext}>
+          <ListboxValueProvider<Value>
+            context={listboxValueContext}
+            value={value()}
+            onChange={(newValue) => {
+              panelContext.close();
+              setValue(() => newValue);
+              localProps.onChange?.(newValue);
+            }}
           >
-            {(() => {
-              localProps.context?.(createExternalContext());
-              return localProps.children;
-            })()}
-          </ActiveItemProvider>
-        </ListboxValueProvider>
-      </PanelProvider>
-    </LabelProvider>
+            <ActiveItemProvider
+              orientation={localProps.orientation}
+              shouldHaveInitialFocus={(id) =>
+                listboxValueContext.values()[id] === listboxValueContext.selectedValue()
+              }
+            >
+              {(() => {
+                localProps.context?.(createExternalContext());
+                return localProps.children;
+              })()}
+            </ActiveItemProvider>
+          </ListboxValueProvider>
+        </PanelProvider>
+      </LabelProvider>
+    </ComboboxComponentContext.Provider>
   );
 
   return (
@@ -223,6 +257,7 @@ export function ComboboxInput<
 
   const onKeyDown: JSX.EventHandler<ComboboxInputElement, KeyboardEvent> = (event) => {
     activeDescendentOnKeyDown(event);
+
     if (event.key === 'ArrowUp') {
       panelActions.openPanel();
       if (!activeDescendentState.activeItemId) {
@@ -256,7 +291,12 @@ export function ComboboxInput<
 
   localProps.context?.(createComboboxContext());
 
+  const comboboxActions = useComboboxActions();
+
+  const panelState = usePanelState();
+
   onMount(() => {
+    comboboxActions.setElementId('inputId', id);
     const popper = usePopperContext();
     popper?.setRef('anchor', document.getElementById(id));
   });
@@ -266,6 +306,7 @@ export function ComboboxInput<
       {...finalProps}
       aria-activedescendent={activeDescendentState.activeItemId}
       aria-autocomplete="list"
+      aria-controls={panelState.panelId}
       component={localProps.component}
       id={id}
       role="combobox"
@@ -297,6 +338,13 @@ export function ComboboxButton<
 
   const panelButtonProps = createPanelButtonProps();
 
+  const comboboxState = useComboboxState();
+
+  const onClick: JSX.EventHandler<ComboboxButtonElement, MouseEvent> = (event) => {
+    panelButtonProps.onClick(event);
+    document.getElementById(comboboxState.inputId)?.focus();
+  };
+
   const onMouseDown: JSX.EventHandler<ComboboxButtonElement, MouseEvent> = (event) => {
     event.preventDefault();
   };
@@ -304,7 +352,7 @@ export function ComboboxButton<
   const finalProps = mergeProps(
     otherProps,
     panelButtonProps,
-    { onMouseDown },
+    { onClick, onMouseDown },
     getDataProp(localProps.idPrefix)
   );
 
@@ -422,7 +470,13 @@ export function ComboboxList<Value, ComboboxListElement extends HTMLElement = HT
   );
 
   const comboboxList = () => (
-    <Dynamic {...finalProps} component={localProps.component} id={id} role="listbox" />
+    <Dynamic
+      {...finalProps}
+      component={localProps.component}
+      data-solid-ui-list=""
+      id={id}
+      role="listbox"
+    />
   );
 
   createEffect(() => {
@@ -469,7 +523,7 @@ export function ComboboxOption<Value, ComboboxOptionElement extends HTMLElement 
 
   const id = useId(localProps.idPrefix);
 
-  const descendentProps = createActiveDescendentProps({ id });
+  const descendentProps = createActiveItemProps({ id });
   const listboxValueItemProps = createListboxValueItemProps<Value>({
     id,
     value: localProps.value,

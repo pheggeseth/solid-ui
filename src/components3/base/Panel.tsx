@@ -128,25 +128,10 @@ export type PanelButtonProps<PanelButtonElement extends HTMLElement> = {
   'aria-controls': string;
   'aria-expanded': boolean;
   'aria-haspopup': PanelRole;
+  'data-solid-ui-button': '';
   onClick: JSX.EventHandler<PanelButtonElement, MouseEvent>;
   onKeyDown: JSX.EventHandler<PanelButtonElement, KeyboardEvent>;
 };
-
-export function createPanelButtonAriaProps() {
-  const panelState = usePanelState();
-
-  return {
-    get ['aria-controls']() {
-      return panelState.panelId;
-    },
-    get ['aria-expanded']() {
-      return panelState.isPanelOpen;
-    },
-    get ['aria-haspopup']() {
-      return panelState.role;
-    },
-  };
-}
 
 export function createPanelButtonProps<PanelButtonElement extends HTMLElement>(
   config: {
@@ -189,6 +174,7 @@ export function createPanelButtonProps<PanelButtonElement extends HTMLElement>(
     get ['aria-haspopup']() {
       return panelState.role;
     },
+    'data-solid-ui-button': '',
     onClick() {
       panelActions.togglePanel();
     },
@@ -203,6 +189,7 @@ export function createPanelButtonProps<PanelButtonElement extends HTMLElement>(
 }
 
 export type PanelProps<PanelElement extends HTMLElement> = {
+  'data-solid-ui-panel': '';
   onKeyDown: JSX.EventHandler<PanelElement, KeyboardEvent>;
   ref: (element: PanelElement) => void;
   role: PanelRole;
@@ -296,6 +283,7 @@ export function createPanelProps<PanelElement extends HTMLElement>(
   });
 
   return {
+    'data-solid-ui-panel': '',
     onKeyDown(event) {
       if (event.key === 'Escape') {
         panelActions.closePanel();

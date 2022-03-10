@@ -83,7 +83,7 @@ export type RadioGroupProps<Value, RadioGroupElement extends HTMLElement> = Base
 export function RadioGroup<Value, RadioGroupElement extends HTMLElement = HTMLDivElement>(
   props: RadioGroupProps<Value, RadioGroupElement>
 ) {
-  props = mergeProps<typeof props[]>({ component: 'div', idPrefix: 'solid-ui-radio-group' }, props);
+  props = mergeProps<typeof props[]>({ component: 'div', idPrefix: 'solid-ui-radiogroup' }, props);
 
   const [state, setState] = createStore<State<Value>>({
     options: [],
@@ -201,10 +201,13 @@ export type RadioOptionProps<Value, RadioOptionElement extends HTMLElement> = Ba
   } & RadioGroupContextProp
 >;
 
-export function RadioOption<Value, RadioOptionElement extends HTMLElement = HTMLDivElement>(
+export function RadioGroupOption<Value, RadioOptionElement extends HTMLElement = HTMLDivElement>(
   props: RadioOptionProps<Value, RadioOptionElement>
 ) {
-  props = mergeProps<typeof props[]>({ component: 'li', idPrefix: 'solid-ui-radio-option' }, props);
+  props = mergeProps<typeof props[]>(
+    { component: 'div', idPrefix: 'solid-ui-radiogroup-option' },
+    props
+  );
 
   const radioGroupState = useRadioGroupState<Value>();
   const radioGroupSelectors = useRadioGroupSelectors<Value>();

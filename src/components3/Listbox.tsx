@@ -4,8 +4,8 @@ import { BaseComponentProps, DynamicComponent, ListOrientation } from '~/types';
 import { createComponentContext, getDataProp, useId } from '~/utils/componentUtils';
 import {
   ActiveItemProvider,
-  createActiveDescendentContainerProps,
-  createActiveDescendentProps,
+  createActiveItemContainerProps,
+  createActiveItemProps,
   useActiveItemSelectors,
   useActiveItemState,
 } from './base/ActiveItem';
@@ -264,7 +264,7 @@ export function ListboxList<Value, ListboxListElement extends HTMLElement = HTML
 
   const id = useId(localProps.idPrefix);
 
-  const containerProps = createActiveDescendentContainerProps();
+  const containerProps = createActiveItemContainerProps();
 
   const activeDescendentState = useActiveItemState();
 
@@ -344,7 +344,7 @@ export function ListboxOption<Value, ListboxOptionElement extends HTMLElement = 
 
   const id = useId(localProps.idPrefix);
 
-  const descendentProps = createActiveDescendentProps({ id });
+  const descendentProps = createActiveItemProps({ id });
   const listboxValueItemProps = createListboxValueItemProps<Value>({
     id,
     value: localProps.value,

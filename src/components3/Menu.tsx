@@ -4,8 +4,8 @@ import { BaseComponentProps, DynamicComponent, ListOrientation } from '~/types';
 import { createComponentContext, getDataProp, useId } from '~/utils/componentUtils';
 import {
   ActiveItemProvider,
-  createActiveDescendentContainerProps,
-  createActiveDescendentProps,
+  createActiveItemContainerProps,
+  createActiveItemProps,
   useActiveItemState,
 } from './base/ActiveItem';
 import {
@@ -197,7 +197,7 @@ export function MenuList<MenuListElement extends HTMLElement = HTMLUListElement>
 
   const id = useId(localProps.idPrefix);
 
-  const containerProps = createActiveDescendentContainerProps();
+  const containerProps = createActiveItemContainerProps();
 
   const activeDescendentState = useActiveItemState();
 
@@ -277,7 +277,7 @@ export function MenuItem<MenuItemElement extends HTMLElement = HTMLLIElement>(
 
   const id = useId(localProps.idPrefix);
 
-  const descendentProps = createActiveDescendentProps({ id });
+  const descendentProps = createActiveItemProps({ id });
   const menuItemProps = createMenuActionItemProps({ action: localProps.action, id });
 
   const finalProps = mergeProps(

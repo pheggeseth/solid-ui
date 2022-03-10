@@ -29,7 +29,10 @@ import {
   MenuProvider,
 } from './Menu';
 import { PopupButton, PopupContext, PopupOverlay, PopupPanel, PopupProvider } from './Popup';
-import { RadioGroup, RadioOption } from './RadioGroup';
+import { RadioGroup, RadioGroupOption } from './RadioGroup';
+
+import './demo.css';
+import './solid-ui.css';
 
 export function Demo() {
   return (
@@ -55,9 +58,9 @@ function RadioGroupDemo() {
     <section>
       <h1>Radio Group</h1>
       <RadioGroup value={value()} onChange={setValue}>
-        <RadioOption value={'Option 1'}>Option 1</RadioOption>
-        <RadioOption value={'Option 2'}>Option 2</RadioOption>
-        <RadioOption value={'Option 3'}>Option 3</RadioOption>
+        <RadioGroupOption value={'Option 1'}>Option 1</RadioGroupOption>
+        <RadioGroupOption value={'Option 2'}>Option 2</RadioGroupOption>
+        <RadioGroupOption value={'Option 3'}>Option 3</RadioGroupOption>
       </RadioGroup>
     </section>
   );
@@ -66,7 +69,7 @@ function RadioGroupDemo() {
 function ComboboxDemo() {
   return (
     <section>
-      <h1>Combobox</h1>
+      <h1 id="Combobox">Combobox</h1>
       <ComboboxProvider>
         <ComboboxInput />
         <ComboboxButton>Open</ComboboxButton>
@@ -167,6 +170,7 @@ function PopupDemo() {
   return (
     <section>
       <h1>Popup</h1>
+      <p>A popup is a </p>
       <PopupProvider>
         <PopupButton>Open</PopupButton>
         <PopupOverlay />

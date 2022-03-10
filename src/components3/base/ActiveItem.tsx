@@ -36,8 +36,7 @@ type Actions = {
   clearItemFocus(): void;
 };
 
-const ActiveItemContext =
-  createContext<{ state: State; selectors: Selectors; actions: Actions }>();
+const ActiveItemContext = createContext<{ state: State; selectors: Selectors; actions: Actions }>();
 export function useActiveItemState() {
   return useContext(ActiveItemContext)?.state;
 }
@@ -69,8 +68,7 @@ export function ActiveItemProvider(props: ActiveItemProviderProps) {
     isItemActive: createSelector(() => state.activeItemId),
   };
 
-  const getActiveItemIndex = () =>
-    state.items.findIndex((id) => id === state.activeItemId);
+  const getActiveItemIndex = () => state.items.findIndex((id) => id === state.activeItemId);
 
   let resetSearch: NodeJS.Timeout;
 
@@ -154,9 +152,9 @@ export type CreateActiveItemContainerPropsConfig = {
   tabIndex?: string | number;
 };
 
-export function createActiveItemContainerOnKeyDown<
-  ContainerElement extends HTMLElement
->(config: { disableTypeahead?: boolean }) {
+export function createActiveItemContainerOnKeyDown<ContainerElement extends HTMLElement>(config: {
+  disableTypeahead?: boolean;
+}) {
   const state = useActiveItemState();
   const actions = useActiveItemActions();
 
@@ -205,7 +203,7 @@ export function createActiveItemContainerOnKeyDown<
   });
 }
 
-export function createActiveDescendentContainerProps<ContainerElement extends HTMLElement>(
+export function createActiveItemContainerProps<ContainerElement extends HTMLElement>(
   config: CreateActiveItemContainerPropsConfig = {}
 ) {
   const state = useActiveItemState();
@@ -219,6 +217,7 @@ export function createActiveDescendentContainerProps<ContainerElement extends HT
     get ['aria-activedescendent']() {
       return state.activeItemId;
     },
+    'data-solid-ui-list': '',
     onFocus() {
       actions.initializeItemFocus();
     },
@@ -227,11 +226,11 @@ export function createActiveDescendentContainerProps<ContainerElement extends HT
   };
 }
 
-export type CreatActiveDescendentPropsConfig = {
+export type CreatActiveItemPropsConfig = {
   id: string;
 };
 
-export function createActiveDescendentProps(config: CreatActiveDescendentPropsConfig) {
+export function createActiveItemProps(config: CreatActiveItemPropsConfig) {
   const state = useActiveItemState();
   const selectors = useActiveItemSelectors();
   const actions = useActiveItemActions();
@@ -241,7 +240,8 @@ export function createActiveDescendentProps(config: CreatActiveDescendentPropsCo
 
   createEffect(() => {
     if (state.activeItemId === config.id) {
-      document.getElementById(config.id).scrollIntoView(false);
+      // TODO: figure out a better way of scrolling a descendent into view if necessary
+      // document.getElementById(config.id).scrollIntoView(false);
     }
   });
 
@@ -252,6 +252,7 @@ export function createActiveDescendentProps(config: CreatActiveDescendentPropsCo
     get ['data-active']() {
       return selectors.isItemActive(config.id) ? '' : undefined;
     },
+    'data-solid-ui-list-item': '',
     onMouseEnter() {
       actions.focusItem(config.id);
     },

@@ -1,7 +1,7 @@
 import { mergeProps, Show, splitProps } from 'solid-js';
 import { Dynamic, Portal } from 'solid-js/web';
 import { BaseComponentProps, ComponentRef, DynamicComponent } from '~/types';
-import { useId } from '~/utils/componentUtils';
+import { getDataProp, useId } from '~/utils/componentUtils';
 import {
   createExternalContext,
   createPanelButtonProps,
@@ -89,9 +89,9 @@ export function PopupOverlay(props: PopupOverlayProps) {
 
   const overlayProps = createPanelOverlayProps({ id });
 
-  const overlay = () => (
-    <Dynamic {...otherProps} {...overlayProps} id={id} data-solid-ui-popup-overlay="" />
-  );
+  const finalProps = mergeProps(otherProps, overlayProps, getDataProp(localProps.idPrefix));
+
+  const overlay = () => <Dynamic {...finalProps} id={id} data-solid-ui-overlay="" />;
 
   const panelState = usePanelState();
 
