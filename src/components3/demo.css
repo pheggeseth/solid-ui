@@ -1,0 +1,13 @@
+body {
+  background: #eee;
+  font-family: sans-serif;
+}
+
+section {
+  background: white;
+  padding: 20px;
+  padding-top: 0;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  margin: 20px;
+}
