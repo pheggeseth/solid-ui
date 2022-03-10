@@ -170,7 +170,6 @@ function PopupDemo() {
   return (
     <section>
       <h1>Popup</h1>
-      <p>A popup is a </p>
       <PopupProvider>
         <PopupButton>Open</PopupButton>
         <PopupOverlay />
@@ -188,6 +187,30 @@ function PopupDemo() {
               <a href="/">Link 3</a>
             </li>
           </ul>
+          {(() => {
+            let context: PopupContext;
+            return (
+              <PopupProvider>
+                <PopupButton>Open</PopupButton>
+                <PopupOverlay />
+                <PopupPanel context={(ctx) => (context = ctx)}>
+                  <h2>Links</h2>
+                  <button onClick={context.close}>Close</button>
+                  <ul>
+                    <li>
+                      <a href="/">Link 1</a>
+                    </li>
+                    <li>
+                      <a href="/">Link 2</a>
+                    </li>
+                    <li>
+                      <a href="/">Link 3</a>
+                    </li>
+                  </ul>
+                </PopupPanel>
+              </PopupProvider>
+            );
+          })()}
         </PopupPanel>
       </PopupProvider>
     </section>

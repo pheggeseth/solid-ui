@@ -37,6 +37,7 @@ import {
   createPanelButtonProps,
   createPanelContext,
   createPanelProps,
+  CreatePanelPropsConfig,
   PanelProvider,
   usePanelActions,
   usePanelState,
@@ -240,15 +241,9 @@ export function ComboboxInput<
 
   const listboxValueState = useListboxValueState<Value>();
 
-  const onBlur: JSX.EventHandler<ComboboxInputElement, FocusEvent> = (event) => {
-    closeList();
-    // TODO: give user the option of reselected selected option on blur
-    // setInputValue(
-    //   listboxValueState.selectedValue
-    //     ? localProps.getInputValue(listboxValueState.selectedValue)
-    //     : ''
-    // );
-  };
+  // const onBlur: JSX.EventHandler<ComboboxInputElement, FocusEvent> = (event) => {
+  //   closeList();
+  // };
 
   const onInput: JSX.EventHandler<ComboboxInputElement, InputEvent> = (event) => {
     setInputValue(event.currentTarget.value);
@@ -280,12 +275,20 @@ export function ComboboxInput<
       (inputValue() && event.key === 'Backspace')
     ) {
       panelActions.openPanel();
+    } else if (event.key === 'Tab') {
+      closeList();
+      // TODO: give user the option of reselected selected option on blur
+      // setInputValue(
+      //   listboxValueState.selectedValue
+      //     ? localProps.getInputValue(listboxValueState.selectedValue)
+      //     : ''
+      // );
     }
   };
 
   const finalProps = mergeProps(
     otherProps,
-    { onBlur, onInput, onKeyDown },
+    { onInput, onKeyDown },
     getDataProp(localProps.idPrefix)
   );
 
@@ -361,30 +364,56 @@ export function ComboboxButton<
   return <Dynamic {...finalProps} component={localProps.component} id={id} tabIndex={-1} />;
 }
 
-export type ComboboxPopupProps<Value> = BaseComponentProps<
+export type ComboboxPopupProps<
+  Value,
+  ComboboxPopupElement extends HTMLElement
+> = BaseComponentProps<
   {
     component?: DynamicComponent<{ id: string; role: 'none' }>;
     idPrefix?: string;
     portal?: boolean;
-  } & ComboboxContextProp<Value>
+  } & Omit<CreatePanelPropsConfig<ComboboxPopupElement>, 'id'> &
+    ComboboxContextProp<Value>
 >;
 
-export function ComboboxPopup<Value>(props: ComboboxPopupProps<Value>) {
+export function ComboboxPopup<Value, ComboboxPopupElement extends HTMLElement = HTMLDivElement>(
+  props: ComboboxPopupProps<Value, ComboboxPopupElement>
+) {
   props = mergeProps<typeof props[]>(
-    { component: 'div', idPrefix: 'solid-ui-combobox-popup', portal: true },
+    {
+      clickAway: true,
+      component: 'div',
+      idPrefix: 'solid-ui-combobox-popup',
+      manageFocus: false,
+      portal: true,
+    },
     props
   );
 
   const [localProps, otherProps] = splitProps(props, [
+    'clickAway',
     'component',
     'context',
     'idPrefix',
+    'manageFocus',
     'portal',
+    'ref',
+    'tabIndex',
   ]);
 
   const id = useId(localProps.idPrefix);
 
-  const panelProps = createPanelProps({ id });
+  const panelProps = createPanelProps({
+    get clickAway() {
+      return localProps.clickAway;
+    },
+    id,
+    get manageFocus() {
+      return localProps.manageFocus;
+    },
+    ref: localProps.ref,
+    tabIndex: localProps.tabIndex,
+  });
 
   const finalProps = mergeProps(otherProps, panelProps, getDataProp(localProps.idPrefix));
 

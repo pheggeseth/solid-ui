@@ -202,6 +202,7 @@ export type CreatePanelPropsConfig<PanelElement extends HTMLElement> = {
     | {
         exceptions?: HTMLElement[];
         onClickAway?: () => void;
+        shouldContainActiveElement?: boolean;
       }
     | ((element: PanelElement) => void);
   id: string;
@@ -248,7 +249,7 @@ export function createPanelProps<PanelElement extends HTMLElement>(
         const panelState = usePanelState();
         const panelActions = usePanelActions();
         const clickAway = config.clickAway === true ? {} : config.clickAway;
-        const { exceptions = [], onClickAway } = clickAway;
+        const { exceptions = [], onClickAway, shouldContainActiveElement = false } = clickAway;
 
         const button = document.getElementById(panelState.buttonId);
         if (button) {
@@ -263,7 +264,7 @@ export function createPanelProps<PanelElement extends HTMLElement>(
           },
           {
             exceptions,
-            shouldContainActiveElement: !config.manageFocus,
+            shouldContainActiveElement,
           }
         );
       }

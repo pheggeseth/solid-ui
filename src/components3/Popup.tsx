@@ -120,10 +120,13 @@ export function PopupPanel<PopupPanelElement extends HTMLElement = HTMLDivElemen
 
   props = mergeProps<typeof props[]>(
     {
-      clickAway: true,
+      clickAway: {
+        shouldContainActiveElement: true,
+      },
       component: 'div',
       idPrefix: 'solid-ui-popup-panel',
       get manageFocus() {
+        return true;
         return {
           initialFocusRef: document.getElementById(panelState.buttonId),
         };
