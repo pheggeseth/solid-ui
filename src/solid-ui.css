@@ -5,7 +5,7 @@
   --color: #222;
   --font-size: 0.9rem;
   --letter-spacing: 0.025rem;
-  --padding: 0.375rem 0.75rem;
+  --padding: 0.25rem 0.5rem;
   --transition: all 75ms;
 
   --active-background: #bbb;
@@ -42,7 +42,8 @@
   position: fixed;
 }
 
-[data-solid-ui-panel] {
+[data-solid-ui-panel],
+[data-solid-ui-dialog] {
   background: white;
   padding: var(--padding);
   border-radius: var(--border-radius);

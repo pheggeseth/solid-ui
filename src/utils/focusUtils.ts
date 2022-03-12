@@ -54,7 +54,7 @@ export function useFocusTrap(
         const activeIndex = elements.findIndex((el) => el === document.activeElement);
 
         if (event.shiftKey) {
-          elements[activeIndex <= 0 ? elements.length - 1 : activeIndex - 1]?.focus();
+          elements[activeIndex > 0 ? activeIndex - 1 : elements.length - 1]?.focus();
           event.preventDefault();
         } else {
           elements[activeIndex < elements.length - 1 ? activeIndex + 1 : 0]?.focus();

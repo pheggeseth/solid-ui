@@ -50,10 +50,6 @@ export function Demo() {
 function RadioGroupDemo() {
   const [value, setValue] = createSignal('');
 
-  createEffect(() => {
-    console.log(value());
-  });
-
   return (
     <section>
       <h1>Radio Group</h1>
@@ -172,7 +168,7 @@ function PopupDemo() {
       <h1>Popup</h1>
       <PopupProvider>
         <PopupButton>Open</PopupButton>
-        <PopupOverlay />
+        {/* <PopupOverlay /> */}
         <PopupPanel context={(ctx) => (context = ctx)}>
           <h2>Links</h2>
           <button onClick={context.close}>Close</button>
