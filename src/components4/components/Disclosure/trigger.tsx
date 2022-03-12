@@ -1,6 +1,6 @@
 import { createEffect, JSX, mergeProps, onMount } from 'solid-js';
 import { getDataProp, useId } from '~/utils/componentUtils';
-import { usePopoverContext, usePopoverActions, usePopoverState } from './context';
+import { useDisclosureContext, useDisclosureActions, useDisclosureState } from './context';
 
 export type TriggerConfig<TriggerElement extends HTMLElement> = {
   idPrefix?: string;
@@ -12,34 +12,34 @@ export type TriggerConfig<TriggerElement extends HTMLElement> = {
 export function createTrigger<TriggerElement extends HTMLElement = HTMLElement>(
   config: TriggerConfig<TriggerElement> = {}
 ) {
-  const popoverState = usePopoverState();
-  config.primary = config.primary ?? !popoverState.triggerId;
+  const disclosureState = useDisclosureState();
+  config.primary = config.primary ?? !disclosureState.triggerId;
   const props = createTriggerProps<TriggerElement>(config);
   const handlers = createTriggerHandlers<TriggerElement>(config);
 
   return {
     props: mergeProps(props, handlers),
     effects: () => createTriggerEffects({ id: props.id, primary: config.primary }),
-    context: usePopoverContext(),
+    context: useDisclosureContext(),
   };
 }
 
 export function createTriggerProps<TriggerElement extends HTMLElement>(
   config: TriggerConfig<TriggerElement> = {}
 ) {
-  const popoverState = usePopoverState();
-  const { idPrefix = 'solid-ui-popover-trigger', primary = !popoverState.triggerId } = config;
+  const disclosureState = useDisclosureState();
+  const { idPrefix = 'solid-ui-disclosure-trigger', primary = !disclosureState.triggerId } = config;
   const id = useId(idPrefix);
 
   return {
     get ['aria-controls']() {
-      return primary ? popoverState.dialogId : undefined;
+      return primary ? disclosureState.contentId : undefined;
     },
     get ['aria-expanded']() {
-      return primary ? popoverState.isPopoverOpen : undefined;
+      return primary ? disclosureState.isContentOpen : undefined;
     },
     get ['aria-haspopup']() {
-      return primary && popoverState.role !== 'none' ? popoverState.role : undefined;
+      return primary ? disclosureState.role : undefined;
     },
     'data-solid-ui-button': '',
     ...getDataProp(idPrefix),
@@ -50,22 +50,22 @@ export function createTriggerProps<TriggerElement extends HTMLElement>(
 export function createTriggerHandlers<TriggerElement extends HTMLElement = HTMLElement>(
   config: TriggerConfig<TriggerElement>
 ) {
-  const popoverState = usePopoverState();
-  const popoverActions = usePopoverActions();
+  const disclosureState = useDisclosureState();
+  const disclosureActions = useDisclosureActions();
 
   const onClick: JSX.EventHandler<TriggerElement, MouseEvent> = (event) => {
-    popoverActions.togglePopover();
+    disclosureActions.toggleDisclosure();
     config.onClick?.(event);
   };
 
   const onKeyUp: JSX.EventHandler<TriggerElement, KeyboardEvent> = (event) => {
     if (event.key === 'Escape') {
-      popoverActions.closePopover();
+      disclosureActions.closeDisclosure();
     } else if (
-      (popoverState.role === 'menu' || popoverState.role === 'listbox') &&
+      (disclosureState.role === 'menu' || disclosureState.role === 'listbox') &&
       (event.key === 'ArrowDown' || event.key === 'ArrowUp')
     ) {
-      popoverActions.openPopover();
+      disclosureActions.openDisclosure();
     }
     config.onKeyUp?.(event);
   };
@@ -85,22 +85,22 @@ export function createTriggerEffects(config: { id: string; primary?: boolean }) 
 
 export function registerTriggerIdOnMount(config: { id: string }) {
   onMount(() => {
-    const popoverState = usePopoverState();
-    const popoverActions = usePopoverActions();
+    const disclosureState = useDisclosureState();
+    const disclosureActions = useDisclosureActions();
 
-    if (!popoverState.triggerId) {
-      popoverActions.setElementId('triggerId', config.id);
+    if (!disclosureState.triggerId) {
+      disclosureActions.setElementId('triggerId', config.id);
     }
   });
 }
 
 export function focusPrimaryTriggerOnClose(config: { id: string }) {
-  const popoverState = usePopoverState();
+  const disclosureState = useDisclosureState();
 
   createEffect<boolean>((wasPanelOpen) => {
-    if (wasPanelOpen && !popoverState.isPopoverOpen && config.id === popoverState.triggerId) {
+    if (wasPanelOpen && !disclosureState.isContentOpen && config.id === disclosureState.triggerId) {
       document.getElementById(config.id)?.focus();
     }
-    return popoverState.isPopoverOpen;
+    return disclosureState.isContentOpen;
   });
 }
