@@ -1,21 +1,21 @@
 import { createEffect, PropsWithChildren, Show } from 'solid-js';
 import { Portal } from 'solid-js/web';
 import { ComponentRef } from '~/types';
-import Disclosure from '../components/Disclosure';
+import Popover from '../components/Popover';
 
 import Popper from '../components/Popper';
 
 export function PopoverTrigger(
   props: PropsWithChildren<{ ref?: ComponentRef<HTMLButtonElement> }>
 ) {
-  const { props: disclosureProps, effects } = Disclosure.createTrigger({
+  const { props: triggerProps, effects } = Popover.createTrigger({
     idPrefix: 'solid-ui-popover-trigger',
   });
 
   effects();
 
   return (
-    <button ref={props.ref} {...disclosureProps}>
+    <button ref={props.ref} {...triggerProps}>
       {props.children}
     </button>
   );
@@ -26,7 +26,7 @@ export function PopoverOverlay(props: PropsWithChildren) {
     props: overlayProps,
     createEffects,
     context,
-  } = Disclosure.createOverlay({ idPrefix: 'solid-ui-popover-overlay' });
+  } = Popover.createOverlay({ idPrefix: 'solid-ui-popover-overlay' });
 
   createEffect(() => {
     if (context.isOverlayOpen()) {
@@ -45,21 +45,21 @@ export function PopoverOverlay(props: PropsWithChildren) {
 
 export function PopoverDialog(props: PropsWithChildren<{ ref?: ComponentRef<HTMLDivElement> }>) {
   const {
-    props: contentProps,
-    createEffects,
+    props: dialogProps,
+    effects: createEffects,
     context,
-  } = Disclosure.createContent({ idPrefix: 'solid-ui-popover-content' });
+  } = Popover.createPanel({ idPrefix: 'solid-ui-popover-panel' });
 
   createEffect(() => {
-    if (context.isDisclosureOpen()) {
+    if (context.isPopoverOpen()) {
       createEffects();
     }
   });
 
   return (
-    <Show when={context.isDisclosureOpen()}>
+    <Show when={context.isPopoverOpen()}>
       <Portal>
-        <div ref={props.ref} {...contentProps} data-solid-ui-dialog>
+        <div ref={props.ref} {...dialogProps} data-solid-ui-dialog>
           {props.children}
         </div>
       </Portal>
@@ -70,14 +70,14 @@ export function PopoverDialog(props: PropsWithChildren<{ ref?: ComponentRef<HTML
 export function PopoverExample() {
   return (
     <Popper>
-      <Disclosure>
+      <Popover>
         <PopoverTrigger ref={Popper.AnchorRef}>Open popover</PopoverTrigger>
         <PopoverOverlay />
         <PopoverDialog ref={Popper.PopperRef}>
           This is the popover.
           <PopoverTrigger>X</PopoverTrigger>
         </PopoverDialog>
-      </Disclosure>
+      </Popover>
     </Popper>
   );
 }

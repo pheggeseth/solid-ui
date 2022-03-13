@@ -1,26 +1,26 @@
 import { JSX } from 'solid-js';
-import { createContent } from './content';
+import { createPanel } from './panel';
 import { createOverlay } from './overlay';
-import DisclosureProvider, { DisclosureProviderProps } from './provider';
+import PopoverProvider, { PopoverProviderProps } from './provider';
 import { createTrigger } from './trigger';
 
 export * from './context';
-export * from './content';
+export * from './panel';
 export * from './overlay';
 export * from './provider';
 export * from './trigger';
 
 export type DisclosureComponentType = {
-  (props: DisclosureProviderProps): JSX.Element;
+  (props: PopoverProviderProps): JSX.Element;
   createTrigger: typeof createTrigger;
   createOverlay: typeof createOverlay;
-  createContent: typeof createContent;
+  createPanel: typeof createPanel;
 };
 
-const DisclosureComponent = Object.assign(DisclosureProvider, {
+const DisclosureComponent = Object.assign(PopoverProvider, {
   createTrigger,
   createOverlay,
-  createContent,
+  createPanel: createPanel,
 });
 
 export default DisclosureComponent;

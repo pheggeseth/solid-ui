@@ -1,6 +1,6 @@
 import { onCleanup, onMount } from 'solid-js';
 import { getDataProp, useId } from '~/utils/componentUtils';
-import { useDisclosureContext, useDisclosureActions } from './context';
+import { usePopoverContext, usePopoverActions } from './context';
 
 export function createOverlay(config: { idPrefix?: string } = {}) {
   const props = createOverlayProps(config);
@@ -8,12 +8,12 @@ export function createOverlay(config: { idPrefix?: string } = {}) {
   return {
     props,
     createEffects: () => createOverlayEffects({ id: props.id }),
-    context: useDisclosureContext(),
+    context: usePopoverContext(),
   };
 }
 
 export function createOverlayProps(config: { idPrefix?: string } = {}) {
-  const { idPrefix = 'solid-ui-disclosure-overlay' } = config;
+  const { idPrefix = 'solid-ui-popover-overlay' } = config;
   const id = useId(idPrefix);
 
   return {
@@ -25,14 +25,14 @@ export function createOverlayProps(config: { idPrefix?: string } = {}) {
 }
 
 export function registerOverlayIdOnMount(config: { id: string }) {
-  const disclosureActions = useDisclosureActions();
-  onMount(() => disclosureActions.setElementId('overlayId', config.id));
+  const popoverActions = usePopoverActions();
+  onMount(() => popoverActions.setElementId('overlayId', config.id));
 }
 
 export function trackIsOverlayMounted() {
-  const disclosureActions = useDisclosureActions();
-  onMount(disclosureActions.onOverlayMount);
-  onCleanup(disclosureActions.onOverlayCleanup);
+  const popoverActions = usePopoverActions();
+  onMount(popoverActions.onOverlayMount);
+  onCleanup(popoverActions.onOverlayCleanup);
 }
 
 export function createOverlayEffects(config: { id: string }) {

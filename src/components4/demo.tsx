@@ -1,4 +1,4 @@
-import { PopoverExample } from './examples/popover';
+import { PopoverExample } from './examples/Popover';
 
 import '../demo.css';
 import '../solid-ui.css';
