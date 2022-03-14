@@ -24,13 +24,13 @@ export function PopoverTrigger(
 export function PopoverOverlay(props: PropsWithChildren) {
   const {
     props: overlayProps,
-    createEffects,
+    effects,
     context,
   } = Popover.createOverlay({ idPrefix: 'solid-ui-popover-overlay' });
 
   createEffect(() => {
     if (context.isOverlayOpen()) {
-      createEffects();
+      effects();
     }
   });
 
@@ -43,23 +43,23 @@ export function PopoverOverlay(props: PropsWithChildren) {
   );
 }
 
-export function PopoverDialog(props: PropsWithChildren<{ ref?: ComponentRef<HTMLDivElement> }>) {
+export function PopoverPanel(props: PropsWithChildren<{ ref?: ComponentRef<HTMLDivElement> }>) {
   const {
-    props: dialogProps,
-    effects: createEffects,
+    props: panelProps,
+    effects,
     context,
   } = Popover.createPanel({ idPrefix: 'solid-ui-popover-panel' });
 
   createEffect(() => {
     if (context.isPopoverOpen()) {
-      createEffects();
+      effects();
     }
   });
 
   return (
     <Show when={context.isPopoverOpen()}>
       <Portal>
-        <div ref={props.ref} {...dialogProps} data-solid-ui-dialog>
+        <div ref={props.ref} {...panelProps}>
           {props.children}
         </div>
       </Portal>
@@ -73,10 +73,10 @@ export function PopoverExample() {
       <Popover>
         <PopoverTrigger ref={Popper.AnchorRef}>Open popover</PopoverTrigger>
         <PopoverOverlay />
-        <PopoverDialog ref={Popper.PopperRef}>
+        <PopoverPanel ref={Popper.PopperRef}>
           This is the popover.
           <PopoverTrigger>X</PopoverTrigger>
-        </PopoverDialog>
+        </PopoverPanel>
       </Popover>
     </Popper>
   );

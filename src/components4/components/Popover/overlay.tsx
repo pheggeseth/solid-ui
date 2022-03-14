@@ -7,7 +7,7 @@ export function createOverlay(config: { idPrefix?: string } = {}) {
 
   return {
     props,
-    createEffects: () => createOverlayEffects({ id: props.id }),
+    effects: () => createOverlayEffects({ id: props.id }),
     context: usePopoverContext(),
   };
 }
