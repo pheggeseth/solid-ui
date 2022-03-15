@@ -5,7 +5,7 @@ import Popover from '../components/Popover';
 
 import Popper from '../components/Popper';
 
-export function PopoverTrigger(
+function PopoverTrigger(
   props: PropsWithChildren<{ ref?: ComponentRef<HTMLButtonElement> }>
 ) {
   const { props: triggerProps, effects } = Popover.createTrigger({
@@ -21,7 +21,7 @@ export function PopoverTrigger(
   );
 }
 
-export function PopoverOverlay(props: PropsWithChildren) {
+function PopoverOverlay(props: PropsWithChildren) {
   const {
     props: overlayProps,
     effects,
@@ -43,7 +43,7 @@ export function PopoverOverlay(props: PropsWithChildren) {
   );
 }
 
-export function PopoverPanel(props: PropsWithChildren<{ ref?: ComponentRef<HTMLDivElement> }>) {
+function PopoverPanel(props: PropsWithChildren<{ ref?: ComponentRef<HTMLDivElement> }>) {
   const {
     props: panelProps,
     effects,

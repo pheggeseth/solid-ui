@@ -94,7 +94,7 @@ export function usePopoverContext(): PopoverContext {
     isOverlayOpen: () => state.shouldShowPanel,
     open: () => actions.openPopover(),
     close: () => actions.closePopover(),
-  } as const;
+  };
 }
 
 export type PopoverContextProp = {

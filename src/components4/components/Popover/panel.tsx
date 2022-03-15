@@ -13,9 +13,11 @@ export type PanelConfig<PanelElement extends HTMLElement> = {
   onKeyUp?: JSX.EventHandler<PanelElement, KeyboardEvent>;
 };
 
-export function createPanel(config: { idPrefix?: string } = {}) {
+export function createPanel<PanelElement extends HTMLElement = HTMLElement>(
+  config: PanelConfig<PanelElement> = {}
+) {
   const props = createPanelProps(config);
-  const handlers = createPanelHandlers();
+  const handlers = createPanelHandlers(config);
 
   return {
     props: mergeProps(props, handlers),
@@ -86,9 +88,7 @@ export function createPanelEffects(config: { id: string }) {
 }
 
 export function registerPanelIdOnMount(config: { id: string }) {
-  const popoverActions = usePopoverActions();
-
   onMount(() => {
-    popoverActions.setElementId('panelId', config.id);
+    usePopoverActions().setElementId('panelId', config.id);
   });
 }

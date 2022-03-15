@@ -21,7 +21,7 @@ export function createTrigger<TriggerElement extends HTMLElement = HTMLElement>(
     props: mergeProps(props, handlers),
     effects: () => createTriggerEffects({ id: props.id, primary: config.primary }),
     context: usePopoverContext(),
-  };
+  } as const;
 }
 
 export function createTriggerProps<TriggerElement extends HTMLElement>(
@@ -41,10 +41,9 @@ export function createTriggerProps<TriggerElement extends HTMLElement>(
     get ['aria-haspopup']() {
       return primary ? popoverState.role : undefined;
     },
-    'data-solid-ui-button': '',
     ...getDataProp(idPrefix),
     id,
-  };
+  } as const;
 }
 
 export function createTriggerHandlers<TriggerElement extends HTMLElement = HTMLElement>(
@@ -73,7 +72,7 @@ export function createTriggerHandlers<TriggerElement extends HTMLElement = HTMLE
   return {
     onClick,
     onKeyUp,
-  };
+  } as const;
 }
 
 export function createTriggerEffects(config: { id: string; primary?: boolean }) {
