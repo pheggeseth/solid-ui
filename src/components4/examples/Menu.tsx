@@ -57,7 +57,11 @@ function MenuList(props: PropsWithChildren<{ ref?: ComponentRef<HTMLUListElement
 }
 
 function MenuItem(props: PropsWithChildren) {
-  const { props: itemProps, effects, context } = Menu.createItem();
+  const {
+    props: itemProps,
+    effects,
+    context,
+  } = Menu.createItem({ onClick: () => console.log(props.children) });
 
   effects();
 

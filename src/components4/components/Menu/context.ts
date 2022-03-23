@@ -22,6 +22,7 @@ type MenuElementIds = {
 
 export type MenuState = MenuElementIds &
   ActiveItemState & {
+    menuActions: { [itemId: string]: () => void };
     orientation: ListOrientation;
     shouldShowPanel: boolean;
     isPanelOpen: boolean;
@@ -31,6 +32,9 @@ export type MenuState = MenuElementIds &
 export type MenuActions = ActiveItemActions &
   PopoverPanelActions &
   Readonly<{
+    addMenuAction(itemId: string, action: () => void): void;
+    removeMenuAction(itemId: string): void;
+    performMenuAction(itemId: string, eventType: 'mouse' | 'keyboard'): void;
     setElementId(name: keyof MenuElementIds, id: string): void;
   }>;
 
@@ -62,11 +66,33 @@ export function createMenuStore(
     get orientation(): ListOrientation {
       return config.orientation();
     },
+    menuActions: {},
   });
 
   const actions: MenuActions = {
     ...createActiveItemActions(setState, config),
     ...createPopoverPanelActions(setState as PopoverPanelActionsSetStoreFunction),
+    addMenuAction(itemId, action) {
+      setState('menuActions', (menuActions) => ({ ...menuActions, [itemId]: action }));
+    },
+    removeMenuAction(itemId) {
+      setState('menuActions', (menuActions) => ({ ...menuActions, [itemId]: undefined }));
+    },
+    performMenuAction(itemId: string, eventType) {
+      if (state.menuActions[itemId]) {
+        state.menuActions[itemId]();
+        actions.closePopover();
+      } else {
+        if (eventType !== 'mouse') {
+          const element = document.getElementById(itemId);
+          if (element['$$click'] || element.onclick || ['BUTTON', 'A'].includes(element.tagName)) {
+            element.click();
+          }
+        }
+
+        actions.closePopover();
+      }
+    },
     setElementId(name, id) {
       setState({ [name]: id });
     },
