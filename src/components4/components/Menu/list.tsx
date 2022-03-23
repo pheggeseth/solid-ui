@@ -6,7 +6,7 @@ import {
 } from '~/components4/utils/eventUtils';
 import { getDataProp, useId } from '~/utils/componentUtils';
 import { useKeyEventHandlers } from '~/utils/eventUtils';
-import { useMenuActions, useMenuState } from './context';
+import { useMenuActions, useMenuContext, useMenuState } from './context';
 
 export type ListConfig<ListElement extends HTMLElement> = {
   idPrefix?: string;
@@ -22,6 +22,7 @@ export function createList<ListElement extends HTMLElement = HTMLElement>(
   return {
     props: mergeProps(props, handlers),
     effects: () => createListEffects({ id: props.id }),
+    context: useMenuContext(),
   };
 }
 
@@ -105,7 +106,7 @@ export function createListEffects(config: { id: string }) {
 
   registerListIdOnMount(config);
 
-  if (!state.panelId) {
+  if (!state.popoverId) {
     createFocusTrapEffect({
       containerId: config.id,
       isEnabled: () => state.isPanelOpen,

@@ -1,5 +1,5 @@
 import { Accessor, createContext, createSelector, useContext } from 'solid-js';
-import { createStore } from 'solid-js/store';
+import { createStore, SetStoreFunction } from 'solid-js/store';
 import { ListOrientation } from '~/types';
 import {
   ActiveItemActions,
@@ -7,13 +7,17 @@ import {
   ActiveItemState,
   createActiveItemActions,
 } from '../ActiveItem';
-import { createPopoverPanelActions, PopoverPanelActions } from '../Popover';
+import {
+  createPopoverPanelActions,
+  PopoverPanelActions,
+  PopoverPanelActionsSetStoreFunction,
+} from '../Popover';
 
 type MenuElementIds = {
   triggerId: string;
   listId: string;
   overlayId: string;
-  panelId: string;
+  popoverId: string;
 };
 
 export type MenuState = MenuElementIds &
@@ -46,7 +50,7 @@ export function createMenuStore(
     triggerId: null,
     listId: null,
     overlayId: null,
-    panelId: null,
+    popoverId: null,
     shouldShowPanel: false,
     get isPanelOpen(): boolean {
       return state.shouldShowPanel && (!state.overlayId || state.isOverlayMounted);
@@ -62,7 +66,7 @@ export function createMenuStore(
 
   const actions: MenuActions = {
     ...createActiveItemActions(setState, config),
-    ...createPopoverPanelActions(setState),
+    ...createPopoverPanelActions(setState as PopoverPanelActionsSetStoreFunction),
     setElementId(name, id) {
       setState({ [name]: id });
     },
@@ -76,7 +80,7 @@ export function createMenuStore(
 }
 
 export const MenuStoreContext = createContext<MenuStore>();
-export function useMenuContext() {
+export function useMenuStore() {
   return useContext(MenuStoreContext);
 }
 export function useMenuState() {
@@ -87,4 +91,24 @@ export function useMenuActions() {
 }
 export function useMenuSelectors() {
   return useContext(MenuStoreContext)[2];
+}
+
+export type MenuContext = Readonly<{
+  isItemActive: (itemId: string) => boolean;
+  isMenuOpen: Accessor<boolean>;
+  open: () => void;
+  close: () => void;
+}>;
+
+export function useMenuContext(): MenuContext {
+  const state = useMenuState();
+  const actions = useMenuActions();
+  const selectors = useMenuSelectors();
+
+  return {
+    isItemActive: (itemId: string) => selectors.isItemActive(itemId),
+    isMenuOpen: () => state.isPanelOpen,
+    open: () => actions.openPopover(),
+    close: () => actions.closePopover(),
+  };
 }

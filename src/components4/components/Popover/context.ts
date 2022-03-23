@@ -28,9 +28,10 @@ export type PopoverActions = Readonly<{
 export type PopoverStore = [state: PopoverState, actions: PopoverActions];
 
 export type PopoverPanelActions = Omit<PopoverActions, 'setElementId'>;
+export type PopoverPanelActionsSetStoreFunction = SetStoreFunction<Omit<PopoverState, 'role'>>;
 
 export function createPopoverPanelActions(
-  setState: SetStoreFunction<Omit<PopoverState, 'role'>>
+  setState: PopoverPanelActionsSetStoreFunction
 ): PopoverPanelActions {
   return {
     openPopover() {
