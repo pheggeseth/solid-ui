@@ -1,7 +1,12 @@
 import { Accessor, createContext, createSelector, useContext } from 'solid-js';
 import { createStore } from 'solid-js/store';
 import { ListOrientation } from '~/types';
-import { ActiveItemActions, ActiveItemState, createActiveItemActions } from '../ActiveItem';
+import {
+  ActiveItemActions,
+  ActiveItemSelectors,
+  ActiveItemState,
+  createActiveItemActions,
+} from '../ActiveItem';
 import { createPopoverPanelActions, PopoverPanelActions } from '../Popover';
 
 type MenuElementIds = {
@@ -25,9 +30,7 @@ export type MenuActions = ActiveItemActions &
     setElementId(name: keyof MenuElementIds, id: string): void;
   }>;
 
-export type MenuSelectors = Readonly<{
-  isItemActive(itemId: string): boolean;
-}>;
+export type MenuSelectors = ActiveItemSelectors;
 
 export type MenuStore = Readonly<
   [state: MenuState, actions: MenuActions, selectors: MenuSelectors]

@@ -6,9 +6,9 @@ export type ActiveItemState = {
   search: string;
 };
 
-type Selectors = {
+export type ActiveItemSelectors = Readonly<{
   isItemActive: (itemId: string) => boolean;
-};
+}>;
 
 export type ActiveItemActions = Readonly<{
   addItem(id: string): void;
