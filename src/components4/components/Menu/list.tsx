@@ -23,7 +23,7 @@ export function createList<ListElement extends HTMLElement = HTMLElement>(
     props: mergeProps(props, handlers),
     effects: () => createListEffects({ id: props.id }),
     context: useMenuContext(),
-  };
+  } as const;
 }
 
 export function createListProps<ListElement extends HTMLElement = HTMLElement>(
@@ -40,15 +40,18 @@ export function createListProps<ListElement extends HTMLElement = HTMLElement>(
     },
     ...getDataProp(idPrefix),
     id,
+    role: 'menu',
     tabIndex: 0,
-  };
+  } as const;
 }
 
-export function createListHandlers<ListElement extends HTMLElement = HTMLElement>() {
+export function createListHandlers<ListElement extends HTMLElement = HTMLElement>(
+  config: ListConfig<ListElement> = {}
+) {
   const state = useMenuState();
   const actions = useMenuActions();
 
-  const onKeyDown = useKeyEventHandlers<ListElement>({
+  const handlers = useKeyEventHandlers<ListElement>({
     ArrowUp(event) {
       if (state.orientation === 'vertical') {
         event.preventDefault();
@@ -82,7 +85,9 @@ export function createListHandlers<ListElement extends HTMLElement = HTMLElement
       actions.focusLastItem();
     },
     Escape() {
-      actions.closePopover();
+      if (!state.panelId) {
+        actions.closePopover();
+      }
     },
     default(event) {
       if (event.key.length === 1) {
@@ -95,9 +100,14 @@ export function createListHandlers<ListElement extends HTMLElement = HTMLElement
     },
   });
 
+  const onKeyDown: JSX.EventHandler<ListElement, KeyboardEvent> = (event) => {
+    handlers(event);
+    config.onKeyDown?.(event);
+  };
+
   return {
     onKeyDown,
-  };
+  } as const;
 }
 
 export function createListEffects(config: { id: string }) {
@@ -106,7 +116,7 @@ export function createListEffects(config: { id: string }) {
 
   registerListIdOnMount(config);
 
-  if (!state.popoverId) {
+  if (!state.panelId) {
     createFocusTrapEffect({
       containerId: config.id,
       isEnabled: () => state.isPanelOpen,

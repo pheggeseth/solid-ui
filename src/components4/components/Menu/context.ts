@@ -17,7 +17,7 @@ type MenuElementIds = {
   triggerId: string;
   listId: string;
   overlayId: string;
-  popoverId: string;
+  panelId: string;
 };
 
 export type MenuState = MenuElementIds &
@@ -50,7 +50,7 @@ export function createMenuStore(
     triggerId: null,
     listId: null,
     overlayId: null,
-    popoverId: null,
+    panelId: null,
     shouldShowPanel: false,
     get isPanelOpen(): boolean {
       return state.shouldShowPanel && (!state.overlayId || state.isOverlayMounted);
@@ -112,3 +112,7 @@ export function useMenuContext(): MenuContext {
     close: () => actions.closePopover(),
   };
 }
+
+export type MenuContextProp = {
+  context?: (ctx: MenuContext) => void;
+};

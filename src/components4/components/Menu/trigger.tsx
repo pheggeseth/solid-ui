@@ -9,7 +9,7 @@ export type TriggerConfig<TriggerElement extends HTMLElement> = {
 };
 
 export function createTrigger<TriggerElement extends HTMLElement = HTMLElement>(
-  config: TriggerConfig<TriggerElement>
+  config: TriggerConfig<TriggerElement> = {}
 ) {
   const props = createTriggerProps<TriggerElement>(config);
   const handlers = createTriggerHandlers<TriggerElement>(config);
@@ -18,7 +18,7 @@ export function createTrigger<TriggerElement extends HTMLElement = HTMLElement>(
     props: mergeProps(props, handlers),
     effects: () => createTriggerEffects({ id: props.id }),
     context: useMenuContext(),
-  };
+  } as const;
 }
 
 export function createTriggerProps<TriggerElement extends HTMLElement>(
@@ -30,7 +30,7 @@ export function createTriggerProps<TriggerElement extends HTMLElement>(
 
   return {
     get ['aria-controls']() {
-      return state.popoverId || state.listId;
+      return state.panelId || state.listId;
     },
     get ['aria-expanded']() {
       return state.isPanelOpen;
