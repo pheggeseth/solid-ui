@@ -84,6 +84,10 @@ export function createListHandlers<ListElement extends HTMLElement = HTMLElement
       event.preventDefault();
       actions.focusLastItem();
     },
+    Enter(event) {
+      event.preventDefault();
+      actions.performMenuAction(state.activeItemId, 'keyboard');
+    },
     Escape() {
       if (!state.panelId) {
         actions.closePopover();
@@ -92,7 +96,8 @@ export function createListHandlers<ListElement extends HTMLElement = HTMLElement
     default(event) {
       if (event.key.length === 1) {
         if (!state.search && event.key === ' ') {
-          return;
+          event.preventDefault();
+          actions.performMenuAction(state.activeItemId, 'keyboard');
         } else {
           actions.focusTypeaheadItem(event.key);
         }
