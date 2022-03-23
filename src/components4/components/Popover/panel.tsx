@@ -23,7 +23,7 @@ export function createPanel<PanelElement extends HTMLElement = HTMLElement>(
     props: mergeProps(props, handlers),
     effects: () => createPanelEffects({ id: props.id }),
     context: usePopoverContext(),
-  };
+  } as const;
 }
 
 export function createPanelProps<PanelElement extends HTMLElement = HTMLElement>(
@@ -35,7 +35,6 @@ export function createPanelProps<PanelElement extends HTMLElement = HTMLElement>
   const popoverState = usePopoverState();
 
   return {
-    'data-solid-ui-panel': '',
     ...getDataProp(idPrefix),
     id,
     get role() {

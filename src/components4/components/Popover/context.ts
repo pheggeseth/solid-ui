@@ -1,5 +1,5 @@
 import { Accessor, createContext, useContext } from 'solid-js';
-import { createStore } from 'solid-js/store';
+import { createStore, SetStoreFunction } from 'solid-js/store';
 
 type PopoverElementIds = {
   triggerId: string;
@@ -26,6 +26,30 @@ export type PopoverActions = Readonly<{
 }>;
 
 export type PopoverStore = [state: PopoverState, actions: PopoverActions];
+
+export type PopoverPanelActions = Omit<PopoverActions, 'setElementId'>;
+
+export function createPopoverPanelActions(
+  setState: SetStoreFunction<Omit<PopoverState, 'role'>>
+): PopoverPanelActions {
+  return {
+    openPopover() {
+      setState('shouldShowPanel', true);
+    },
+    closePopover() {
+      setState('shouldShowPanel', false);
+    },
+    togglePopover() {
+      setState('shouldShowPanel', (state) => !state);
+    },
+    onOverlayMount() {
+      setState({ isOverlayMounted: true });
+    },
+    onOverlayCleanup() {
+      setState({ isOverlayMounted: false });
+    },
+  };
+}
 
 export function createPopoverStore(config: { role?: Accessor<PopoverRole> } = {}) {
   const [state, setState] = createStore<PopoverState>({
