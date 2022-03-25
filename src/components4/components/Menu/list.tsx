@@ -32,12 +32,16 @@ export function createListProps<ListElement extends HTMLElement = HTMLElement>(
   const { idPrefix = 'solid-ui-menu-list' } = config;
   const id = useId(idPrefix);
 
-  const menuState = useMenuState();
+  const state = useMenuState();
 
   return {
     get ['aria-activedescendent']() {
-      return menuState.activeItemId;
+      return state.activeItemId;
     },
+    get ['data-solid-ui-panel']() {
+      return state.panelId ? undefined : '';
+    },
+    'data-solid-ui-list': '',
     ...getDataProp(idPrefix),
     id,
     role: 'menu',

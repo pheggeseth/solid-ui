@@ -39,6 +39,7 @@ export function createTriggerProps<TriggerElement extends HTMLElement>(
     get ['aria-labelledby']() {
       return state.labelId;
     },
+    'data-solid-ui-button': '',
     ...getDataProp(idPrefix),
     id,
   } as const;

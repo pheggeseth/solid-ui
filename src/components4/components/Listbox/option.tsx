@@ -57,6 +57,7 @@ export function createOptionProps<Value, OptionElement extends HTMLElement = HTM
     get ['data-selected']() {
       return selectors.isSelected(config.value?.()) ? '' : undefined;
     },
+    'data-solid-ui-list-item': '',
     ...getDataProp(idPrefix),
     id,
     role: 'option',

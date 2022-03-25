@@ -46,6 +46,7 @@ export function createItemProps(config: { idPrefix?: string }) {
     get ['data-active']() {
       return selectors.isActive(id) ? '' : undefined;
     },
+    'data-solid-ui-list-item': '',
     ...getDataProp(idPrefix),
     id,
     role: 'menuitem',

@@ -35,6 +35,7 @@ export function createPanelProps<PanelElement extends HTMLElement = HTMLElement>
   const popoverState = usePopoverState();
 
   return {
+    'data-solid-ui-panel': '',
     ...getDataProp(idPrefix),
     id,
     get role() {

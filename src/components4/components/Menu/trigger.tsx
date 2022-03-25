@@ -36,6 +36,7 @@ export function createTriggerProps<TriggerElement extends HTMLElement>(
       return state.isPanelOpen;
     },
     ['aria-haspopup']: 'menu',
+    'data-solid-ui-button': '',
     ...getDataProp(idPrefix),
     id,
   } as const;

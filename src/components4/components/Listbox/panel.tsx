@@ -32,6 +32,7 @@ export function createPanelProps<PanelElement extends HTMLElement = HTMLElement>
   const id = useId(idPrefix);
 
   return {
+    'data-solid-ui-panel': '',
     ...getDataProp(idPrefix),
     id,
     tabIndex: -1,

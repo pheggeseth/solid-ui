@@ -41,6 +41,10 @@ export function createListProps<ListElement extends HTMLElement = HTMLElement>(
     get ['aria-labelledby']() {
       return state.labelId;
     },
+    get ['data-solid-ui-panel']() {
+      return state.panelId ? undefined : '';
+    },
+    'data-solid-ui-list': '',
     ...getDataProp(idPrefix),
     id,
     role: 'listbox',

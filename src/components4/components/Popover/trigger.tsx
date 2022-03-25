@@ -41,6 +41,7 @@ export function createTriggerProps<TriggerElement extends HTMLElement>(
     get ['aria-haspopup']() {
       return primary ? popoverState.role : undefined;
     },
+    'data-solid-ui-button': '',
     ...getDataProp(idPrefix),
     id,
   } as const;

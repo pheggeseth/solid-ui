@@ -38,6 +38,7 @@ export function createTriggerProps<TriggerElement extends HTMLElement>(
     get ['aria-expanded']() {
       return primary ? disclosureState.isShowingContent : undefined;
     },
+    'data-solid-ui-button': '',
     ...getDataProp(idPrefix),
     id,
   } as const;
