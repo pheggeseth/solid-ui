@@ -91,7 +91,7 @@ export function createActiveItemActions(
           .slice(activeItemIndex + 1)
           .concat(state.items.slice(0, activeItemIndex));
 
-        const searchTerm = state.search.toLocaleLowerCase();
+        const searchTerm = search.toLocaleLowerCase();
         const matchingItemId = wrappedItems.find((id) =>
           document.getElementById(id).textContent.toLocaleLowerCase().startsWith(searchTerm)
         );
