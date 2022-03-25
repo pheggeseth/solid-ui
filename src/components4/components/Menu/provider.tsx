@@ -1,4 +1,4 @@
-import { PropsWithChildren } from 'solid-js';
+import { mergeProps, PropsWithChildren } from 'solid-js';
 import { ListOrientation } from '~/types';
 import {
   createMenuStore,
@@ -15,7 +15,9 @@ export type MenuProviderProps = PropsWithChildren<
 >;
 
 export default function MenuProvider(props: MenuProviderProps) {
-  const store = createMenuStore();
+  props = mergeProps<typeof props[]>({ orientation: 'vertical' }, props);
+
+  const store = createMenuStore({ orientation: () => props.orientation });
 
   return (
     <MenuStoreContext.Provider value={store as MenuStore}>

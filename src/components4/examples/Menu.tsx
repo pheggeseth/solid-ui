@@ -1,6 +1,6 @@
 import { createEffect, PropsWithChildren, Show } from 'solid-js';
 import { Portal } from 'solid-js/web';
-import Popper from '~/components3/Popper';
+import Popper from '~/components4/components/Popper';
 import { ComponentRef } from '~/types';
 import Menu from '../components/Menu';
 
@@ -20,13 +20,13 @@ function MenuPanel(props: PropsWithChildren<{ ref?: ComponentRef<HTMLDivElement>
   const { props: panelProps, effects, context } = Menu.createPanel();
 
   createEffect(() => {
-    if (context.isMenuOpen()) {
+    if (context.isOpen()) {
       effects();
     }
   });
 
   return (
-    <Show when={context.isMenuOpen()}>
+    <Show when={context.isOpen()}>
       <Portal>
         <div ref={props.ref} {...panelProps}>
           {props.children}
@@ -40,13 +40,13 @@ function MenuList(props: PropsWithChildren<{ ref?: ComponentRef<HTMLUListElement
   const { props: listProps, effects, context } = Menu.createList();
 
   createEffect(() => {
-    if (context.isMenuOpen()) {
+    if (context.isOpen()) {
       effects();
     }
   });
 
   return (
-    <Show when={context.isMenuOpen()}>
+    <Show when={context.isOpen()}>
       <Portal>
         <ul ref={props.ref} {...listProps}>
           {props.children}

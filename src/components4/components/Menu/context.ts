@@ -1,5 +1,5 @@
 import { Accessor, createContext, createSelector, useContext } from 'solid-js';
-import { createStore, SetStoreFunction } from 'solid-js/store';
+import { createStore } from 'solid-js/store';
 import { ListOrientation } from '~/types';
 import {
   ActiveItemActions,
@@ -11,6 +11,7 @@ import {
   createPopoverPanelActions,
   PopoverPanelActions,
   PopoverPanelActionsSetStoreFunction,
+  PopoverPanelState,
 } from '../Popover';
 
 type MenuElementIds = {
@@ -21,21 +22,19 @@ type MenuElementIds = {
 };
 
 export type MenuState = MenuElementIds &
-  ActiveItemState & {
+  ActiveItemState &
+  PopoverPanelState & {
     menuActions: { [itemId: string]: () => void };
     orientation: ListOrientation;
-    shouldShowPanel: boolean;
-    isPanelOpen: boolean;
-    isOverlayMounted: boolean;
   };
 
 export type MenuActions = ActiveItemActions &
   PopoverPanelActions &
   Readonly<{
+    setElementId(name: keyof MenuElementIds, id: string): void;
     addMenuAction(itemId: string, action: () => void): void;
     removeMenuAction(itemId: string): void;
     performMenuAction(itemId: string, eventType: 'mouse' | 'keyboard'): void;
-    setElementId(name: keyof MenuElementIds, id: string): void;
   }>;
 
 export type MenuSelectors = ActiveItemSelectors;
@@ -60,8 +59,8 @@ export function createMenuStore(
       return state.shouldShowPanel && (!state.overlayId || state.isOverlayMounted);
     },
     isOverlayMounted: false,
-    activeItemId: null,
     items: [],
+    activeItemId: null,
     search: '',
     get orientation(): ListOrientation {
       return config.orientation();
@@ -71,7 +70,7 @@ export function createMenuStore(
 
   const actions: MenuActions = {
     ...createActiveItemActions(setState, config),
-    ...createPopoverPanelActions(setState as PopoverPanelActionsSetStoreFunction),
+    ...createPopoverPanelActions(setState),
     addMenuAction(itemId, action) {
       setState('menuActions', (menuActions) => ({ ...menuActions, [itemId]: action }));
     },
@@ -99,10 +98,10 @@ export function createMenuStore(
   };
 
   const selectors: MenuSelectors = {
-    isItemActive: createSelector(() => state.activeItemId),
+    isActive: createSelector(() => state.activeItemId),
   };
 
-  return [state as MenuState, actions, selectors];
+  return [state as MenuState, actions, selectors] as const;
 }
 
 export const MenuStoreContext = createContext<MenuStore>();
@@ -121,7 +120,7 @@ export function useMenuSelectors() {
 
 export type MenuContext = Readonly<{
   isItemActive: (itemId: string) => boolean;
-  isMenuOpen: Accessor<boolean>;
+  isOpen: Accessor<boolean>;
   open: () => void;
   close: () => void;
 }>;
@@ -132,8 +131,8 @@ export function useMenuContext(): MenuContext {
   const selectors = useMenuSelectors();
 
   return {
-    isItemActive: (itemId: string) => selectors.isItemActive(itemId),
-    isMenuOpen: () => state.isPanelOpen,
+    isItemActive: (itemId: string) => selectors.isActive(itemId),
+    isOpen: () => state.isPanelOpen,
     open: () => actions.openPopover(),
     close: () => actions.closePopover(),
   };

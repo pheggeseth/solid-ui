@@ -9,12 +9,10 @@ type PopoverElementIds = {
 
 export type PopoverRole = 'menu' | 'listbox' | 'tree' | 'grid';
 
-export type PopoverState = PopoverElementIds & {
-  role: PopoverRole;
-  shouldShowPanel: boolean;
-  isPanelOpen: boolean;
-  isOverlayMounted: boolean;
-};
+export type PopoverState = PopoverElementIds &
+  PopoverPanelState & {
+    role: PopoverRole;
+  };
 
 export type PopoverActions = Readonly<{
   setElementId(name: keyof PopoverElementIds, id: string): void;
@@ -27,6 +25,11 @@ export type PopoverActions = Readonly<{
 
 export type PopoverStore = [state: PopoverState, actions: PopoverActions];
 
+export type PopoverPanelState = {
+  shouldShowPanel: boolean;
+  isPanelOpen: boolean;
+  isOverlayMounted: boolean;
+};
 export type PopoverPanelActions = Omit<PopoverActions, 'setElementId'>;
 export type PopoverPanelActionsSetStoreFunction = SetStoreFunction<Omit<PopoverState, 'role'>>;
 

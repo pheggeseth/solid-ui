@@ -34,10 +34,10 @@ export function createItemProps(config: { idPrefix?: string }) {
 
   return {
     get ['aria-selected']() {
-      return selectors.isItemActive(id) || undefined;
+      return selectors.isActive(id) || undefined;
     },
     get ['data-active']() {
-      return selectors.isItemActive(id) ? '' : undefined;
+      return selectors.isActive(id) ? '' : undefined;
     },
     ...getDataProp(idPrefix),
     id,
@@ -73,7 +73,7 @@ export function createItemHandlers<ItemElement extends HTMLElement = HTMLElement
     onClick,
     onMouseEnter,
     onMouseLeave,
-  };
+  } as const;
 }
 
 export function createItemEffects(config: { id: string; action: () => void }) {

@@ -7,7 +7,7 @@ export type ActiveItemState = {
 };
 
 export type ActiveItemSelectors = Readonly<{
-  isItemActive: (itemId: string) => boolean;
+  isActive: (itemId: string) => boolean;
 }>;
 
 export type ActiveItemActions = Readonly<{
@@ -23,9 +23,11 @@ export type ActiveItemActions = Readonly<{
   clearItemFocus(): void;
 }>;
 
+export type CreateActiveItemActionsConfig = { getInitialFocusedItem?: (itemId: string) => boolean };
+
 export function createActiveItemActions(
   setState: SetStoreFunction<ActiveItemState>,
-  config: { getInitialFocusedItem?: (itemId: string) => boolean } = {}
+  config: CreateActiveItemActionsConfig = {}
 ): ActiveItemActions {
   const getActiveItemIndex = (state: DeepReadonly<ActiveItemState>) =>
     state.items.findIndex((id) => id === state.activeItemId);

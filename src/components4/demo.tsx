@@ -4,6 +4,7 @@ import { DisclosureExample } from './examples/Disclosure';
 import '../demo.css';
 import '../solid-ui.css';
 import { MenuExample } from './examples/Menu';
+import { ListboxExample } from './examples/Listbox';
 
 export function Demo() {
   return (
@@ -19,6 +20,10 @@ export function Demo() {
       <section>
         <h1>Menu</h1>
         <MenuExample />
+      </section>
+      <section>
+        <h1>Listbox</h1>
+        <ListboxExample />
       </section>
     </>
   );

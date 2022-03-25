@@ -5,7 +5,7 @@ import {
   focusInitialChildOnMount,
 } from '~/components4/utils/eventUtils';
 import { getDataProp, useId } from '~/utils/componentUtils';
-import { useMenuActions, useMenuContext, useMenuState } from './context';
+import { useListboxActions, useListboxContext, useListboxState } from './context';
 
 export type PanelConfig<PanelElement extends HTMLElement> = {
   idPrefix?: string;
@@ -21,14 +21,14 @@ export function createPanel<PanelElement extends HTMLElement = HTMLElement>(
   return {
     props: mergeProps(props, handlers),
     effects: () => createPanelEffects({ id: props.id }),
-    context: useMenuContext(),
+    context: useListboxContext(),
   } as const;
 }
 
 export function createPanelProps<PanelElement extends HTMLElement = HTMLElement>(
   config: PanelConfig<PanelElement>
 ) {
-  const { idPrefix = 'solid-ui-menu-panel' } = config;
+  const { idPrefix = 'solid-ui-listbox-panel' } = config;
   const id = useId(idPrefix);
 
   return {
@@ -41,7 +41,7 @@ export function createPanelProps<PanelElement extends HTMLElement = HTMLElement>
 export function createPanelHandlers<PanelElement extends HTMLElement = HTMLElement>(
   config: PanelConfig<PanelElement>
 ) {
-  const actions = useMenuActions();
+  const actions = useListboxActions();
 
   const onKeyUp: JSX.EventHandler<PanelElement, KeyboardEvent> = (event) => {
     if (event.key === 'Escape') {
@@ -56,8 +56,8 @@ export function createPanelHandlers<PanelElement extends HTMLElement = HTMLEleme
 }
 
 export function createPanelEffects(config: { id: string }) {
-  const state = useMenuState();
-  const actions = useMenuActions();
+  const state = useListboxState();
+  const actions = useListboxActions();
 
   registerPanelIdOnMount({ id: config.id });
 
@@ -80,7 +80,7 @@ export function createPanelEffects(config: { id: string }) {
 }
 
 export function registerPanelIdOnMount(config: { id: string }) {
-  const actions = useMenuActions();
+  const actions = useListboxActions();
   onMount(() => {
     actions.setElementId('panelId', config.id);
   });
