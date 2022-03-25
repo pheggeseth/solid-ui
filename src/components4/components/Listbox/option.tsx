@@ -26,11 +26,13 @@ export function createOption<Value, OptionElement extends HTMLElement = HTMLElem
   } as const;
 }
 
-export function createOptionProps(config: { idPrefix?: string }) {
+export function createOptionProps<Value, OptionElement extends HTMLElement = HTMLElement>(
+  config: OptionConfig<Value, OptionElement>
+) {
   const { idPrefix = 'solid-ui-listbox-option' } = config;
   const id = useId(idPrefix);
 
-  const selectors = useListboxSelectors();
+  const selectors = useListboxSelectors<Value>();
 
   return {
     get ['aria-selected']() {
@@ -38,6 +40,9 @@ export function createOptionProps(config: { idPrefix?: string }) {
     },
     get ['data-active']() {
       return selectors.isActive(id) ? '' : undefined;
+    },
+    get ['data-selected']() {
+      return selectors.isSelected(config.value?.()) ? '' : undefined;
     },
     ...getDataProp(idPrefix),
     id,
