@@ -23,7 +23,9 @@ export type ActiveItemActions = Readonly<{
   clearItemFocus(): void;
 }>;
 
-export type CreateActiveItemActionsConfig = { getInitialFocusedItem?: (itemId: string) => boolean };
+export type CreateActiveItemActionsConfig = {
+  getInitialFocusedItem?: (itemId: string, items?: readonly string[]) => boolean;
+};
 
 export function createActiveItemActions(
   setState: SetStoreFunction<ActiveItemState>,
@@ -44,7 +46,7 @@ export function createActiveItemActions(
     initializeItemFocus() {
       setState((state) => {
         if (config.getInitialFocusedItem) {
-          const id = state.items.find(config.getInitialFocusedItem);
+          const id = state.items.find((item) => config.getInitialFocusedItem(item, state.items));
           if (id) {
             return { activeItemId: id };
           } else {

@@ -17,7 +17,10 @@ export type MenuProviderProps = PropsWithChildren<
 export default function MenuProvider(props: MenuProviderProps) {
   props = mergeProps<typeof props[]>({ orientation: 'vertical' }, props);
 
-  const store = createMenuStore({ orientation: () => props.orientation });
+  const store = createMenuStore({
+    orientation: () => props.orientation,
+    getInitialFocusedItem: (itemId, items) => items.indexOf(itemId) === 0,
+  });
 
   return (
     <MenuStoreContext.Provider value={store as MenuStore}>

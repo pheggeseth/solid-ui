@@ -11,10 +11,11 @@ import {
 import { createPopoverPanelActions, PopoverPanelActions, PopoverPanelState } from '../Popover';
 
 type ListboxElementIds = {
-  triggerId: string;
+  labelId: string;
   listId: string;
   overlayId: string;
   panelId: string;
+  triggerId: string;
 };
 
 export type ListboxState<Value> = ListboxElementIds &
@@ -52,10 +53,11 @@ export function createListboxStore<Value = any>(
   config: CreateListboxStoreConfig<Value> = { orientation: () => 'vertical' }
 ): ListboxStore<Value> {
   const [state, setState] = createStore<ListboxState<Value>>({
-    triggerId: null,
+    labelId: null,
     listId: null,
     overlayId: null,
     panelId: null,
+    triggerId: null,
     shouldShowPanel: false,
     get isPanelOpen(): boolean {
       return state.shouldShowPanel && (!state.overlayId || state.isOverlayMounted);
@@ -85,7 +87,12 @@ export function createListboxStore<Value = any>(
       setState('values', { [itemId]: undefined });
     },
     chooseValue(itemId) {
-      config.onChange?.(state.values[itemId] as Value);
+      const newValue = state.values[itemId] as Value;
+
+      if (itemId && newValue !== config.value()) {
+        config.onChange?.(newValue);
+      }
+
       actions.closePopover();
     },
   };

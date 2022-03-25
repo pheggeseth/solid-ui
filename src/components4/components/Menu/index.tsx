@@ -14,17 +14,17 @@ export * from './trigger';
 
 export type MenuComponentType = {
   (props: MenuProviderProps): JSXElement;
-  createTrigger: typeof createTrigger;
-  createPanel: typeof createPanel;
-  createList: typeof createList;
   createItem: typeof createItem;
+  createList: typeof createList;
+  createPanel: typeof createPanel;
+  createTrigger: typeof createTrigger;
 };
 
 const MenuComponent: MenuComponentType = Object.assign(MenuProvider, {
-  createTrigger,
-  createPanel,
-  createList,
   createItem,
+  createList,
+  createPanel,
+  createTrigger,
 });
 
 export default MenuComponent;

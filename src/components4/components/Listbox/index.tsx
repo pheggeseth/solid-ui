@@ -1,4 +1,5 @@
 import { JSXElement } from 'solid-js';
+import { createLabel } from './label';
 import { createList } from './list';
 import { createOption } from './option';
 import { createPanel } from './panel';
@@ -14,17 +15,19 @@ export * from './trigger';
 
 export type ListboxComponentType = {
   <Value>(props: ListboxProviderProps<Value>): JSXElement;
-  createTrigger: typeof createTrigger;
-  createPanel: typeof createPanel;
+  createLabel: typeof createLabel;
   createList: typeof createList;
   createOption: typeof createOption;
+  createPanel: typeof createPanel;
+  createTrigger: typeof createTrigger;
 };
 
 const ListboxComponent: ListboxComponentType = Object.assign(ListboxProvider, {
-  createTrigger,
-  createPanel,
+  createLabel,
   createList,
   createOption,
+  createPanel,
+  createTrigger,
 });
 
 export default ListboxComponent;

@@ -36,6 +36,9 @@ export function createTriggerProps<TriggerElement extends HTMLElement>(
       return state.isPanelOpen;
     },
     ['aria-haspopup']: 'listbox',
+    get ['aria-labelledby']() {
+      return state.labelId;
+    },
     ...getDataProp(idPrefix),
     id,
   } as const;

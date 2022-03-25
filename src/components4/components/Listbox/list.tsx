@@ -38,6 +38,9 @@ export function createListProps<ListElement extends HTMLElement = HTMLElement>(
     get ['aria-activedescendent']() {
       return state.activeItemId;
     },
+    get ['aria-labelledby']() {
+      return state.labelId;
+    },
     ...getDataProp(idPrefix),
     id,
     role: 'listbox',

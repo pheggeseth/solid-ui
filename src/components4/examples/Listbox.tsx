@@ -4,6 +4,14 @@ import Popper from '~/components4/components/Popper';
 import { ComponentRef } from '~/types';
 import Listbox from '../components/Listbox';
 
+function ListboxLabel(props: PropsWithChildren) {
+  const { props: labelProps, effects } = Listbox.createLabel();
+
+  effects();
+
+  return <label {...labelProps}>{props.children}</label>;
+}
+
 function ListboxTrigger(props: PropsWithChildren<{ ref?: ComponentRef<HTMLButtonElement> }>) {
   const { props: triggerProps, effects } = Listbox.createTrigger();
 
@@ -76,6 +84,7 @@ export function ListboxExample() {
   return (
     <Popper>
       <Listbox value={value()} onChange={setValue}>
+        <ListboxLabel>Choose a fruit: </ListboxLabel>
         <ListboxTrigger ref={Popper.AnchorRef}>Listbox: {value()}</ListboxTrigger>
         <ListboxList ref={Popper.PopperRef}>
           <For each={fruits}>{(fruit) => <ListboxOption value={fruit}>{fruit}</ListboxOption>}</For>

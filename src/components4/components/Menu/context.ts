@@ -6,6 +6,7 @@ import {
   ActiveItemSelectors,
   ActiveItemState,
   createActiveItemActions,
+  CreateActiveItemActionsConfig,
 } from '../ActiveItem';
 import {
   createPopoverPanelActions,
@@ -46,8 +47,11 @@ export type MenuStore = Readonly<
 export function createMenuStore(
   config: {
     orientation: Accessor<ListOrientation>;
-    getInitialFocusedItem?: (itemId: string) => boolean;
-  } = { orientation: () => 'vertical' }
+    getInitialFocusedItem?: CreateActiveItemActionsConfig['getInitialFocusedItem'];
+  } = {
+    orientation: () => 'vertical',
+    getInitialFocusedItem: (itemId, items) => items.indexOf(itemId) === 0,
+  }
 ): MenuStore {
   const [state, setState] = createStore<MenuState>({
     triggerId: null,
@@ -78,19 +82,23 @@ export function createMenuStore(
       setState('menuActions', (menuActions) => ({ ...menuActions, [itemId]: undefined }));
     },
     performMenuAction(itemId: string, eventType) {
-      if (state.menuActions[itemId]) {
-        state.menuActions[itemId]();
-        actions.closePopover();
-      } else {
-        if (eventType !== 'mouse') {
-          const element = document.getElementById(itemId);
-          if (element['$$click'] || element.onclick || ['BUTTON', 'A'].includes(element.tagName)) {
-            element.click();
+      if (itemId) {
+        if (state.menuActions[itemId]) {
+          state.menuActions[itemId]();
+        } else {
+          if (eventType !== 'mouse') {
+            const element = document.getElementById(itemId);
+            if (
+              element &&
+              (element['$$click'] || element.onclick || ['BUTTON', 'A'].includes(element.tagName))
+            ) {
+              element.click();
+            }
           }
         }
-
-        actions.closePopover();
       }
+
+      actions.closePopover();
     },
     setElementId(name, id) {
       setState({ [name]: id });
