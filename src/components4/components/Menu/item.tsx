@@ -19,10 +19,17 @@ export function createItem<ItemElement extends HTMLElement = HTMLElement>(
     ...config,
   });
 
+  const selectors = useMenuSelectors();
+
+  const context = {
+    ...useMenuContext(),
+    isActive: () => selectors.isActive(props.id),
+  } as const;
+
   return {
     props: mergeProps(props, handlers),
     effects: () => createItemEffects({ id: props.id, action: config.action }),
-    context: useMenuContext(),
+    context,
   } as const;
 }
 

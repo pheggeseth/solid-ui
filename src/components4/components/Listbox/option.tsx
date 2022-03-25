@@ -1,6 +1,11 @@
 import { Accessor, JSX, mergeProps, onCleanup, onMount } from 'solid-js';
 import { getDataProp, useId } from '~/utils/componentUtils';
-import { useListboxActions, useListboxContext, useListboxSelectors } from './context';
+import {
+  ListboxContext,
+  useListboxActions,
+  useListboxContext,
+  useListboxSelectors,
+} from './context';
 
 export type OptionConfig<Value, OptionElement extends HTMLElement> = {
   idPrefix?: string;
@@ -19,10 +24,18 @@ export function createOption<Value, OptionElement extends HTMLElement = HTMLElem
     ...config,
   });
 
+  const selectors = useListboxSelectors<Value>();
+
+  const context = {
+    ...useListboxContext(),
+    isActive: () => selectors.isActive(props.id),
+    isSelected: () => selectors.isSelected(config.value()),
+  } as const;
+
   return {
     props: mergeProps(props, handlers),
     effects: () => createOptionEffects({ id: props.id, value: config.value }),
-    context: useListboxContext(),
+    context,
   } as const;
 }
 

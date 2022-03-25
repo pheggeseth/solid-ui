@@ -119,7 +119,7 @@ export function useMenuSelectors() {
 }
 
 export type MenuContext = Readonly<{
-  isItemActive: (itemId: string) => boolean;
+  isActive: (itemId: string) => boolean;
   isOpen: Accessor<boolean>;
   open: () => void;
   close: () => void;
@@ -131,11 +131,11 @@ export function useMenuContext(): MenuContext {
   const selectors = useMenuSelectors();
 
   return {
-    isItemActive: (itemId: string) => selectors.isActive(itemId),
+    isActive: (itemId: string) => selectors.isActive(itemId),
     isOpen: () => state.isPanelOpen,
     open: () => actions.openPopover(),
     close: () => actions.closePopover(),
-  };
+  } as const;
 }
 
 export type MenuContextProp = {
