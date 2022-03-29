@@ -1,10 +1,10 @@
-import { PopoverExample } from './examples/Popover';
-import { DisclosureExample } from './examples/Disclosure';
-
 import '../demo.css';
 import '../solid-ui.css';
-import { MenuExample } from './examples/Menu';
+import { ComboboxExample } from './examples/Combobox';
+import { DisclosureExample } from './examples/Disclosure';
 import { ListboxExample } from './examples/Listbox';
+import { MenuExample } from './examples/Menu';
+import { PopoverExample } from './examples/Popover';
 
 export function Demo() {
   return (
@@ -24,6 +24,10 @@ export function Demo() {
       <section>
         <h1>Listbox</h1>
         <ListboxExample />
+      </section>
+      <section>
+        <h1>Combobox</h1>
+        <ComboboxExample />
       </section>
     </>
   );

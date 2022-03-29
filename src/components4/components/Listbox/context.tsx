@@ -18,36 +18,49 @@ type ListboxElementIds = {
   triggerId: string;
 };
 
+export type ListboxValueState<Value> = {
+  orientation: ListOrientation;
+  values: { [itemId: string]: Value };
+};
+
 export type ListboxState<Value> = ListboxElementIds &
   ActiveItemState &
-  PopoverPanelState & {
-    orientation: ListOrientation;
-    values: { [itemId: string]: Value };
-  };
+  PopoverPanelState &
+  ListboxValueState<Value>;
+
+export type ListboxValueActions<Value> = {
+  addValue(itemId: string, value: Value): void;
+  removeValue(itemId: string): void;
+  chooseValue(itemId: string): void;
+};
 
 export type ListboxActions<Value> = ActiveItemActions &
   PopoverPanelActions &
+  ListboxValueActions<Value> &
   Readonly<{
     setElementId(name: keyof ListboxElementIds, id: string): void;
-    addValue(itemId: string, value: Value): void;
-    removeValue(itemId: string): void;
-    chooseValue(itemId: string): void;
   }>;
 
-export type ListboxSelectors<Value> = ActiveItemSelectors &
-  Readonly<{
-    isSelected(value: Value): boolean;
-  }>;
+export type ListboxValueSelectors<Value> = Readonly<{
+  isSelected(value: Value): boolean;
+}>;
+
+export type ListboxSelectors<Value> = ActiveItemSelectors & ListboxValueSelectors<Value>;
 
 export type ListboxStore<Value> = Readonly<
   [state: ListboxState<Value>, actions: ListboxActions<Value>, selectors: ListboxSelectors<Value>]
 >;
 
-export type CreateListboxStoreConfig<Value> = CreateActiveItemActionsConfig & {
+export type CreateListboxValueConfig<Value> = {
   onChange?: (newValue: Value) => void;
-  orientation?: Accessor<ListOrientation>;
   value?: Accessor<Value>;
 };
+
+export type CreateListboxStoreConfig<Value> = CreateActiveItemActionsConfig &
+  CreateListboxValueConfig<Value> &
+  Readonly<{
+    orientation?: Accessor<ListOrientation>;
+  }>;
 
 export function createListboxStore<Value = any>(
   config: CreateListboxStoreConfig<Value> = { orientation: () => 'vertical' }

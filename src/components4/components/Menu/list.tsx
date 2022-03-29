@@ -82,7 +82,7 @@ export function createListHandlers<ListElement extends HTMLElement = HTMLElement
     },
     Home(event) {
       event.preventDefault();
-      actions.focusFirstDescendent();
+      actions.focusFirstItem();
     },
     End(event) {
       event.preventDefault();

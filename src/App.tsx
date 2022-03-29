@@ -4,7 +4,7 @@ import Form from '~/components/Form';
 import Switch from '~/components/Switch';
 import './App.css';
 import { Demo } from './components4/demo';
-// import { Demo } from './components3/demo';
+import { Demo as Demo3 } from './components3/demo';
 import CalendarDemo from './demo/Calendar';
 import ComboboxDemo from './demo/Combobox';
 import ListboxDemo from './demo/Listbox';
@@ -94,6 +94,7 @@ const App: Component = () => {
   return (
     <>
       <Demo />
+      <Demo3 />
       {/* <NewDemo />
       <section>
         <h1>Old</h1>

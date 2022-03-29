@@ -1,12 +1,8 @@
 import { JSX, mergeProps, onMount } from 'solid-js';
-import {
-  createClickAwayEffect,
-  createFocusTrapEffect,
-  focusInitialChildOnMount,
-} from '~/components4/utils/eventUtils';
+import { createClickAwayEffect } from '~/components4/utils/eventUtils';
 import { getDataProp, useId } from '~/utils/componentUtils';
 import { useKeyEventHandlers } from '~/utils/eventUtils';
-import { useListboxActions, useListboxContext, useListboxState } from './context';
+import { useComboboxActions, useComboboxContext, useComboboxState } from './context';
 
 export type ListConfig<ListElement extends HTMLElement> = {
   idPrefix?: string;
@@ -22,17 +18,17 @@ export function createList<ListElement extends HTMLElement = HTMLElement>(
   return {
     props: mergeProps(props, handlers),
     effects: () => createListEffects({ id: props.id }),
-    context: useListboxContext(),
+    context: useComboboxContext(),
   } as const;
 }
 
 export function createListProps<ListElement extends HTMLElement = HTMLElement>(
   config: ListConfig<ListElement> = {}
 ) {
-  const { idPrefix = 'solid-ui-listbox-list' } = config;
+  const { idPrefix = 'solid-ui-combobox-list' } = config;
   const id = useId(idPrefix);
 
-  const state = useListboxState();
+  const state = useComboboxState();
 
   return {
     get ['aria-activedescendent']() {
@@ -55,8 +51,8 @@ export function createListProps<ListElement extends HTMLElement = HTMLElement>(
 export function createListHandlers<ListElement extends HTMLElement = HTMLElement>(
   config: ListConfig<ListElement> = {}
 ) {
-  const state = useListboxState();
-  const actions = useListboxActions();
+  const state = useComboboxState();
+  const actions = useComboboxActions();
 
   const handlers = useKeyEventHandlers<ListElement>({
     ArrowUp(event) {
@@ -123,27 +119,18 @@ export function createListHandlers<ListElement extends HTMLElement = HTMLElement
 }
 
 export function createListEffects(config: { id: string }) {
-  const state = useListboxState();
-  const actions = useListboxActions();
+  const state = useComboboxState();
+  const actions = useComboboxActions();
 
   registerListIdOnMount(config);
 
   if (!state.panelId) {
-    createFocusTrapEffect({
-      containerId: config.id,
-      isEnabled: () => state.isPanelOpen,
-    });
-
-    focusInitialChildOnMount({
-      containerId: config.id,
-    });
-
     createClickAwayEffect({
       containerId: config.id,
       exceptionIds: () => [state.triggerId],
       onClickAway: actions.closePopover,
       isEnabled: () =>
-        state.isPanelOpen && document.getElementById(config.id).contains(document.activeElement),
+        state.isPanelOpen /* && document.getElementById(config.id).contains(document.activeElement) */,
     });
   }
 
@@ -151,14 +138,14 @@ export function createListEffects(config: { id: string }) {
 }
 
 export function registerListIdOnMount(config: { id: string }) {
-  const actions = useListboxActions();
+  const actions = useComboboxActions();
   onMount(() => {
     actions.setElementId('listId', config.id);
   });
 }
 
 export function initializeActiveItemOnMount() {
-  const actions = useListboxActions();
+  const actions = useComboboxActions();
   onMount(() => {
     actions.initializeItemFocus();
   });

@@ -31,8 +31,8 @@ import {
 import { PopupButton, PopupContext, PopupOverlay, PopupPanel, PopupProvider } from './Popup';
 import { RadioGroup, RadioGroupOption } from './RadioGroup';
 
-import './demo.css';
-import './solid-ui.css';
+import '../demo.css';
+import '../solid-ui.css';
 
 export function Demo() {
   return (

@@ -16,7 +16,7 @@ export type ActiveItemActions = Readonly<{
   initializeItemFocus(): void;
   focusNextItem(): void;
   focusPreviousItem(): void;
-  focusFirstDescendent(): void;
+  focusFirstItem(): void;
   focusLastItem(): void;
   focusTypeaheadItem(key: string): void;
   focusItem(itemId: string): void;
@@ -77,7 +77,7 @@ export function createActiveItemActions(
         return state;
       });
     },
-    focusFirstDescendent() {
+    focusFirstItem() {
       setState((state) => ({ activeItemId: state.items[0] }));
     },
     focusLastItem() {
