@@ -1,14 +1,19 @@
 import { Accessor, createEffect, JSX, mergeProps, onMount } from 'solid-js';
-import { useComboboxActions, useComboboxContext, useComboboxState } from './context';
 import { getDataProp, useId } from '~/utils/componentUtils';
 import { useKeyEventHandlers } from '~/utils/eventUtils';
+import {
+  useComboboxActions,
+  useComboboxContext,
+  useComboboxSelectors,
+  useComboboxState,
+} from './context';
 
 export type CreateInputConfig<Value, InputElement extends HTMLInputElement = HTMLInputElement> = {
-  getInputValue?: (value: Value) => string;
   idPrefix?: string;
   onInput?: JSX.EventHandler<InputElement, InputEvent>;
   onKeyDown?: JSX.EventHandler<InputElement, KeyboardEvent>;
   value?: Accessor<string>;
+  getDisplayValue?: Accessor<(value: Value) => string>;
 };
 
 export function createInput<Value = any, InputElement extends HTMLInputElement = HTMLInputElement>(
@@ -73,23 +78,27 @@ export function createInputHandlers<
   };
 
   const keyDownHandlers = useKeyEventHandlers<InputElement>({
-    ArrowUp() {
+    ArrowUp(event) {
+      event.preventDefault();
+
       if (!state.isPanelOpen) {
         actions.openPopover();
         if (!state.activeItemId) {
           actions.focusLastItem();
         }
-      } else if (state.orientation === 'vertical') {
+      } else {
         actions.focusPreviousItem();
       }
     },
-    ArrowDown() {
+    ArrowDown(event) {
+      event.preventDefault();
+
       if (!state.isPanelOpen) {
         actions.openPopover();
         if (!state.activeItemId) {
           actions.focusFirstItem();
         }
-      } else if (state.orientation === 'vertical') {
+      } else {
         actions.focusNextItem();
       }
     },
@@ -131,7 +140,8 @@ export function createInputEffects<
   InputElement extends HTMLInputElement = HTMLInputElement
 >(config: CreateInputConfig<Value, InputElement> & { id: string }) {
   registerInputIdOnMount(config);
-  // setInputValueOnComboboxValueChange<Value>(config);
+  registerGetInputDisplayValue(config);
+  setInputValueOnComboboxClose();
 }
 
 export function registerInputIdOnMount(config: { id: string }) {
@@ -141,16 +151,25 @@ export function registerInputIdOnMount(config: { id: string }) {
   });
 }
 
-// export function setInputValueOnComboboxValueChange<
-//   Value = any,
-//   InputElement extends HTMLInputElement = HTMLInputElement
-// >(config: CreateInputConfig<Value, InputElement>) {
-//   const state = useComboboxState<Value>();
-//   const actions = useComboboxActions<Value>();
+export function registerGetInputDisplayValue<Value>(config: CreateInputConfig<Value>) {
+  const actions = useComboboxActions();
+  createEffect(() => {
+    if (config.getDisplayValue?.()) {
+      actions.registerGetInputDisplayValue(config.getDisplayValue());
+    }
+  });
+}
 
-//   createEffect(() => {
-//     actions.setInputValue(
-//       config.getInputValue ? config.getInputValue(state.selectedValue) : String(state.selectedValue)
-//     );
-//   });
-// }
+export function setInputValueOnComboboxClose<Value>() {
+  const state = useComboboxState<Value>();
+  const actions = useComboboxActions<Value>();
+  const selectors = useComboboxSelectors<Value>();
+
+  createEffect<boolean>((wasOpen) => {
+    if (wasOpen && !state.isPanelOpen) {
+      actions.setInputValue(state.getInputDisplayValue(selectors.selectedValue));
+    }
+
+    return state.isPanelOpen;
+  });
+}

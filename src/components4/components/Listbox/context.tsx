@@ -20,7 +20,6 @@ type ListboxElementIds = {
 
 export type ListboxValueState<Value> = {
   orientation: ListOrientation;
-  values: { [itemId: string]: Value };
 };
 
 export type ListboxState<Value> = ListboxElementIds &
@@ -43,6 +42,7 @@ export type ListboxActions<Value> = ActiveItemActions &
 
 export type ListboxValueSelectors<Value> = Readonly<{
   isSelected(value: Value): boolean;
+  selectedValue: Value;
 }>;
 
 export type ListboxSelectors<Value> = ActiveItemSelectors & ListboxValueSelectors<Value>;
@@ -82,25 +82,26 @@ export function createListboxStore<Value = any>(
     items: [],
     activeItemId: null,
     search: '',
-    values: {},
   });
+
+  const values: { [id: string]: Value } = {};
 
   const actions: ListboxActions<Value> = {
     ...createActiveItemActions(setState, {
-      getInitialFocusedItem: (itemId) => state.values[itemId] === config.value?.(),
+      getInitialFocusedItem: (itemId) => values[itemId] === config.value?.(),
     }),
     ...createPopoverPanelActions(setState),
     setElementId(name, id) {
       setState({ [name]: id });
     },
     addValue(itemId, value) {
-      setState('values', { [itemId]: value });
+      values[itemId] = value;
     },
     removeValue(itemId) {
-      setState('values', { [itemId]: undefined });
+      delete values[itemId];
     },
     chooseValue(itemId) {
-      const newValue = state.values[itemId] as Value;
+      const newValue = values[itemId];
 
       if (itemId && newValue !== config.value()) {
         config.onChange?.(newValue);
@@ -113,6 +114,9 @@ export function createListboxStore<Value = any>(
   const selectors: ListboxSelectors<Value> = {
     isActive: createSelector(() => state.activeItemId),
     isSelected: createSelector(config.value),
+    get selectedValue() {
+      return config.value?.();
+    },
   };
 
   return [state as ListboxState<Value>, actions, selectors] as const;

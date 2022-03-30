@@ -3,6 +3,7 @@ import { Portal } from 'solid-js/web';
 import { ComponentRef } from '~/types';
 import Combobox from '../components/Combobox';
 import Popper from '../components/Popper';
+import { Fruit, fruits } from './utils';
 
 function ComboboxLabel(props: PropsWithChildren) {
   const { props: labelProps, effects } = Combobox.createLabel();
@@ -12,12 +13,14 @@ function ComboboxLabel(props: PropsWithChildren) {
   return <label {...labelProps}>{props.children}</label>;
 }
 
-function ComboboxInput(props: {
+function ComboboxInput<Value = any>(props: {
+  getDisplayValue?: (value: Value) => string;
   onInput?: JSX.EventHandler<HTMLInputElement, InputEvent>;
   ref?: ComponentRef<HTMLInputElement>;
 }) {
   const { props: inputProps, effects } = Combobox.createInput({
     onInput: props.onInput,
+    getDisplayValue: props.getDisplayValue ? () => props.getDisplayValue : undefined,
   });
 
   effects();
@@ -85,10 +88,8 @@ function ComboboxOption<Value = any>(props: PropsWithChildren<{ value?: Value }>
   return <li {...optionProps}>{props.children}</li>;
 }
 
-const fruits = ['apple', 'apricot', 'orange', 'peach', 'pineapple', 'watermelon'];
-
 export function ComboboxExample() {
-  const [value, setValue] = createSignal('');
+  const [value, setValue] = createSignal<{ displayValue: string; value: string }>(null);
 
   return (
     <Popper>
@@ -100,10 +101,14 @@ export function ComboboxExample() {
         }}
       >
         <ComboboxLabel>Choose a fruit: </ComboboxLabel>
-        <ComboboxInput ref={Popper.AnchorRef} /> <ComboboxTrigger>Open</ComboboxTrigger>
+        <ComboboxInput
+          getDisplayValue={(value: Fruit) => value?.displayValue ?? ''}
+          ref={Popper.AnchorRef}
+        />{' '}
+        <ComboboxTrigger>Open</ComboboxTrigger>
         <ComboboxList ref={Popper.PopperRef}>
           <For each={fruits}>
-            {(fruit) => <ComboboxOption value={fruit}>{fruit}</ComboboxOption>}
+            {(fruit) => <ComboboxOption value={fruit}>{fruit.displayValue}</ComboboxOption>}
           </For>
         </ComboboxList>
       </Combobox>

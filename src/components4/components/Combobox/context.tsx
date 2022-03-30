@@ -29,8 +29,8 @@ export type ComboboxState<Value> = ComboboxElementIds &
   ActiveItemState &
   PopoverPanelState &
   ListboxValueState<Value> & {
-    selectedValue: Value;
     inputValue: string;
+    getInputDisplayValue: (value: Value) => string;
   };
 
 export type ComboboxActions<Value> = ActiveItemActions &
@@ -39,6 +39,7 @@ export type ComboboxActions<Value> = ActiveItemActions &
   Readonly<{
     setElementId(name: keyof ComboboxElementIds, id: string): void;
     setInputValue(value: string): void;
+    registerGetInputDisplayValue(callback: (value: Value) => string): void;
   }>;
 
 export type ComboboxSelectors<Value> = ActiveItemSelectors & ListboxValueSelectors<Value>;
@@ -54,14 +55,13 @@ export type ComboboxStore<Value> = Readonly<
 export type CreateComboboxStoreConfig<Value> = CreateActiveItemActionsConfig &
   CreateListboxValueConfig<Value> &
   Readonly<{
-    getInputValue?: (value: Value) => string;
     orientation?: Accessor<ListOrientation>;
   }>;
 
 export function createComboboxStore<Value = any>(
   config: CreateComboboxStoreConfig<Value> = {}
 ): ComboboxStore<Value> {
-  const { orientation = () => 'vertical', getInputValue = (value) => String(value) } = config;
+  const { orientation = () => 'vertical' } = config;
 
   const [state, setState] = createStore<ComboboxState<Value>>({
     inputId: null,
@@ -81,49 +81,52 @@ export function createComboboxStore<Value = any>(
     items: [],
     activeItemId: null,
     search: '',
-    values: {},
-    get selectedValue(): Value {
-      return config.value?.();
-    },
     inputValue: '',
+    getInputDisplayValue: (value) => String(value),
   });
+
+  const values: { [id: string]: Value } = {};
 
   const actions: ComboboxActions<Value> = {
     ...createActiveItemActions(setState, {
-      getInitialFocusedItem: (itemId) => state.values[itemId] === config.value?.(),
+      getInitialFocusedItem: (itemId) => values[itemId] === config.value?.(),
     }),
     ...createPopoverPanelActions(setState),
     setElementId(name, id) {
       setState({ [name]: id });
     },
     addValue(itemId, value) {
-      setState('values', { [itemId]: value });
+      values[itemId] = value;
     },
     removeValue(itemId) {
-      setState('values', { [itemId]: undefined });
+      delete values[itemId];
     },
     chooseValue(itemId) {
-      const newValue = state.values[itemId] as Value;
+      const newValue = values[itemId] as Value;
 
-      if (itemId && getInputValue(newValue) !== state.inputValue) {
-        setState('inputValue', getInputValue(newValue));
-        config.onChange?.(newValue);
+      if (itemId) {
+        setState('inputValue', state.getInputDisplayValue(newValue));
+        if (newValue !== config.value?.()) {
+          config.onChange?.(newValue);
+        }
       }
-
-      // if (itemId && newValue !== config.value()) {
-      //   config.onChange?.(newValue);
-      // }
 
       actions.closePopover();
     },
     setInputValue(value) {
       setState('inputValue', value);
     },
+    registerGetInputDisplayValue(callback) {
+      setState('getInputDisplayValue', () => callback);
+    },
   };
 
   const selectors: ComboboxSelectors<Value> = {
     isActive: createSelector(() => state.activeItemId),
     isSelected: createSelector(config.value),
+    get selectedValue() {
+      return config.value?.();
+    },
   };
 
   return [state as ComboboxState<Value>, actions, selectors] as const;

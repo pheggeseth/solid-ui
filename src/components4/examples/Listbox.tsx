@@ -3,6 +3,7 @@ import { Portal } from 'solid-js/web';
 import Popper from '~/components4/components/Popper';
 import { ComponentRef } from '~/types';
 import Listbox from '../components/Listbox';
+import { Fruit, fruits } from './utils';
 
 function ListboxLabel(props: PropsWithChildren) {
   const { props: labelProps, effects } = Listbox.createLabel();
@@ -76,18 +77,24 @@ function ListboxOption<Value = any>(props: PropsWithChildren<{ value?: Value }>)
   return <li {...optionProps}>{props.children}</li>;
 }
 
-const fruits = ['apple', 'apricot', 'orange', 'peach', 'pineapple', 'watermelon'];
-
 export function ListboxExample() {
-  const [value, setValue] = createSignal<string>();
+  const [value, setValue] = createSignal<Fruit>();
 
   return (
     <Popper>
-      <Listbox value={value()} onChange={setValue}>
+      <Listbox
+        value={value()}
+        onChange={(newValue) => {
+          console.log('listbox change:', newValue);
+          setValue(newValue);
+        }}
+      >
         <ListboxLabel>Choose a fruit: </ListboxLabel>
-        <ListboxTrigger ref={Popper.AnchorRef}>Listbox: {value()}</ListboxTrigger>
+        <ListboxTrigger ref={Popper.AnchorRef}>Listbox: {value()?.displayValue}</ListboxTrigger>
         <ListboxList ref={Popper.PopperRef}>
-          <For each={fruits}>{(fruit) => <ListboxOption value={fruit}>{fruit}</ListboxOption>}</For>
+          <For each={fruits}>
+            {(fruit) => <ListboxOption value={fruit}>{fruit.displayValue}</ListboxOption>}
+          </For>
         </ListboxList>
       </Listbox>
     </Popper>
