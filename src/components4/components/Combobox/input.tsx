@@ -10,6 +10,7 @@ import {
 
 export type CreateInputConfig<Value, InputElement extends HTMLInputElement = HTMLInputElement> = {
   idPrefix?: string;
+  onBlur?: JSX.EventHandler<InputElement, FocusEvent>;
   onInput?: JSX.EventHandler<InputElement, InputEvent>;
   onKeyDown?: JSX.EventHandler<InputElement, KeyboardEvent>;
   value?: Accessor<string>;
@@ -124,12 +125,25 @@ export function createInputHandlers<
     },
   });
 
+  const selectors = useComboboxSelectors<Value>();
+
+  const onBlur: JSX.EventHandler<InputElement, FocusEvent> = (event) => {
+    if (!state.inputValue) {
+      actions.clearValue();
+    } else {
+      actions.setInputValue(state.getInputDisplayValue(selectors.selectedValue));
+    }
+
+    config.onBlur?.(event);
+  };
+
   const onKeyDown: JSX.EventHandler<InputElement, KeyboardEvent> = (event) => {
     keyDownHandlers(event);
     config.onKeyDown?.(event);
   };
 
   return {
+    onBlur,
     onInput,
     onKeyDown,
   } as const;
@@ -141,7 +155,6 @@ export function createInputEffects<
 >(config: CreateInputConfig<Value, InputElement> & { id: string }) {
   registerInputIdOnMount(config);
   registerGetInputDisplayValue(config);
-  setInputValueOnComboboxClose();
 }
 
 export function registerInputIdOnMount(config: { id: string }) {
@@ -157,19 +170,5 @@ export function registerGetInputDisplayValue<Value>(config: CreateInputConfig<Va
     if (config.getDisplayValue?.()) {
       actions.registerGetInputDisplayValue(config.getDisplayValue());
     }
-  });
-}
-
-export function setInputValueOnComboboxClose<Value>() {
-  const state = useComboboxState<Value>();
-  const actions = useComboboxActions<Value>();
-  const selectors = useComboboxSelectors<Value>();
-
-  createEffect<boolean>((wasOpen) => {
-    if (wasOpen && !state.isPanelOpen) {
-      actions.setInputValue(state.getInputDisplayValue(selectors.selectedValue));
-    }
-
-    return state.isPanelOpen;
   });
 }

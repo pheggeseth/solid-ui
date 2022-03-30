@@ -37,9 +37,10 @@ export type ComboboxActions<Value> = ActiveItemActions &
   PopoverPanelActions &
   ListboxValueActions<Value> &
   Readonly<{
+    clearValue(): void;
+    registerGetInputDisplayValue(callback: (value: Value) => string): void;
     setElementId(name: keyof ComboboxElementIds, id: string): void;
     setInputValue(value: string): void;
-    registerGetInputDisplayValue(callback: (value: Value) => string): void;
   }>;
 
 export type ComboboxSelectors<Value> = ActiveItemSelectors & ListboxValueSelectors<Value>;
@@ -112,6 +113,11 @@ export function createComboboxStore<Value = any>(
       }
 
       actions.closePopover();
+    },
+    clearValue() {
+      if (config.value?.() !== null) {
+        config.onChange?.(null);
+      }
     },
     setInputValue(value) {
       setState('inputValue', value);
