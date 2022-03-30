@@ -104,7 +104,7 @@ export function ComboboxExample() {
         <ComboboxInput
           getDisplayValue={(value: Fruit) => value?.displayValue ?? ''}
           ref={Popper.AnchorRef}
-        />{' '}
+        />
         <ComboboxTrigger>Open</ComboboxTrigger>
         <ComboboxList ref={Popper.PopperRef}>
           <For each={fruits}>
