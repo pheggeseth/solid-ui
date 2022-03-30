@@ -79,7 +79,7 @@ export function focusInitialChildOnMount(config: { containerId: string; initialF
     const container = document.getElementById(config.containerId);
     const initialFocusElement = document.getElementById(config.initialFocusId);
 
-    (initialFocusElement || getFirstFocusableElement(container))?.focus();
+    (initialFocusElement || getFirstFocusableElement(container))?.focus({ preventScroll: true });
   });
 }
 

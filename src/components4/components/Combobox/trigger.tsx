@@ -54,7 +54,7 @@ export function createTriggerHandlers<TriggerElement extends HTMLElement>(
 
   const onClick: JSX.EventHandler<TriggerElement, MouseEvent> = (event) => {
     actions.togglePopover();
-    document.getElementById(state.inputId)?.focus();
+    document.getElementById(state.inputId)?.focus({ preventScroll: true });
     config.onClick?.(event);
   };
 

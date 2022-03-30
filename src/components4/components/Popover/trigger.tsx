@@ -99,7 +99,7 @@ export function focusPrimaryTriggerOnClose(config: { id: string }) {
 
   createEffect<boolean>((wasPanelOpen) => {
     if (wasPanelOpen && !popoverState.isPanelOpen && config.id === popoverState.triggerId) {
-      document.getElementById(config.id)?.focus();
+      document.getElementById(config.id)?.focus({ preventScroll: true });
     }
     return popoverState.isPanelOpen;
   });

@@ -83,7 +83,7 @@ export function focusTriggerOnClose(config: { id: string }) {
 
   createEffect<boolean>((wasPanelOpen) => {
     if (wasPanelOpen && !state.isPanelOpen) {
-      document.getElementById(config.id)?.focus();
+      document.getElementById(config.id)?.focus({ preventScroll: true });
     }
     return state.isPanelOpen;
   });
