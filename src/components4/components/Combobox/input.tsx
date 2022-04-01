@@ -76,6 +76,10 @@ export function createInputHandlers<
   const onInput: JSX.EventHandler<InputElement, InputEvent> = (event) => {
     actions.setInputValue(event.currentTarget.value);
     config.onInput?.(event);
+
+    if (state.inputValue && !state.isPanelOpen) {
+      actions.openPopover();
+    }
   };
 
   const keyDownHandlers = useKeyEventHandlers<InputElement>({
@@ -103,6 +107,12 @@ export function createInputHandlers<
         actions.focusNextItem();
       }
     },
+    End(event) {
+      if (state.isPanelOpen) {
+        event.preventDefault();
+        actions.focusLastItem();
+      }
+    },
     Enter() {
       actions.chooseValue(state.activeItemId);
       closeList();
@@ -110,9 +120,10 @@ export function createInputHandlers<
     Escape() {
       closeList();
     },
-    Backspace() {
-      if (config.value ? config.value() : state.inputValue) {
-        actions.openPopover();
+    Home(event) {
+      if (state.isPanelOpen) {
+        event.preventDefault();
+        actions.focusFirstItem();
       }
     },
     Tab() {
@@ -128,12 +139,7 @@ export function createInputHandlers<
   const selectors = useComboboxSelectors<Value>();
 
   const onBlur: JSX.EventHandler<InputElement, FocusEvent> = (event) => {
-    if (!state.inputValue) {
-      actions.clearValue();
-    } else {
-      actions.setInputValue(state.getInputDisplayValue(selectors.selectedValue));
-    }
-
+    actions.setInputValue(state.getInputDisplayValue(selectors.selectedValue));
     config.onBlur?.(event);
   };
 

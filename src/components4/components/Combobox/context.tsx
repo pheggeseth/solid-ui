@@ -121,6 +121,10 @@ export function createComboboxStore<Value = any>(
     },
     setInputValue(value) {
       setState('inputValue', value);
+
+      if (!value) {
+        actions.clearValue();
+      }
     },
     registerGetInputDisplayValue(callback) {
       setState('getInputDisplayValue', () => callback);
