@@ -5,7 +5,7 @@ import { useMenuActions, useMenuContext, useMenuState } from './context';
 export type TriggerConfig<TriggerElement extends HTMLElement> = {
   idPrefix?: string;
   onClick?: JSX.EventHandler<TriggerElement, MouseEvent>;
-  onKeyUp?: JSX.EventHandler<TriggerElement, KeyboardEvent>;
+  onKeyDown?: JSX.EventHandler<TriggerElement, KeyboardEvent>;
 };
 
 export function createTrigger<TriggerElement extends HTMLElement = HTMLElement>(
@@ -52,18 +52,19 @@ export function createTriggerHandlers<TriggerElement extends HTMLElement = HTMLE
     config.onClick?.(event);
   };
 
-  const onKeyUp: JSX.EventHandler<TriggerElement, KeyboardEvent> = (event) => {
+  const onKeyDown: JSX.EventHandler<TriggerElement, KeyboardEvent> = (event) => {
     if (event.key === 'Escape') {
       actions.closePopover();
     } else if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+      event.preventDefault();
       actions.openPopover();
     }
-    config.onKeyUp?.(event);
+    config.onKeyDown?.(event);
   };
 
   return {
     onClick,
-    onKeyUp,
+    onKeyDown,
   } as const;
 }
 

@@ -18,14 +18,14 @@ type ListboxElementIds = {
   triggerId: string;
 };
 
-export type ListboxValueState<Value> = {
+export type ListboxValueState = {
   orientation: ListOrientation;
 };
 
-export type ListboxState<Value> = ListboxElementIds &
+export type ListboxState = ListboxElementIds &
   ActiveItemState &
   PopoverPanelState &
-  ListboxValueState<Value>;
+  ListboxValueState;
 
 export type ListboxValueActions<Value> = {
   addValue(itemId: string, value: Value): void;
@@ -48,7 +48,7 @@ export type ListboxValueSelectors<Value> = Readonly<{
 export type ListboxSelectors<Value> = ActiveItemSelectors & ListboxValueSelectors<Value>;
 
 export type ListboxStore<Value> = Readonly<
-  [state: ListboxState<Value>, actions: ListboxActions<Value>, selectors: ListboxSelectors<Value>]
+  [state: ListboxState, actions: ListboxActions<Value>, selectors: ListboxSelectors<Value>]
 >;
 
 export type CreateListboxValueConfig<Value> = {
@@ -65,7 +65,7 @@ export type CreateListboxStoreConfig<Value> = CreateActiveItemActionsConfig &
 export function createListboxStore<Value = any>(
   config: CreateListboxStoreConfig<Value> = { orientation: () => 'vertical' }
 ): ListboxStore<Value> {
-  const [state, setState] = createStore<ListboxState<Value>>({
+  const [state, setState] = createStore<ListboxState>({
     labelId: null,
     listId: null,
     overlayId: null,
@@ -119,15 +119,15 @@ export function createListboxStore<Value = any>(
     },
   };
 
-  return [state as ListboxState<Value>, actions, selectors] as const;
+  return [state as ListboxState, actions, selectors] as const;
 }
 
 export const ListboxStoreContext = createContext<ListboxStore<any>>();
 export function useListboxStore() {
   return useContext(ListboxStoreContext);
 }
-export function useListboxState<Value>() {
-  return useContext(ListboxStoreContext)[0] as ListboxState<Value>;
+export function useListboxState() {
+  return useContext(ListboxStoreContext)[0];
 }
 export function useListboxActions<Value>() {
   return useContext(ListboxStoreContext)[1] as ListboxActions<Value>;

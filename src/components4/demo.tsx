@@ -5,6 +5,7 @@ import { DisclosureExample } from './examples/Disclosure';
 import { ListboxExample } from './examples/Listbox';
 import { MenuExample } from './examples/Menu';
 import { PopoverExample } from './examples/Popover';
+import { RadioGroupExample } from './examples/RadioGroup';
 
 export function Demo() {
   return (
@@ -28,6 +29,10 @@ export function Demo() {
       <section>
         <h1>Combobox</h1>
         <ComboboxExample />
+      </section>
+      <section>
+        <h1>Radio Group</h1>
+        <RadioGroupExample />
       </section>
     </>
   );

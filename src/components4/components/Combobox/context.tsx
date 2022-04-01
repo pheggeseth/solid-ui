@@ -28,7 +28,7 @@ export type ComboboxElementIds = {
 export type ComboboxState<Value> = ComboboxElementIds &
   ActiveItemState &
   PopoverPanelState &
-  ListboxValueState<Value> & {
+  ListboxValueState & {
     inputValue: string;
     getInputDisplayValue: (value: Value) => string;
   };

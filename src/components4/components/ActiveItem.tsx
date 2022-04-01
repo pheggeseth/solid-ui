@@ -25,6 +25,7 @@ export type ActiveItemActions = Readonly<{
 
 export type CreateActiveItemActionsConfig = {
   getInitialFocusedItem?: (itemId: string, items?: readonly string[]) => boolean;
+  shouldWrap?: boolean;
 };
 
 export function createActiveItemActions(
@@ -59,7 +60,11 @@ export function createActiveItemActions(
     },
     focusNextItem() {
       setState((state) => {
-        const activeItemIndex = getActiveItemIndex(state);
+        let activeItemIndex = getActiveItemIndex(state);
+        if (config.shouldWrap && activeItemIndex === state.items.length - 1) {
+          activeItemIndex = -1;
+        }
+
         if (activeItemIndex < state.items.length - 1) {
           return { activeItemId: state.items[activeItemIndex + 1] };
         }
@@ -67,7 +72,11 @@ export function createActiveItemActions(
     },
     focusPreviousItem() {
       setState((state) => {
-        const activeItemIndex = getActiveItemIndex(state);
+        let activeItemIndex = getActiveItemIndex(state);
+        if (config.shouldWrap && activeItemIndex === 0) {
+          activeItemIndex = state.items.length;
+        }
+
         if (activeItemIndex === -1) {
           return { activeItemId: state.items[state.items.length - 1] };
         } else if (activeItemIndex > 0) {

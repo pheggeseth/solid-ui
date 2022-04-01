@@ -29,7 +29,7 @@ export function createOption<Value, OptionElement extends HTMLElement = HTMLElem
   const context = {
     ...useListboxContext(),
     isActive: () => selectors.isActive(props.id),
-    isSelected: () => selectors.isSelected(config.value()),
+    isSelected: () => selectors.isSelected(config.value?.()),
   } as const;
 
   return {
