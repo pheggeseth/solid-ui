@@ -1,9 +1,13 @@
 :root {
   --border-color: #888;
   --border-radius: 0.25rem;
+  --border: 2px solid var(--border-color);
+  --border-transparent: 2px solid transparent;
   --box-shadow: 0 4px 8px -2px rgb(0, 0, 0, 0.5);
   --color: #222;
+  --focus-outline: 2px solid #444;
   --font-size: 0.9rem;
+  --input-margin: 0 0.25rem 0.25rem 0;
   --letter-spacing: 0.025rem;
   --padding: 0.25rem 0.5rem;
   --transition: all 60ms;
@@ -28,12 +32,16 @@
   transition: var(--transition);
 }
 
-[data-solid-ui-button]:hover {
-  background: var(--active-background);
-}
-
 [data-solid-ui-button]:active {
   background: var(--pressed-background);
+}
+
+[data-solid-ui-button]:focus {
+  outline: var(--focus-outline);
+}
+
+[data-solid-ui-button]:hover {
+  background: var(--active-background);
 }
 
 [data-solid-ui-overlay] {
@@ -42,13 +50,16 @@
   position: fixed;
 }
 
-[data-solid-ui-panel],
-[data-solid-ui-dialog] {
+[data-solid-ui-panel] {
   background: white;
   padding: var(--padding);
   border-radius: var(--border-radius);
   box-shadow: var(--box-shadow);
   overflow: hidden;
+}
+
+[data-solid-ui-panel]:focus-visible {
+  outline: none;
 }
 
 [data-solid-ui-list] {
@@ -69,24 +80,52 @@
 }
 
 [data-solid-ui-input] {
-  border: 2px solid var(--border-color);
+  border: var(--border);
   border-radius: var(--border-radius);
   box-sizing: border-box;
   font-size: var(--font-size);
+  margin: var(--input-margin);
   padding: var(--padding);
+  transition: var(--transition);
+}
+
+[data-solid-ui-input]:focus-visible {
+  border: var(--focus-outline);
+  outline: none;
+}
+
+[data-solid-ui-disclosure-content] {
+  border: var(--border);
+  border-radius: var(--border-radius);
+  letter-spacing: var(--letter-spacing);
+  padding: 1rem;
+  margin: 0.5rem 0;
 }
 
 [data-solid-ui-radiogroup] {
+  display: inline-block;
+  letter-spacing: var(--letter-spacing);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  outline: none;
 }
 
-[data-solid-ui-radiogroup-option] {
-  border: 1px solid var(--border-color);
+[data-solid-ui-radiogroup-radio] {
+  border: var(--border);
+  border-radius: var(--border-radius);
   cursor: pointer;
   padding: var(--padding);
-  user-select: none;
+  margin: var(--input-margin);
+  transition: var(--transition);
 }
 
-[data-selected] {
+[data-solid-ui-radiogroup-radio][data-active] {
+  border: var(--focus-outline);
+}
+
+[data-selected],
+[data-checked] {
   background: var(--selected-background);
 }
 
