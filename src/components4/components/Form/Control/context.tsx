@@ -49,7 +49,7 @@ export function createFormControlStore(
     fieldId: null,
     helperTextId: null,
     errorMessageId: null,
-    errors: null,
+    errors: [],
     isTouched: false,
   });
 

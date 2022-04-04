@@ -6,17 +6,17 @@ export type CreateFormControlLabelConfig = {
   idPrefix?: string;
 };
 
-export function createFormControlLabel(config: CreateFormControlLabelConfig) {
-  const props = createFormControlLabelProps(config);
+export function createLabel(config: CreateFormControlLabelConfig = {}) {
+  const props = createLabelProps(config);
 
   return {
     props,
-    effects: () => createFormControlLabelEffects({ id: props.id }),
+    effects: () => createLabelEffects({ id: props.id }),
     context: useFormControlContext(),
   } as const;
 }
 
-export function createFormControlLabelProps(config: CreateFormControlLabelConfig) {
+export function createLabelProps(config: CreateFormControlLabelConfig) {
   const { idPrefix = 'solid-ui-form-control-label' } = config;
   const id = useId(idPrefix);
   const state = useFormControlState();
@@ -30,7 +30,7 @@ export function createFormControlLabelProps(config: CreateFormControlLabelConfig
   } as const;
 }
 
-export function createFormControlLabelEffects(config: { id: string }) {
+export function createLabelEffects(config: { id: string }) {
   registerLabelIdOnMount(config);
 }
 

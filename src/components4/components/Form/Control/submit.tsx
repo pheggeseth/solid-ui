@@ -7,15 +7,15 @@ export type CreateFormControlSubmitConfig = {
   isDisabled?: Accessor<boolean>;
 };
 
-export function createFormControlSubmit(config: CreateFormControlSubmitConfig) {
-  const props = createFormControlSubmitProps(config);
+export function createSubmit(config: CreateFormControlSubmitConfig) {
+  const props = createSubmitProps(config);
 
   return {
     props,
   };
 }
 
-export function createFormControlSubmitProps(config: CreateFormControlSubmitConfig) {
+export function createSubmitProps(config: CreateFormControlSubmitConfig) {
   const { idPrefix = 'solid-ui-form-control-submit' } = config;
   const id = useId(idPrefix);
   const selectors = useFormControlSelectors();

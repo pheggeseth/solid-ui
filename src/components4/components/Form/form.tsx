@@ -2,10 +2,10 @@ import { JSX } from 'solid-js';
 import { useFormActions, useFormSelectors } from './context';
 
 export type CreateFormConfig = {
-  onSubmit: (event: SubmitEvent, onSubmitEnd: () => void) => void;
+  onSubmit?: (event: SubmitEvent, onSubmitEnd: () => void) => void;
 };
 
-export function createForm(config: CreateFormConfig) {
+export function createForm(config: CreateFormConfig = {}) {
   const handlers = createFormHandlers(config);
 
   return {
@@ -23,7 +23,7 @@ export function createFormHandlers(config: CreateFormConfig) {
     }
 
     actions.startSubmit();
-    config.onSubmit(event, actions.endSubmit);
+    config.onSubmit?.(event, actions.endSubmit);
   };
 
   return {

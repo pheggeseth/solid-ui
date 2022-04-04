@@ -2,6 +2,7 @@ import '../demo.css';
 import '../solid-ui.css';
 import { ComboboxExample } from './examples/Combobox';
 import { DisclosureExample } from './examples/Disclosure';
+import { FormExample } from './examples/Form';
 import { ListboxExample } from './examples/Listbox';
 import { MenuExample } from './examples/Menu';
 import { PopoverExample } from './examples/Popover';
@@ -33,6 +34,10 @@ export function Demo() {
       <section>
         <h1>Radio Group</h1>
         <RadioGroupExample />
+      </section>
+      <section>
+        <h1>Form</h1>
+        <FormExample />
       </section>
     </>
   );

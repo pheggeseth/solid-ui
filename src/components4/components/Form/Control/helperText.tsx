@@ -2,21 +2,21 @@ import { onMount } from 'solid-js';
 import { getDataProp, useId } from '~/utils/componentUtils';
 import { useFormControlActions, useFormControlContext } from './context';
 
-export type CreateFormHelperTextConfig = {
+export type CreateHelperTextConfig = {
   idPrefix?: string;
 };
 
-export function createFormHelperText(config: CreateFormHelperTextConfig) {
-  const props = createFormHelperTextProps(config);
+export function createHelperText(config: CreateHelperTextConfig = {}) {
+  const props = createHelperTextProps(config);
 
   return {
     props,
-    effects: () => createFormHelperTextEffects({ id: props.id }),
+    effects: () => createHelperTextEffects({ id: props.id }),
     context: useFormControlContext(),
   } as const;
 }
 
-export function createFormHelperTextProps(config: CreateFormHelperTextConfig) {
+export function createHelperTextProps(config: CreateHelperTextConfig) {
   const { idPrefix = 'solid-ui-form-helper-text' } = config;
   const id = useId(idPrefix);
 
@@ -26,11 +26,11 @@ export function createFormHelperTextProps(config: CreateFormHelperTextConfig) {
   } as const;
 }
 
-export function createFormHelperTextEffects(config: { id: string }) {
-  registerFormHelperIdOnMount(config);
+export function createHelperTextEffects(config: { id: string }) {
+  registerHelperTextIdOnMount(config);
 }
 
-export function registerFormHelperIdOnMount(config: { id: string }) {
+export function registerHelperTextIdOnMount(config: { id: string }) {
   const actions = useFormControlActions();
   onMount(() => {
     actions.setElementId('helperTextId', config.id);

@@ -2,21 +2,21 @@ import { onMount } from 'solid-js';
 import { getDataProp, useId } from '~/utils/componentUtils';
 import { useFormControlActions, useFormControlContext } from './context';
 
-export type CreateFormErrorMessageConfig = {
+export type CreateFormControlErrorMessageConfig = {
   idPrefix?: string;
 };
 
-export function createFormErrorMessage(config: CreateFormErrorMessageConfig) {
-  const props = createFormErrorMessageProps(config);
+export function createErrorMessage(config: CreateFormControlErrorMessageConfig = {}) {
+  const props = createErrorMessageProps(config);
 
   return {
     props,
-    effects: () => createFormErrorMessageEffects({ id: props.id }),
+    effects: () => createErrorMessageEffects({ id: props.id }),
     context: useFormControlContext(),
   } as const;
 }
 
-export function createFormErrorMessageProps(config: CreateFormErrorMessageConfig) {
+export function createErrorMessageProps(config: CreateFormControlErrorMessageConfig = {}) {
   const { idPrefix = 'solid-ui-form-error-message' } = config;
   const id = useId(idPrefix);
 
@@ -26,7 +26,7 @@ export function createFormErrorMessageProps(config: CreateFormErrorMessageConfig
   } as const;
 }
 
-export function createFormErrorMessageEffects(config: { id: string }) {
+export function createErrorMessageEffects(config: { id: string }) {
   registerErrorMessageIdOnMount(config);
 }
 

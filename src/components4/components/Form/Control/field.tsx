@@ -1,5 +1,5 @@
 import { onMount } from 'solid-js';
-import { useId } from '~/utils/componentUtils';
+import { getDataProp, useId } from '~/utils/componentUtils';
 import { useFormActions } from '../context';
 import {
   useFormControlActions,
@@ -73,9 +73,13 @@ export function createFieldProps<Value>(config: CreateFieldConfig<Value>) {
     get ['aria-invalid']() {
       return selectors.isInvalid() || undefined;
     },
+    get ['aria-labelledby']() {
+      return state.labelId;
+    },
     get ['aria-required']() {
       return selectors.isRequired() || undefined;
     },
+    ...getDataProp(idPrefix),
     get disabled() {
       return selectors.isDisabled() || undefined;
     },

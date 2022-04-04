@@ -1,12 +1,12 @@
-export function createFormControl() {
-  const props = createFormControlProps();
+export function createControl() {
+  const props = createControlProps();
 
   return {
     props,
   } as const;
 }
 
-export function createFormControlProps() {
+export function createControlProps() {
   return {
     role: 'group',
   } as const;
