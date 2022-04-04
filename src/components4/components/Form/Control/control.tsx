@@ -8,6 +8,7 @@ export function createControl() {
 
 export function createControlProps() {
   return {
+    'data-solid-ui-form-control': '',
     role: 'group',
   } as const;
 }

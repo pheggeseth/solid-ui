@@ -1,4 +1,4 @@
-import { onMount } from 'solid-js';
+import { onCleanup, onMount } from 'solid-js';
 import { getDataProp, useId } from '~/utils/componentUtils';
 import { useFormActions } from '../context';
 import {
@@ -97,6 +97,7 @@ export function createFieldEffects<Value = any>(config: {
 }) {
   registerFieldIdOnMount(config);
   validateFieldOnMount(config);
+  trackFieldFocus(config);
 }
 
 export function registerFieldIdOnMount(config: { id: string }) {
@@ -112,5 +113,32 @@ export function validateFieldOnMount<Value = any>(config: {
 }) {
   onMount(() => {
     config.validate(config.initialValue);
+  });
+}
+
+export function trackFieldFocus(config: { id: string }) {
+  const state = useFormControlState();
+  const actions = useFormControlActions();
+
+  function trackFocus() {
+    if (document.activeElement.id === config.id && !state.hasFocus) {
+      actions.setHasFocus(true);
+    }
+  }
+
+  function trackBlur() {
+    if (state.hasFocus) {
+      actions.setHasFocus(false);
+    }
+  }
+
+  onMount(() => {
+    document.addEventListener('focusin', trackFocus);
+    document.addEventListener('focusout', trackBlur);
+  });
+
+  onCleanup(() => {
+    document.removeEventListener('focusin', trackFocus);
+    document.removeEventListener('focusout', trackBlur);
   });
 }

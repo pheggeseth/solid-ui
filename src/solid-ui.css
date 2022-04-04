@@ -1,10 +1,11 @@
 :root {
-  --border-color: #888;
+  --border-color: #777;
   --border-radius: 0.25rem;
   --border: 2px solid var(--border-color);
   --border-transparent: 2px solid transparent;
   --box-shadow: 0 4px 8px -2px rgb(0, 0, 0, 0.5);
   --color: #222;
+  --disabled-color: #666;
   --focus-outline: 2px solid #444;
   --font-size: 0.9rem;
   --input-margin: 0 0.25rem 0.25rem 0;
@@ -15,6 +16,7 @@
   --active-background: #bbb;
   --pressed-background: #aaa;
   --selected-background: #ddd;
+  --disabled-background: #eee;
 
   --button-background: var(--selected-background);
   --overlay-background: rgba(0, 0, 0, 0.05);
@@ -42,6 +44,12 @@
 
 [data-solid-ui-button]:hover {
   background: var(--active-background);
+}
+
+[data-solid-ui-button]:disabled {
+  background: var(--disabled-background);
+  color: var(--disabled-color);
+  cursor: default;
 }
 
 [data-solid-ui-overlay] {
@@ -122,6 +130,21 @@
 
 [data-solid-ui-radiogroup-radio][data-active] {
   border: var(--focus-outline);
+}
+
+[data-solid-ui-form-control] {
+  display: flex;
+  flex-direction: column;
+}
+
+[data-solid-ui-form-control-label] {
+  color: var(--border-color);
+  font-size: 0.9rem;
+  transition: var(--transition);
+}
+
+[data-solid-ui-form-control-label][data-focused] {
+  color: var(--color);
 }
 
 [data-selected],

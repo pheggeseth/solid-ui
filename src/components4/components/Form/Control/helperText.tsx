@@ -1,6 +1,6 @@
 import { onMount } from 'solid-js';
 import { getDataProp, useId } from '~/utils/componentUtils';
-import { useFormControlActions, useFormControlContext } from './context';
+import { useFormControlActions, useFormControlContext, useFormControlState } from './context';
 
 export type CreateHelperTextConfig = {
   idPrefix?: string;
@@ -19,8 +19,12 @@ export function createHelperText(config: CreateHelperTextConfig = {}) {
 export function createHelperTextProps(config: CreateHelperTextConfig) {
   const { idPrefix = 'solid-ui-form-helper-text' } = config;
   const id = useId(idPrefix);
+  const state = useFormControlState();
 
   return {
+    get ['data-focused']() {
+      return state.hasFocus ? '' : undefined;
+    },
     ...getDataProp(idPrefix),
     id,
   } as const;

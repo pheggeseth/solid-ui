@@ -22,6 +22,9 @@ export function createLabelProps(config: CreateFormControlLabelConfig) {
   const state = useFormControlState();
 
   return {
+    get ['data-focused']() {
+      return state.hasFocus ? '' : undefined;
+    },
     ...getDataProp(idPrefix),
     get for() {
       return state.fieldId;

@@ -5,7 +5,6 @@ import { createField } from './field';
 import { createHelperText } from './helperText';
 import { createLabel } from './label';
 import FormControlProvider, { FormControlProviderProps } from './provider';
-import { createSubmit } from './submit';
 
 export * from './context';
 export * from './control';
@@ -13,7 +12,6 @@ export * from './errorMessage';
 export * from './field';
 export * from './helperText';
 export * from './label';
-export * from './submit';
 
 export type FormControlComponentType = {
   (props: FormControlProviderProps): JSXElement;
@@ -22,7 +20,6 @@ export type FormControlComponentType = {
   createField: typeof createField;
   createHelperText: typeof createHelperText;
   createLabel: typeof createLabel;
-  createSubmit: typeof createSubmit;
 };
 
 const FormControlComponent: FormControlComponentType = Object.assign(FormControlProvider, {
@@ -31,7 +28,6 @@ const FormControlComponent: FormControlComponentType = Object.assign(FormControl
   createField,
   createHelperText,
   createLabel,
-  createSubmit,
 });
 
 export default FormControlComponent;

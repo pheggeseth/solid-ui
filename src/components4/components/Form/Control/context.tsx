@@ -11,12 +11,14 @@ export type FormControlElementIds = {
 export type FormControlState = Readonly<
   FormControlElementIds & {
     errors: string[];
+    hasFocus: boolean;
     isTouched: boolean;
   }
 >;
 
 export type FormControlActions = Readonly<{
   setElementId(name: keyof FormControlElementIds, id: string): void;
+  setHasFocus(hasFocus: boolean): void;
   setIsTouched(isTouched: boolean): void;
   setErrors(errors: string[]): void;
 }>;
@@ -50,12 +52,16 @@ export function createFormControlStore(
     helperTextId: null,
     errorMessageId: null,
     errors: [],
+    hasFocus: false,
     isTouched: false,
   });
 
   const actions: FormControlActions = {
     setElementId(name, id) {
       setState({ [name]: id });
+    },
+    setHasFocus(hasFocus) {
+      setState('hasFocus', hasFocus);
     },
     setIsTouched(isTouched) {
       setState('isTouched', isTouched);

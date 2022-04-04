@@ -1,11 +1,16 @@
 import { createSignal, For, JSX, PropsWithChildren, Show } from 'solid-js';
-import FormComponent from '../components/Form';
+import FormComponent, {
+  CreateFormConfig,
+  FormContextProp,
+  useFormContext,
+} from '../components/Form';
 
-export function Form(props: PropsWithChildren) {
+export function Form(props: PropsWithChildren<CreateFormConfig & FormContextProp>) {
   return (
     <FormComponent>
       {(() => {
-        const { props: formProps } = FormComponent.createForm();
+        const { props: formProps } = FormComponent.createForm(props);
+        props.context?.(useFormContext());
         return <form {...formProps}>{props.children}</form>;
       })()}
     </FormComponent>
@@ -41,8 +46,8 @@ export function Input(props: PropsWithChildren<{ name: string }>) {
     name: props.name,
     initialValue: '',
     validators: [
-      (value) => value.length < 5 && 'too short',
-      (value) => !value.includes('a') && 'must include "a"',
+      (value) => value.length < 5 && 'Value must be at least 5 characters long.',
+      (value) => !value.includes('a') && 'Value must include the character "a".',
     ],
   });
 
@@ -93,15 +98,26 @@ export function ErrorMessage() {
   );
 }
 
+function FormSubmit() {
+  const { props: submitProps, context } = FormComponent.createSubmit();
+  return <button {...submitProps}>{context.isSubmitting() ? 'Submitting...' : 'Submit'}</button>;
+}
+
 export function FormExample() {
   return (
-    <Form>
+    <Form
+      onSubmit={(event, onSubmitEnd) => {
+        event.preventDefault();
+        setTimeout(onSubmitEnd, 1000);
+      }}
+    >
       <FormControl>
         <Label>Field 1</Label>
         <Input name="field1" />
         <HelperText>This is the helper text.</HelperText>
         <ErrorMessage />
       </FormControl>
+      <FormSubmit />
     </Form>
   );
 }
