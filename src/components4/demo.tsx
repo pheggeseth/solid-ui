@@ -7,6 +7,7 @@ import { ListboxExample } from './examples/Listbox';
 import { MenuExample } from './examples/Menu';
 import { PopoverExample } from './examples/Popover';
 import { RadioGroupExample } from './examples/RadioGroup';
+import { SwitchExample } from './examples/Switch';
 
 export function Demo() {
   return (
@@ -38,6 +39,10 @@ export function Demo() {
       <section>
         <h1>Form</h1>
         <FormExample />
+      </section>
+      <section>
+        <h1>Switch</h1>
+        <SwitchExample />
       </section>
     </>
   );

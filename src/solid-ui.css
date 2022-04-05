@@ -147,6 +147,36 @@
   color: var(--color);
 }
 
+[data-solid-ui-switch] {
+  background: white;
+  border: var(--border);
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  font-size: var(--font-size);
+  padding: 0.141rem;
+  width: 3.14rem;
+  transition: all 60ms;
+}
+
+[data-solid-ui-switch]:focus {
+  border: var(--focus-outline);
+  outline: none;
+}
+
+[data-solid-ui-switch]::before {
+  content: '';
+  background: #444;
+  display: flex;
+  height: 1.25rem;
+  width: 1.25rem;
+  border-radius: var(--border-radius);
+  transition: all 60ms;
+}
+
+[data-solid-ui-switch][data-checked]::before {
+  transform: translateX(1.34rem);
+}
+
 [data-selected],
 [data-checked] {
   background: var(--selected-background);
