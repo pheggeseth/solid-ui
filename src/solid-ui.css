@@ -7,7 +7,7 @@
   --color: #222;
   --disabled-color: #666;
   --focus-outline: 2px solid #444;
-  --font-size: 0.9rem;
+  --font-size: 1rem;
   --input-margin: 0 0.25rem 0.25rem 0;
   --letter-spacing: 0.025rem;
   --padding: 0.25rem 0.5rem;
@@ -153,28 +153,30 @@
   border-radius: var(--border-radius);
   cursor: pointer;
   font-size: var(--font-size);
-  padding: 0.141rem;
-  width: 3.14rem;
+  padding: 0.125rem;
+  height: 1.9065rem;
+  width: 3.5rem;
   transition: all 60ms;
 }
 
 [data-solid-ui-switch]:focus {
+  background: var(--active-background);
   border: var(--focus-outline);
   outline: none;
 }
 
-[data-solid-ui-switch]::before {
+[data-solid-ui-switch]::after {
   content: '';
   background: #444;
   display: flex;
-  height: 1.25rem;
-  width: 1.25rem;
-  border-radius: var(--border-radius);
+  height: 100%;
+  width: 1.4065rem;
+  border-radius: 0.1rem;
   transition: all 60ms;
 }
 
-[data-solid-ui-switch][data-checked]::before {
-  transform: translateX(1.34rem);
+[data-solid-ui-switch][data-checked]::after {
+  transform: translateX(1.6rem);
 }
 
 [data-selected],
