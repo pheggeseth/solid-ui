@@ -167,15 +167,20 @@
 
 [data-solid-ui-switch]::after {
   content: '';
-  background: #444;
+  background: var(--border-color);
   display: flex;
   height: 100%;
   width: 1.4065rem;
-  border-radius: 0.1rem;
+  border-radius: 0.125rem;
   transition: all 60ms;
 }
 
+[data-solid-ui-switch]:focus::after {
+  background: #444;
+}
+
 [data-solid-ui-switch][data-checked]::after {
+  background: #444;
   transform: translateX(1.6rem);
 }
 
