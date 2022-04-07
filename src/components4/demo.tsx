@@ -1,5 +1,6 @@
 import '../demo.css';
 import '../solid-ui.css';
+import { CalendarExample } from './examples/Calendar';
 import { ComboboxExample } from './examples/Combobox';
 import { DisclosureExample } from './examples/Disclosure';
 import { FormExample } from './examples/Form';
@@ -43,6 +44,10 @@ export function Demo() {
       <section>
         <h1>Switch</h1>
         <SwitchExample />
+      </section>
+      <section>
+        <h1>Calendar</h1>
+        <CalendarExample />
       </section>
     </>
   );
