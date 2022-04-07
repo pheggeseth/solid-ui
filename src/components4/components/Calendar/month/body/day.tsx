@@ -1,23 +1,38 @@
-import { Accessor } from 'solid-js';
+import { Accessor, createEffect, JSX, mergeProps } from 'solid-js';
 import { getDataProp, useId } from '~/utils/componentUtils';
-import { useCalendarContext, useCalendarSelectors } from '../../context';
+import { useKeyEventHandlers } from '~/utils/eventUtils';
+import {
+  useCalendarActions,
+  useCalendarContext,
+  useCalendarSelectors,
+  useCalendarState,
+} from '../../context';
 
-export type CreateMonthBodyDayConfig = {
+export type CreateDayConfig<DayElement extends HTMLElement = HTMLElement> = {
   idPrefix?: string;
   date: Accessor<Date>;
+  onClick?: JSX.EventHandler<DayElement, MouseEvent>;
+  onKeyDown?: JSX.EventHandler<DayElement, KeyboardEvent>;
+  role?: JSX.HTMLAttributes<HTMLElement>['role'];
 };
 
-export function createMonthBodyDay(config: CreateMonthBodyDayConfig) {
-  const props = createMonthBodyDayProps(config);
+export function createMonthBodyDay<DayElement extends HTMLElement = HTMLElement>(
+  config: CreateDayConfig
+) {
+  const props = createMonthBodyDayProps<DayElement>(config);
+  const handlers = createMonthBodyDayHandlers<DayElement>(config);
 
   return {
-    props,
+    props: mergeProps(props, handlers),
+    effects: () => createMonthBodyDayEffects({ ...config, id: props.id }),
     context: useCalendarContext(),
   } as const;
 }
 
-export function createMonthBodyDayProps(config: CreateMonthBodyDayConfig) {
-  const { idPrefix = 'solid-ui-calendar-month-body-day' } = config;
+export function createMonthBodyDayProps<DayElement extends HTMLElement = HTMLElement>(
+  config: CreateDayConfig<DayElement>
+) {
+  const { idPrefix = 'solid-ui-calendar-month-body-day', role = 'gridcell' } = config;
   const id = useId(idPrefix);
   const selectors = useCalendarSelectors();
 
@@ -39,5 +54,68 @@ export function createMonthBodyDayProps(config: CreateMonthBodyDayConfig) {
       return selectors.isInVisibleMonth(config.date()) ? '' : undefined;
     },
     id,
+    role,
+    get tabIndex() {
+      return selectors.isActive(config.date()) ? 0 : -1;
+    },
   } as const;
+}
+
+export function createMonthBodyDayHandlers<DayElement extends HTMLElement = HTMLElement>(
+  config: CreateDayConfig
+) {
+  const actions = useCalendarActions();
+  const selectors = useCalendarSelectors();
+
+  const onClick: JSX.EventHandler<DayElement, MouseEvent> = (event) => {
+    if (selectors.isActive(config.date())) {
+      actions.onDateClick(config.date());
+    }
+    config.onClick?.(event);
+  };
+
+  const onFocus: JSX.EventHandler<DayElement, FocusEvent> = () => {
+    if (!selectors.isActive(config.date())) {
+      actions.selectDate(config.date());
+    }
+  };
+
+  const keyDownHandlers = useKeyEventHandlers<DayElement>({
+    ArrowUp(event) {
+      event.preventDefault();
+      actions.goTo('previous', 'week');
+    },
+    ArrowDown(event) {
+      event.preventDefault();
+      actions.goTo('next', 'week');
+    },
+    ArrowLeft() {
+      actions.goTo('previous', 'day');
+    },
+    ArrowRight() {
+      actions.goTo('next', 'day');
+    },
+  });
+
+  const onKeyDown: JSX.EventHandler<DayElement, KeyboardEvent> = (event) => {
+    keyDownHandlers(event);
+    config.onKeyDown?.(event);
+  };
+
+  return {
+    onClick,
+    onFocus,
+    onKeyDown,
+  } as const;
+}
+
+export function createMonthBodyDayEffects(config: CreateDayConfig & { id: string }) {
+  const state = useCalendarState();
+  const selectors = useCalendarSelectors();
+
+  createEffect(() => {
+    if (selectors.isActive(config.date()) && state.isActiveDateFromKeyboardMove) {
+      document.getElementById(config.id)?.focus();
+    }
+  });
 }

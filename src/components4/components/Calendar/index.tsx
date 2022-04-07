@@ -15,7 +15,6 @@ import { createMonth } from './month/month';
 import { createMonthHeadWeek } from './month/head/week';
 import { createMonthHeadDay } from './month/head/day';
 import { createMonthBody } from './month/body/body';
-import { createDate } from './actions/date';
 import { createMonthBodyWeek } from './month/body/week';
 import { createMonthBodyDay } from './month/body/day';
 
@@ -26,7 +25,6 @@ export type CalendarComponentType = {
   createRoot: typeof createRoot;
   Actions: {
     createCancel: typeof createCancel;
-    createDate: typeof createDate;
     createSave: typeof createSave;
   };
   Navigation: {
@@ -57,7 +55,6 @@ const CalendarComponent: CalendarComponentType = Object.assign(CalendarProvider,
   createRoot,
   Actions: {
     createCancel,
-    createDate,
     createSave,
   },
   Navigation: {

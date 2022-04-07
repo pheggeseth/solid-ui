@@ -85,18 +85,13 @@ function CalendarWeek(props: { week: Date[] }) {
 }
 
 function CalendarDay(props: { date: Date }) {
-  const { props: dayProps } = Calendar.Month.Body.createDay({ date: () => props.date });
-  const { props: dateButtonProps, effects } = Calendar.Actions.createDate({
+  const { props: dayProps, effects } = Calendar.Month.Body.createDay({
     date: () => props.date,
   });
 
   effects();
 
-  return (
-    <td {...dayProps}>
-      <button {...dateButtonProps}>{props.date.getDate()}</button>
-    </td>
-  );
+  return <td {...dayProps}>{props.date.getDate()}</td>;
 }
 
 function CalendarActions() {
