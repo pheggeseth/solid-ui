@@ -2,21 +2,17 @@ import { JSXElement } from 'solid-js';
 import { createCancel } from './actions/cancel';
 import { createSave } from './actions/save';
 import { createRoot } from './calendar';
-import { createNextMonth } from './navigation/nextMonth';
-import { createNextYear } from './navigation/nextYear';
-import { createPreviousMonth } from './navigation/previousMonth';
-import { createPreviousYear } from './navigation/previousYear';
-import { createSelectMonth } from './navigation/selectMonth';
-import { createSelectYear } from './navigation/selectYear';
+import { createMonthBody } from './month/body/body';
+import { createMonthBodyDay } from './month/body/day';
+import { createMonthBodyWeek } from './month/body/week';
+import { createMonthHeadDay } from './month/head/day';
+import { createMonthHead } from './month/head/head';
+import { createMonthHeadWeek } from './month/head/week';
+import { createMonth } from './month/month';
+import { createNav } from './navigation/navigation';
+import { createSelect } from './navigation/select';
 import { createToday } from './navigation/today';
 import CalendarProvider, { CalendarProviderProps } from './provider';
-import { createMonthHead } from './month/head/head';
-import { createMonth } from './month/month';
-import { createMonthHeadWeek } from './month/head/week';
-import { createMonthHeadDay } from './month/head/day';
-import { createMonthBody } from './month/body/body';
-import { createMonthBodyWeek } from './month/body/week';
-import { createMonthBodyDay } from './month/body/day';
 
 export * from './calendar';
 
@@ -28,12 +24,8 @@ export type CalendarComponentType = {
     createSave: typeof createSave;
   };
   Navigation: {
-    createNextMonth: typeof createNextMonth;
-    createNextYear: typeof createNextYear;
-    createPreviousMonth: typeof createPreviousMonth;
-    createPreviousYear: typeof createPreviousYear;
-    createSelectMonth: typeof createSelectMonth;
-    createSelectYear: typeof createSelectYear;
+    createNav: typeof createNav;
+    createSelect: typeof createSelect;
     createToday: typeof createToday;
   };
   Month: {
@@ -58,12 +50,8 @@ const CalendarComponent: CalendarComponentType = Object.assign(CalendarProvider,
     createSave,
   },
   Navigation: {
-    createNextMonth,
-    createNextYear,
-    createPreviousMonth,
-    createPreviousYear,
-    createSelectMonth,
-    createSelectYear,
+    createNav,
+    createSelect,
     createToday,
   },
   Month: {

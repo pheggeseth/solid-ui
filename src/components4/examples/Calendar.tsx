@@ -2,38 +2,59 @@ import { createSignal, For, JSX, splitProps } from 'solid-js';
 import Calendar from '../components/Calendar';
 
 function CalendarNav() {
-  const { props: previousYearProps } = Calendar.Navigation.createPreviousYear();
-  const { props: previousMonthProps } = Calendar.Navigation.createPreviousMonth();
+  const { props: previousYearProps } = Calendar.Navigation.createNav({
+    direction: 'previous',
+    unit: 'year',
+  });
+  const { props: previousMonthProps } = Calendar.Navigation.createNav({
+    direction: 'previous',
+    unit: 'month',
+  });
 
   const {
     props: selectMonthProps,
-    context: { monthOptions },
-  } = Calendar.Navigation.createSelectMonth();
+    context: { value: visibleMonth, options: monthOptions },
+  } = Calendar.Navigation.createSelect({ unit: 'month' });
   const [localSelectMonthProps, otherSelectMonthProps] = splitProps(selectMonthProps, ['onChange']);
   const handleMonthChange: JSX.EventHandler<HTMLSelectElement, Event> = (event) => {
     localSelectMonthProps.onChange(Number(event.currentTarget.value));
   };
 
-  const { props: selectYearProps } = Calendar.Navigation.createSelectYear();
+  const {
+    props: selectYearProps,
+    context: { value: visibleYear, options: yearOptions },
+  } = Calendar.Navigation.createSelect({ unit: 'year' });
   const [localSelectYearProps, otherSelectYearProps] = splitProps(selectYearProps, ['onChange']);
   const handleYearChange: JSX.EventHandler<HTMLSelectElement, Event> = (event) => {
     localSelectYearProps.onChange(Number(event.currentTarget.value));
   };
 
-  const { props: nextMonthProps } = Calendar.Navigation.createNextMonth();
-  const { props: nextYearProps } = Calendar.Navigation.createNextYear();
+  const { props: nextMonthProps } = Calendar.Navigation.createNav({
+    direction: 'next',
+    unit: 'month',
+  });
+  const { props: nextYearProps } = Calendar.Navigation.createNav({
+    direction: 'next',
+    unit: 'year',
+  });
+
+  const monthFormatter = new Intl.DateTimeFormat([], { month: 'long' });
 
   return (
     <div>
       <button {...previousYearProps}>{'<<'}</button>
       <button {...previousMonthProps}>{'<'}</button>
-      <select {...otherSelectMonthProps} onChange={handleMonthChange}>
+      <select {...otherSelectMonthProps} value={visibleMonth()} onChange={handleMonthChange}>
         <For each={monthOptions()}>
-          {(month) => <option value={month.value}>{month.displayValue}</option>}
+          {(month) => {
+            const date = new Date();
+            date.setMonth(month);
+            return <option value={month}>{monthFormatter.format(date)}</option>;
+          }}
         </For>
       </select>
-      <select {...otherSelectYearProps} onChange={handleYearChange}>
-        <For each={[1, 2, 3]}>{(year) => <option value={year}>{year}</option>}</For>
+      <select {...otherSelectYearProps} value={visibleYear()} onChange={handleYearChange}>
+        <For each={yearOptions()}>{(year) => <option value={year}>{year}</option>}</For>
       </select>
       <button {...nextMonthProps}>{'>'}</button>
       <button {...nextYearProps}>{'>>'}</button>
@@ -115,10 +136,13 @@ export function CalendarExample() {
   }
 
   return (
-    <Calendar value={date()} onChange={handleChange}>
-      <CalendarNav />
-      <CalendarMonth />
-      <CalendarActions />
-    </Calendar>
+    <div>
+      <div>Selected date: {date().toDateString()}</div>
+      <Calendar value={date()} onChange={handleChange}>
+        <CalendarNav />
+        <CalendarMonth />
+        <CalendarActions />
+      </Calendar>
+    </div>
   );
 }

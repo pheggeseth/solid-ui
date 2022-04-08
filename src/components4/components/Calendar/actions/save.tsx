@@ -26,6 +26,7 @@ export function createSaveProps<SaveElement extends HTMLButtonElement = HTMLButt
 
   return {
     ...getDataProp(idPrefix),
+    'data-solid-ui-button': '',
     id,
   } as const;
 }

@@ -23,8 +23,8 @@ export function createCancelProps(config: CreateCancelConfig = {}) {
   const id = useId(idPrefix);
 
   return {
-    'solid-ui-button': '',
     ...getDataProp(idPrefix),
+    'data-solid-ui-button': '',
     id,
   } as const;
 }

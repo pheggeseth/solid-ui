@@ -29,6 +29,8 @@ export type CalendarSelectors = Readonly<{
   isInVisibleMonth: (date: Date) => boolean;
   isSelected: (date: Date) => boolean;
   isToday: (date: Date) => boolean;
+  visibleYear: Accessor<number>;
+  visibleMonth: Accessor<number>;
   visibleWeeks: Accessor<Date[][]>;
 }>;
 
@@ -133,6 +135,8 @@ export function createCalendarStore(config: CreateCalendarStoreConfig): Calendar
       (date, selectedDate) => date.toDateString() === selectedDate.toDateString()
     ),
     isToday: (date) => date.toDateString() === new Date().toDateString(),
+    visibleYear: () => state.visibleYear,
+    visibleMonth: () => state.visibleMonth,
     visibleWeeks: createMemo(() => getDaysInVisibleMonth(state.visibleYear, state.visibleMonth)),
   };
 
