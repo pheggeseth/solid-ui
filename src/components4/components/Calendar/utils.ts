@@ -1,7 +1,11 @@
 export function getDaysInVisibleMonth(visibleYear: number, visibleMonth: number) {
   const startDate = new Date(visibleYear, visibleMonth);
+  const prevMonthDaysVisible = startDate.getDay();
   const endDate = new Date(visibleYear, visibleMonth + 1, 0);
-  const dayCount = endDate.getDate();
+  const nextMonthDaysVisible = 6 - endDate.getDay();
+  const dayCount = endDate.getDate() + prevMonthDaysVisible + nextMonthDaysVisible;
+  startDate.setDate(startDate.getDate() - prevMonthDaysVisible);
+  endDate.setDate(endDate.getDate() + nextMonthDaysVisible);
 
   const weeks: Date[][] = [];
 

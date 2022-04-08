@@ -8,9 +8,10 @@ export type CreateMonthHeadWeekConfig = {
 export function createMonthHeadWeek(config: CreateMonthHeadWeekConfig = {}) {
   const props = createMonthHeadWeekProps(config);
 
-  const date = new Date();
+  const now = new Date();
   const dates = [0, 1, 2, 3, 4, 5, 6].map((n) => {
-    date.setDate(date.getDate() - date.getDay() + n);
+    const date = new Date(now);
+    date.setDate(now.getDate() - now.getDay() + n);
     return date;
   });
 
