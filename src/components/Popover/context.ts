@@ -1,38 +1,130 @@
-import { createContext, useContext } from 'solid-js';
+import { Accessor, createContext, useContext } from 'solid-js';
+import { createStore, SetStoreFunction } from 'solid-js/store';
 
-export type PopoverState = {
-  isOpen: boolean;
-  isOverlayOpen: boolean;
-  isPanelOpen: boolean;
-  triggerId: string | null;
-  overlayId: string | null;
-  panelId: string | null;
+type PopoverElementIds = {
+  triggerId: string;
+  panelId: string;
+  overlayId: string;
 };
 
-export type PopoverActions = {
-  setTriggerReference(element: Element): void;
-  setAnchorReference(element: Element): void;
-  setPopperReference(element: HTMLElement): void;
-  registerTrigger(triggerId: string): void;
-  registerOverlay(overlayId: string): void;
-  registerPanel(panelId: string): void;
+export type PopoverRole = 'menu' | 'listbox' | 'tree' | 'grid';
+
+export type PopoverState = PopoverElementIds &
+  PopoverPanelState & {
+    role: PopoverRole;
+  };
+
+export type PopoverActions = Readonly<{
+  setElementId(name: keyof PopoverElementIds, id: string): void;
   openPopover(): void;
   closePopover(): void;
   togglePopover(): void;
-  openOverlay(): void;
-  closeOverlay(): void;
+  onOverlayMount(): void;
+  onOverlayCleanup(): void;
+}>;
+
+export type PopoverStore = [state: PopoverState, actions: PopoverActions];
+
+export type PopoverPanelState = {
+  shouldShowPanel: boolean;
+  isPanelOpen: boolean;
+  isOverlayMounted: boolean;
 };
+export type PopoverPanelActions = Omit<PopoverActions, 'setElementId'>;
+export type PopoverPanelActionsSetStoreFunction = SetStoreFunction<Omit<PopoverState, 'role'>>;
 
-export const PopoverComponentContext =
-  createContext<[state: PopoverState, actions: PopoverActions]>();
-export function usePopoverComponentContext() {
-  return useContext(PopoverComponentContext);
+export function createPopoverPanelActions(
+  setState: PopoverPanelActionsSetStoreFunction
+): PopoverPanelActions {
+  return {
+    openPopover() {
+      setState('shouldShowPanel', true);
+    },
+    closePopover() {
+      setState('shouldShowPanel', false);
+    },
+    togglePopover() {
+      setState('shouldShowPanel', (state) => !state);
+    },
+    onOverlayMount() {
+      setState({ isOverlayMounted: true });
+    },
+    onOverlayCleanup() {
+      setState({ isOverlayMounted: false });
+    },
+  };
 }
 
+export function createPopoverStore(config: { role?: Accessor<PopoverRole> } = {}) {
+  const [state, setState] = createStore<PopoverState>({
+    triggerId: null,
+    overlayId: null,
+    panelId: null,
+    get role(): PopoverRole {
+      return config.role?.();
+    },
+    shouldShowPanel: false,
+    get isPanelOpen(): boolean {
+      return state.shouldShowPanel && (!state.overlayId || state.isOverlayMounted);
+    },
+    isOverlayMounted: false,
+  });
+
+  const actions: PopoverActions = {
+    setElementId(name, id) {
+      setState({ [name]: id });
+    },
+    openPopover() {
+      setState('shouldShowPanel', true);
+    },
+    closePopover() {
+      setState('shouldShowPanel', false);
+    },
+    togglePopover() {
+      setState('shouldShowPanel', (state) => !state);
+    },
+    onOverlayMount() {
+      setState({ isOverlayMounted: true });
+    },
+    onOverlayCleanup() {
+      setState({ isOverlayMounted: false });
+    },
+  } as const;
+
+  return [state, actions] as const;
+}
+
+export const PopoverStoreContext = createContext<PopoverStore>();
+
+export function usePopoverStore() {
+  return useContext(PopoverStoreContext);
+}
 export function usePopoverState() {
-  return usePopoverComponentContext()[0];
+  return useContext(PopoverStoreContext)[0];
+}
+export function usePopoverActions() {
+  return useContext(PopoverStoreContext)[1];
 }
 
-export function usePopoverActions() {
-  return usePopoverComponentContext()[1];
+export type PopoverContext = Readonly<{
+  isPopoverOpen: Accessor<boolean>;
+  isOverlayOpen: Accessor<boolean>;
+  open: () => void;
+  close: () => void;
+}>;
+
+export function usePopoverContext(): PopoverContext {
+  const state = usePopoverState();
+  const actions = usePopoverActions();
+
+  return {
+    isPopoverOpen: () => state.isPanelOpen,
+    isOverlayOpen: () => state.shouldShowPanel,
+    open: () => actions.openPopover(),
+    close: () => actions.closePopover(),
+  };
 }
+
+export type PopoverContextProp = {
+  context?: (ctx: PopoverContext) => void;
+};

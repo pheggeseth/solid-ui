@@ -1,43 +1,59 @@
-import { mergeProps, onMount, splitProps } from 'solid-js';
-import { Dynamic } from 'solid-js/web';
-import { useId } from '~/utils/componentUtils';
-import { BaseComponent } from '~/types';
+import { JSX, mergeProps, onMount } from 'solid-js';
+import { getDataProp, useId } from '~/utils/componentUtils';
 import { useSwitchActions, useSwitchState } from './context';
 
-export type LabelProps = {
-  as?: string | BaseComponent<{ id: string; onClick(): void }>;
+export type CreateLabelConfig<LabelElement extends HTMLElement = HTMLElement> = {
+  idPrefix?: string;
+  onClick?: JSX.EventHandler<LabelElement, MouseEvent>;
   passive?: boolean;
 };
 
-export const Label: BaseComponent<LabelProps> = (props) => {
-  props = mergeProps({ as: 'label' }, props);
+export function createLabel<LabelElement extends HTMLElement = HTMLElement>(
+  config: CreateLabelConfig<LabelElement> = {}
+) {
+  const props = createLabelProps(config);
+  const handlers = createLabelHandlers<LabelElement>(config);
 
+  return {
+    props: mergeProps(props, handlers),
+    effects: () => createLabelEffects({ id: props.id }),
+  } as const;
+}
+
+export function createLabelProps(config: CreateLabelConfig = {}) {
+  const { idPrefix = 'solid-ui-switch-label' } = config;
+  const id = useId(idPrefix);
+
+  return {
+    ...getDataProp(idPrefix),
+    id,
+  } as const;
+}
+
+export function createLabelHandlers<LabelElement extends HTMLElement = HTMLElement>(
+  config: CreateLabelConfig<LabelElement> = {}
+) {
   const state = useSwitchState();
-  const actions = useSwitchActions();
 
-  const id = useId('switch-label');
-
-  onMount(() => {
-    actions.registerLabelId(id);
-  });
-
-  const [localProps, otherProps] = splitProps(props, ['as', 'passive']);
-
-  function handleClick() {
-    if (!localProps.passive) {
-      document.getElementById(state.switchId)?.click();
+  const onClick: JSX.EventHandler<LabelElement, MouseEvent> = (event) => {
+    if (!config.passive) {
+      document.getElementById(state.labelId)?.click();
     }
-  }
+    config.onClick?.(event);
+  };
 
-  return (
-    <Dynamic
-      {...otherProps}
-      component={localProps.as}
-      data-solid-switch-label=""
-      id={id}
-      onClick={handleClick}
-    />
-  );
-};
+  return {
+    onClick,
+  } as const;
+}
 
-export default Label;
+export function createLabelEffects(config: { id: string }) {
+  registerLabelIdOnMount(config);
+}
+
+export function registerLabelIdOnMount(config: { id: string }) {
+  const actions = useSwitchActions();
+  onMount(() => {
+    actions.setElementId('labelId', config.id);
+  });
+}

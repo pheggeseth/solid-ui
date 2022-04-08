@@ -1,16 +1,26 @@
-import PopoverOverlay from './Overlay';
-import PopoverPanel from './Panel';
-import type { PopoverContext } from './Popover';
-import Popover, { AnchorRef, PopoverProvider } from './Popover';
-import PopoverTrigger from './Trigger';
+import { JSXElement } from 'solid-js';
+import { createPanel } from './panel';
+import { createOverlay } from './overlay';
+import PopoverProvider, { PopoverProviderProps } from './provider';
+import { createTrigger } from './trigger';
 
-export {
-  PopoverContext,
-  PopoverOverlay,
-  PopoverPanel,
-  PopoverProvider as Popover,
-  PopoverTrigger,
-  AnchorRef as PopoverAnchorRef,
+export * from './context';
+export * from './panel';
+export * from './overlay';
+export * from './provider';
+export * from './trigger';
+
+export type PopoverComponentType = {
+  (props: PopoverProviderProps): JSXElement;
+  createTrigger: typeof createTrigger;
+  createOverlay: typeof createOverlay;
+  createPanel: typeof createPanel;
 };
 
-export default Popover;
+const PopoverComponent: PopoverComponentType = Object.assign(PopoverProvider, {
+  createTrigger,
+  createOverlay,
+  createPanel,
+});
+
+export default PopoverComponent;

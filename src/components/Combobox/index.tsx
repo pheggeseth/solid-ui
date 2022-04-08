@@ -1,21 +1,38 @@
-import Combobox, { ComboboxContainer } from './Combobox';
-import type { ComboboxContext } from './Combobox';
-import ComboboxDropdown from './Dropdown';
-import ComboboxLabel from './Label';
-import ComboboxOption from './Option';
-import ComboboxOptions from './Options';
-import ComboboxPanel from './Panel';
-import ComboboxTextbox from './Textbox';
+import { JSXElement } from 'solid-js';
+import { createInput } from './input';
+import { createLabel } from './label';
+import { createList } from './list';
+import { createOption } from './option';
+import { createPanel } from './panel';
+import ComboboxProvider, { ComboboxProviderProps } from './provider';
+import { createTrigger } from './trigger';
 
-export {
-  ComboboxContainer,
-  ComboboxContext,
-  ComboboxDropdown,
-  ComboboxLabel,
-  ComboboxPanel,
-  ComboboxOption,
-  ComboboxOptions,
-  ComboboxTextbox,
+export * from './context';
+export * from './input';
+export * from './label';
+export * from './list';
+export * from './option';
+export * from './panel';
+export * from './provider';
+export * from './trigger';
+
+export type ComboboxComponentType = {
+  <Value>(props: ComboboxProviderProps<Value>): JSXElement;
+  createInput: typeof createInput;
+  createLabel: typeof createLabel;
+  createList: typeof createList;
+  createOption: typeof createOption;
+  createPanel: typeof createPanel;
+  createTrigger: typeof createTrigger;
 };
 
-export default Combobox;
+const ComboboxComponent: ComboboxComponentType = Object.assign(ComboboxProvider, {
+  createInput,
+  createLabel,
+  createList,
+  createOption,
+  createPanel,
+  createTrigger,
+});
+
+export default ComboboxComponent;

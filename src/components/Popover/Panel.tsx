@@ -1,106 +1,94 @@
-import { Accessor, createContext, mergeProps, splitProps, useContext } from 'solid-js';
-import { Dynamic, Portal, Show } from 'solid-js/web';
-import { BaseComponent } from '~/types';
-import { useId } from '~/utils/componentUtils';
-import { useOnClickAway } from '~/utils/eventUtils';
-import { getFirstFocusableElement, useFocusOnOpen, useFocusTrap } from '~/utils/focusUtils';
-import { usePopoverActions, usePopoverState } from './context';
+import { mergeProps, onMount } from 'solid-js';
+import { JSX } from 'solid-js/jsx-runtime';
+import { getDataProp, useId } from '~/utils/componentUtils';
+import {
+  createClickAwayEffect,
+  createFocusTrapEffect,
+  focusInitialChildOnMount,
+} from '../../utils/eventUtils';
+import { usePopoverContext, usePopoverActions, usePopoverState } from './context';
 
-export const PopoverPanelConfigContext =
-  createContext<{ clickAwayExceptions?: Accessor<HTMLElement[]>; disableFocus?: boolean }>();
+export type PanelConfig<PanelElement extends HTMLElement> = {
+  idPrefix?: string;
+  onKeyUp?: JSX.EventHandler<PanelElement, KeyboardEvent>;
+};
 
-export function usePopoverPanelConfigContext() {
-  return (
-    useContext(PopoverPanelConfigContext) || {
-      clickAwayExceptions: () => [],
-      disableFocus: false,
-    }
-  );
+export function createPanel<PanelElement extends HTMLElement = HTMLElement>(
+  config: PanelConfig<PanelElement> = {}
+) {
+  const props = createPanelProps(config);
+  const handlers = createPanelHandlers(config);
+
+  return {
+    props: mergeProps(props, handlers),
+    effects: () => createPanelEffects({ id: props.id }),
+    context: usePopoverContext(),
+  } as const;
 }
 
-type PopoverPanelDataAttributeProp =
-  | { 'data-solid-popover-panel': '' }
-  | { 'data-solid-menu-panel': '' }
-  | { 'data-solid-listbox-panel': '' }
-  | { 'data-solid-combobox-panel': '' };
+export function createPanelProps<PanelElement extends HTMLElement = HTMLElement>(
+  config: PanelConfig<PanelElement> = {}
+) {
+  const { idPrefix = 'solid-ui-popover-panel' } = config;
+  const id = useId(idPrefix);
 
-export type PanelProps = {
-  as?:
-    | string
-    | BaseComponent<
-        {
-          'aria-modal'?: PanelProps['aria-modal'];
-          id: string;
-          onKeyDown: PanelProps['onKeyDown'];
-          role: PanelProps['role'];
-          tabIndex: string | number;
-        } & PopoverPanelDataAttributeProp
-      >;
-  'aria-modal'?: boolean;
-  dataAttribute?:
-    | 'data-solid-popover-panel'
-    | 'data-solid-menu-panel'
-    | 'data-solid-listbox-panel'
-    | 'data-solid-combobox-panel';
-  onKeyDown?: (event: KeyboardEvent) => void;
-  ref?: (element: HTMLElement) => void;
-  role?: string;
-};
+  const popoverState = usePopoverState();
 
-const Panel: BaseComponent<PanelProps> = function Panel(props) {
-  props = mergeProps({ as: 'div', dataAttribute: 'data-solid-popover-panel' }, props);
+  return {
+    'data-solid-ui-panel': '',
+    ...getDataProp(idPrefix),
+    id,
+    get role() {
+      return popoverState.role;
+    },
+    tabIndex: 0,
+  };
+}
 
-  const state = usePopoverState();
-  const actions = usePopoverActions();
+export function createPanelHandlers<PanelElement extends HTMLElement = HTMLElement>(
+  config: PanelConfig<PanelElement> = {}
+) {
+  const popoverActions = usePopoverActions();
 
-  const panelId = useId('popover-panel');
-
-  actions.registerPanel(panelId);
-
-  const { clickAwayExceptions, disableFocus = false } = usePopoverPanelConfigContext();
-
-  function ref(element: HTMLElement) {
-    actions.setPopperReference(element);
-    if (!disableFocus) {
-      useFocusTrap(element, () => state.isOpen);
-      useFocusOnOpen(getFirstFocusableElement(element), () => state.isOpen);
-    }
-
-    const exceptions = clickAwayExceptions() || [];
-    const trigger = document.getElementById(state.triggerId);
-    if (trigger) exceptions.push(trigger);
-    useOnClickAway(element, () => actions.closePopover(), {
-      exceptions,
-      shouldContainActiveElement: !disableFocus,
-    });
-    props.ref?.(element);
-  }
-
-  function handleKeyDown(event: KeyboardEvent) {
+  const onKeyUp: JSX.EventHandler<PanelElement, KeyboardEvent> = (event) => {
     if (event.key === 'Escape') {
-      actions.closePopover();
+      popoverActions.closePopover();
     }
-    props.onKeyDown?.(event);
-  }
+    config.onKeyUp?.(event);
+  };
 
-  const [localProps, otherProps] = splitProps(props, ['as', 'dataAttribute', 'role']);
+  return {
+    onKeyUp,
+  };
+}
 
-  return (
-    <Show when={state.isPanelOpen}>
-      <Portal>
-        <Dynamic
-          {...otherProps}
-          component={localProps.as}
-          {...({ [localProps.dataAttribute]: '' } as PopoverPanelDataAttributeProp)}
-          id={state.panelId}
-          onKeyDown={handleKeyDown}
-          ref={ref}
-          role={localProps.role}
-          tabIndex={disableFocus ? -1 : 0}
-        />
-      </Portal>
-    </Show>
-  );
-};
+export function createPanelEffects(config: { id: string }) {
+  const popoverState = usePopoverState();
+  const popoverActions = usePopoverActions();
 
-export default Panel;
+  registerPanelIdOnMount(config);
+
+  createFocusTrapEffect({
+    containerId: config.id,
+    isEnabled: () => popoverState.isPanelOpen,
+  });
+
+  focusInitialChildOnMount({
+    containerId: config.id,
+  });
+
+  createClickAwayEffect({
+    containerId: config.id,
+    exceptionIds: () => [popoverState.triggerId],
+    onClickAway: popoverActions.closePopover,
+    isEnabled: () =>
+      popoverState.isPanelOpen &&
+      document.getElementById(config.id).contains(document.activeElement),
+  });
+}
+
+export function registerPanelIdOnMount(config: { id: string }) {
+  onMount(() => {
+    usePopoverActions().setElementId('panelId', config.id);
+  });
+}

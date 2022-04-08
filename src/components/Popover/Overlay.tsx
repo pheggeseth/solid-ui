@@ -1,59 +1,41 @@
-import { Component, mergeProps, onCleanup, onMount, splitProps } from 'solid-js';
-import { Dynamic, Portal, Show } from 'solid-js/web';
-import { useId } from '~/utils/componentUtils';
-import { BaseComponent } from '~/types';
-import { usePopoverActions, usePopoverState } from './context';
+import { onCleanup, onMount } from 'solid-js';
+import { getDataProp, useId } from '~/utils/componentUtils';
+import { usePopoverContext, usePopoverActions } from './context';
 
-type PopoverOverlayDataAttributeProp =
-  | { 'data-solid-popover-overlay': '' }
-  | { 'data-solid-menu-overlay': '' }
-  | { 'data-solid-listbox-overlay': '' };
+export function createOverlay(config: { idPrefix?: string } = {}) {
+  const props = createOverlayProps(config);
 
-export type OverlayProps = {
-  as?: string | BaseComponent<{ id: string } & PopoverOverlayDataAttributeProp>;
-  dataAttribute?:
-    | 'data-solid-popover-overlay'
-    | 'data-solid-menu-overlay'
-    | 'data-solid-listbox-overlay';
-};
+  return {
+    props,
+    effects: () => createOverlayEffects({ id: props.id }),
+    context: usePopoverContext(),
+  };
+}
 
-const Overlay: BaseComponent<OverlayProps> = function Overlay(props) {
-  props = mergeProps({ as: 'div', dataAttribute: 'data-solid-popover-overlay' }, props);
+export function createOverlayProps(config: { idPrefix?: string } = {}) {
+  const { idPrefix = 'solid-ui-popover-overlay' } = config;
+  const id = useId(idPrefix);
 
-  const state = usePopoverState();
-  const actions = usePopoverActions();
+  return {
+    'data-solid-ui-overlay': '',
+    ...getDataProp(idPrefix),
+    id,
+    ref() {},
+  };
+}
 
-  const overlayId = useId('popover-overlay');
-  actions.registerOverlay(overlayId);
+export function registerOverlayIdOnMount(config: { id: string }) {
+  const popoverActions = usePopoverActions();
+  onMount(() => popoverActions.setElementId('overlayId', config.id));
+}
 
-  const [localProps, otherProps] = splitProps(props, ['as', 'dataAttribute']);
+export function trackIsOverlayMounted() {
+  const popoverActions = usePopoverActions();
+  onMount(popoverActions.onOverlayMount);
+  onCleanup(popoverActions.onOverlayCleanup);
+}
 
-  return (
-    <Show when={state.isOpen}>
-      <OverlayPortal>
-        <Dynamic
-          {...otherProps}
-          component={localProps.as}
-          {...({ [localProps.dataAttribute]: '' } as PopoverOverlayDataAttributeProp)}
-          id={state.overlayId}
-        />
-      </OverlayPortal>
-    </Show>
-  );
-};
-
-const OverlayPortal: Component = (props) => {
-  const actions = usePopoverActions();
-
-  onMount(() => {
-    actions.openOverlay();
-
-    onCleanup(() => {
-      actions.closeOverlay();
-    });
-  });
-
-  return <Portal>{props.children}</Portal>;
-};
-
-export default Overlay;
+export function createOverlayEffects(config: { id: string }) {
+  registerOverlayIdOnMount(config);
+  trackIsOverlayMounted();
+}

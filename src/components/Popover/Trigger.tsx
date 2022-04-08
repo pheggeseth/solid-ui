@@ -1,101 +1,106 @@
-import { createEffect, mergeProps, splitProps } from 'solid-js';
-import { Dynamic } from 'solid-js/web';
-import { useId } from '~/utils/componentUtils';
-import { BaseComponent } from '~/types';
-import { usePopoverActions, usePopoverState } from './context';
+import { createEffect, JSX, mergeProps, onMount } from 'solid-js';
+import { getDataProp, useId } from '~/utils/componentUtils';
+import { usePopoverContext, usePopoverActions, usePopoverState } from './context';
 
-type PopoverTriggerDataAttributeProp =
-  | { 'data-solid-popover-trigger': '' }
-  | { 'data-solid-menu-button': '' }
-  | { 'data-solid-listbox-button': '' };
-
-export type TriggerProps = {
-  as?:
-    | BaseComponent<
-        {
-          'aria-expanded': boolean;
-          'aria-haspopup': TriggerProps['aria-haspopup'];
-          id: string;
-          onClick: TriggerProps['onClick'];
-          onKeyDown?: TriggerProps['onKeyDown'];
-          type: 'button';
-        } & PopoverTriggerDataAttributeProp
-      >
-    | string;
-  'aria-haspopup'?: boolean | string;
-  dataAttribute?:
-    | 'data-solid-popover-trigger'
-    | 'data-solid-menu-button'
-    | 'data-solid-listbox-button';
+export type TriggerConfig<TriggerElement extends HTMLElement> = {
   idPrefix?: string;
-  onClick?: (event: MouseEvent) => void;
-  onKeyDown?: (event: KeyboardEvent) => void;
-  ref?: Element | ((element: Element) => void);
+  primary?: boolean;
+  onClick?: JSX.EventHandler<TriggerElement, MouseEvent>;
+  onKeyUp?: JSX.EventHandler<TriggerElement, KeyboardEvent>;
 };
 
-export const Trigger: BaseComponent<TriggerProps> = function Trigger(props) {
-  props = mergeProps(
-    { 'aria-haspopup': 'dialog', as: 'button', dataAttribute: 'data-solid-popover-trigger' },
-    props
-  );
+export function createTrigger<TriggerElement extends HTMLElement = HTMLElement>(
+  config: TriggerConfig<TriggerElement> = {}
+) {
+  const popoverState = usePopoverState();
+  config.primary = config.primary ?? !popoverState.triggerId;
+  const props = createTriggerProps<TriggerElement>(config);
+  const handlers = createTriggerHandlers<TriggerElement>(config);
 
-  const state = usePopoverState();
-  const actions = usePopoverActions();
+  return {
+    props: mergeProps(props, handlers),
+    effects: () => createTriggerEffects({ id: props.id, primary: config.primary }),
+    context: usePopoverContext(),
+  } as const;
+}
 
-  const triggerId = useId(props.idPrefix || 'popover-trigger');
+export function createTriggerProps<TriggerElement extends HTMLElement>(
+  config: TriggerConfig<TriggerElement> = {}
+) {
+  const popoverState = usePopoverState();
+  const { idPrefix = 'solid-ui-popover-trigger', primary = !popoverState.triggerId } = config;
+  const id = useId(idPrefix);
 
-  // only register the first trigger that renders
-  if (!state.triggerId) {
-    actions.registerTrigger(triggerId);
+  return {
+    get ['aria-controls']() {
+      return primary ? popoverState.panelId : undefined;
+    },
+    get ['aria-expanded']() {
+      return primary ? popoverState.isPanelOpen : undefined;
+    },
+    get ['aria-haspopup']() {
+      return primary ? popoverState.role : undefined;
+    },
+    'data-solid-ui-button': '',
+    ...getDataProp(idPrefix),
+    id,
+  } as const;
+}
+
+export function createTriggerHandlers<TriggerElement extends HTMLElement = HTMLElement>(
+  config: TriggerConfig<TriggerElement>
+) {
+  const popoverState = usePopoverState();
+  const popoverActions = usePopoverActions();
+
+  const onClick: JSX.EventHandler<TriggerElement, MouseEvent> = (event) => {
+    popoverActions.togglePopover();
+    config.onClick?.(event);
+  };
+
+  const onKeyUp: JSX.EventHandler<TriggerElement, KeyboardEvent> = (event) => {
+    if (event.key === 'Escape') {
+      popoverActions.closePopover();
+    } else if (
+      (popoverState.role === 'menu' || popoverState.role === 'listbox') &&
+      (event.key === 'ArrowDown' || event.key === 'ArrowUp')
+    ) {
+      popoverActions.openPopover();
+    }
+    config.onKeyUp?.(event);
+  };
+
+  return {
+    onClick,
+    onKeyUp,
+  } as const;
+}
+
+export function createTriggerEffects(config: { id: string; primary?: boolean }) {
+  if (config.primary) {
+    registerTriggerIdOnMount(config);
+    focusPrimaryTriggerOnClose(config);
   }
+}
 
-  function ref(element: HTMLElement) {
-    // only use this trigger as the popper trigger if it was the first trigger to render
-    if (state.triggerId === triggerId) {
-      actions.setTriggerReference(element);
-    }
-    if (typeof props.ref === 'function') {
-      props.ref(element);
-    } else {
-      props.ref = element;
-    }
-  }
+export function registerTriggerIdOnMount(config: { id: string }) {
+  onMount(() => {
+    const popoverState = usePopoverState();
+    const popoverActions = usePopoverActions();
 
-  createEffect((prevIsOpen) => {
-    if (prevIsOpen && !state.isOpen) {
-      document.getElementById(state.triggerId)?.focus();
+    if (!popoverState.triggerId) {
+      popoverActions.setElementId('triggerId', config.id);
     }
-    return state.isOpen;
   });
+}
 
-  function handleClick(event: MouseEvent) {
-    props.onClick?.(event);
-    actions.togglePopover();
-  }
+export function focusPrimaryTriggerOnClose(config: { id: string }) {
+  const popoverState = usePopoverState();
 
-  function handleKeyDown(event) {
-    props.onKeyDown?.(event);
-  }
-
-  const [localProps, otherProps] = splitProps(props, ['as', 'aria-haspopup', 'dataAttribute']);
-
-  return (
-    <Dynamic
-      {...otherProps}
-      component={localProps.as}
-      aria-controls={state.isOpen ? state.panelId : undefined}
-      aria-expanded={state.isOpen}
-      aria-haspopup={localProps['aria-haspopup']}
-      {...({ [localProps.dataAttribute]: '' } as PopoverTriggerDataAttributeProp)}
-      id={triggerId}
-      onClick={handleClick}
-      onKeyDown={handleKeyDown}
-      ref={ref}
-      type="button"
-    >
-      {otherProps.children}
-    </Dynamic>
-  );
-};
-
-export default Trigger;
+  createEffect<boolean>((wasPanelOpen) => {
+    if (wasPanelOpen && !popoverState.isPanelOpen && config.id === popoverState.triggerId) {
+      document.getElementById(config.id)?.focus({ preventScroll: true });
+    }
+    return popoverState.isPanelOpen;
+  });
+}

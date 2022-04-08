@@ -1,16 +1,20 @@
-import dayjs from 'dayjs';
+export function getDaysInVisibleMonth(visibleYear: number, visibleMonth: number) {
+  const startDate = new Date(visibleYear, visibleMonth);
+  const prevMonthDaysVisible = startDate.getDay();
+  const endDate = new Date(visibleYear, visibleMonth + 1, 0);
+  const nextMonthDaysVisible = 6 - endDate.getDay();
+  const dayCount = endDate.getDate() + prevMonthDaysVisible + nextMonthDaysVisible;
+  startDate.setDate(startDate.getDate() - prevMonthDaysVisible);
+  endDate.setDate(endDate.getDate() + nextMonthDaysVisible);
 
-export function getDaysInVisibleMonth(visibleMonth: number, visibleYear: number) {
-  const startDate = dayjs([visibleYear, visibleMonth]).startOf('month').weekday(0);
-  const endDate = dayjs([visibleYear, visibleMonth]).endOf('month').weekday(6);
-  const dayCount = endDate.diff(startDate, 'days') + 1;
-
-  const weeks: string[][] = [];
+  const weeks: Date[][] = [];
 
   for (let i = 0; i < dayCount / 7; i++) {
-    const week: string[] = [];
+    const week: Date[] = [];
     for (let j = 0; j < 7; j++) {
-      week.push(startDate.add(i * 7 + j, 'days').format('YYYY-MM-DD'));
+      const date = new Date(startDate);
+      date.setDate(date.getDate() + i * 7 + j);
+      week.push(date);
     }
     weeks.push(week);
   }

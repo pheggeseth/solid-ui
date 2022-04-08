@@ -1,52 +1,69 @@
-import { JSXElement, mergeProps, onMount, splitProps } from 'solid-js';
-import { Dynamic } from 'solid-js/web';
-import { useId } from '~/utils/componentUtils';
-import { BaseComponent, BaseComponentProps } from '~/types';
+import { Accessor, JSX, mergeProps, onMount } from 'solid-js';
+import { getDataProp, useId } from '~/utils/componentUtils';
 import { useSwitchActions, useSwitchState } from './context';
-import Description from './Description';
-import Group from './Group';
-import Label from './Label';
 
-export type SwitchProps = {
-  as?:
-    | string
-    | BaseComponent<{
-        id: string;
-        'aria-labelledby'?: string;
-        'aria-describedby'?: string;
-        'aria-checked': boolean;
-        onClick: (event?: MouseEvent) => void;
-        onKeyPress: (event: KeyboardEvent) => void;
-        onKeyUp: (event: KeyboardEvent) => void;
-        role: 'switch';
-        tabIndex: string | number;
-      }>;
-  checked: boolean;
+export type CreateSwitchConfig<SwitchElement extends HTMLElement = HTMLElement> = {
+  checked?: Accessor<boolean>;
+  idPrefix?: string;
   onChange?: (checked: boolean) => void;
+  onClick?: JSX.EventHandler<SwitchElement, MouseEvent>;
+  onKeyPress?: JSX.EventHandler<SwitchElement, KeyboardEvent>;
+  onKeyUp?: JSX.EventHandler<SwitchElement, KeyboardEvent>;
 };
 
-export const Switch: BaseComponent<SwitchProps> = (props) => {
-  props = mergeProps({ as: 'button' }, props);
+export function createSwitch<SwitchElement extends HTMLElement = HTMLElement>(
+  config: CreateSwitchConfig = {}
+) {
+  const props = createSwitchProps(config);
+  const handlers = createSwitchHandlers<SwitchElement>(config);
 
-  const [localProps, otherProps] = splitProps(props, ['as', 'checked', 'onChange']);
+  return {
+    props: mergeProps(props, handlers),
+    effects: () => createSwitchEffects({ id: props.id }),
+  } as const;
+}
 
-  const actions = useSwitchActions();
+export function createSwitchProps(config: CreateSwitchConfig) {
+  const { idPrefix = 'solid-ui-switch' } = config;
+  const id = useId(idPrefix);
+  const state = useSwitchState();
 
-  const id = useId('switch');
+  return {
+    get ['aria-checked']() {
+      return config.checked();
+    },
+    get ['aria-describedby']() {
+      return state.descriptionId;
+    },
+    get ['aria-labelledby']() {
+      return state.labelId;
+    },
+    ...getDataProp(idPrefix),
+    get ['data-checked']() {
+      return config.checked() ? '' : undefined;
+    },
+    id,
+    role: 'switch',
+    tabIndex: 0,
+  } as const;
+}
 
-  onMount(() => {
-    actions?.registerSwitchId(id);
-  });
+export function createSwitchHandlers<SwitchElement extends HTMLElement = HTMLElement>(
+  config: CreateSwitchConfig = {}
+) {
+  const toggle = () => config.onChange?.(!config.checked?.());
 
-  function toggle() {
-    localProps.onChange(!localProps.checked);
-  }
+  const onClick: JSX.EventHandler<SwitchElement, MouseEvent> = (event) => {
+    toggle();
+    config.onClick?.(event);
+  };
 
-  function handleKeyPress(event: KeyboardEvent) {
+  const onKeyPress: JSX.EventHandler<SwitchElement, KeyboardEvent> = (event) => {
     event.preventDefault();
-  }
+    config.onKeyPress?.(event);
+  };
 
-  function handleKeyUp(event: KeyboardEvent) {
+  const onKeyUp: JSX.EventHandler<SwitchElement, KeyboardEvent> = (event) => {
     if (event.key !== 'Tab') {
       event.preventDefault();
     }
@@ -54,35 +71,24 @@ export const Switch: BaseComponent<SwitchProps> = (props) => {
     if (event.key === ' ') {
       toggle();
     }
-  }
 
-  const state = useSwitchState();
+    config.onKeyUp?.(event);
+  };
 
-  return (
-    <Dynamic
-      {...otherProps}
-      component={localProps.as}
-      id={id}
-      aria-labelledby={state?.labelId}
-      aria-describedby={state?.descriptionId}
-      aria-checked={localProps.checked}
-      data-solid-switch=""
-      onClick={toggle}
-      onKeyPress={handleKeyPress}
-      onKeyUp={handleKeyUp}
-      role="switch"
-      tabIndex="0"
-    />
-  );
-};
+  return {
+    onClick,
+    onKeyPress,
+    onKeyUp,
+  } as const;
+}
 
-type SwitchComponentType = {
-  (props: BaseComponentProps<SwitchProps>): JSXElement;
-  Group: typeof Group;
-  Label: typeof Label;
-  Description: typeof Description;
-};
+export function createSwitchEffects(config: { id: string }) {
+  registerSwitchIdOnMount(config);
+}
 
-const SwitchComponent: SwitchComponentType = Object.assign(Switch, { Group, Label, Description });
-
-export default SwitchComponent;
+export function registerSwitchIdOnMount(config: { id: string }) {
+  const actions = useSwitchActions();
+  onMount(() => {
+    actions.setElementId('switchId', config.id);
+  });
+}
