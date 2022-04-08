@@ -2,7 +2,7 @@ import { createEffect, PropsWithChildren, Show } from 'solid-js';
 import { Portal } from 'solid-js/web';
 import Popper from '~/components/Popper';
 import { ComponentRef } from '~/types';
-import Menu from '../../components/Menu';
+import Menu from '../components/Menu';
 
 function MenuTrigger(props: PropsWithChildren<{ ref?: ComponentRef<HTMLButtonElement> }>) {
   const { props: triggerProps, effects } = Menu.createTrigger();

@@ -2,7 +2,7 @@ import { createEffect, createSignal, For, PropsWithChildren, Show } from 'solid-
 import { Portal } from 'solid-js/web';
 import Popper from '~/components/Popper';
 import { ComponentRef } from '~/types';
-import Listbox from '../../components/Listbox';
+import Listbox from '../components/Listbox';
 import { Fruit, fruits } from './utils';
 
 function ListboxLabel(props: PropsWithChildren) {

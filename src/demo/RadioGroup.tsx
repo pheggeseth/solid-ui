@@ -1,5 +1,5 @@
 import { createSignal, For, PropsWithChildren } from 'solid-js';
-import RadioGroupComponent, { RadioGroupProviderProps } from '../../components/RadioGroup';
+import RadioGroupComponent, { RadioGroupProviderProps } from '../components/RadioGroup';
 import { Fruit, fruits } from './utils';
 
 function RadioGroupLabel(props: PropsWithChildren) {

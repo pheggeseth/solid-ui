@@ -1,8 +1,8 @@
 import { createEffect, createSignal, For, JSX, PropsWithChildren, Show } from 'solid-js';
 import { Portal } from 'solid-js/web';
 import { ComponentRef } from '~/types';
-import Combobox from '../../components/Combobox';
-import Popper from '../../components/Popper';
+import Combobox from '../components/Combobox';
+import Popper from '../components/Popper';
 import { Fruit, fruits } from './utils';
 
 function ComboboxLabel(props: PropsWithChildren) {

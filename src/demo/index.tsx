@@ -1,14 +1,14 @@
 import './demo.css';
 import '../solid-ui.css';
-import { CalendarExample } from './examples/Calendar';
-import { ComboboxExample } from './examples/Combobox';
-import { DisclosureExample } from './examples/Disclosure';
-import { FormExample } from './examples/Form';
-import { ListboxExample } from './examples/Listbox';
-import { MenuExample } from './examples/Menu';
-import { PopoverExample } from './examples/Popover';
-import { RadioGroupExample } from './examples/RadioGroup';
-import { SwitchExample } from './examples/Switch';
+import { CalendarExample } from './Calendar';
+import { ComboboxExample } from './Combobox';
+import { DisclosureExample } from './Disclosure';
+import { FormExample } from './Form';
+import { ListboxExample } from './Listbox';
+import { MenuExample } from './Menu';
+import { PopoverExample } from './Popover';
+import { RadioGroupExample } from './RadioGroup';
+import { SwitchExample } from './Switch';
 
 export function Demo() {
   return (

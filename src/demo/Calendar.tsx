@@ -1,6 +1,6 @@
 import { createSignal, For, JSX, PropsWithChildren, splitProps } from 'solid-js';
-import Calendar from '../../components/Calendar';
-import { CalendarContextProp, useCalendarContext } from '../../components/Calendar/context';
+import Calendar from '../components/Calendar';
+import { CalendarContextProp, useCalendarContext } from '../components/Calendar/context';
 
 function CalendarRoot(
   props: PropsWithChildren<{ value: Date; onChange: (newDate: Date) => void } & CalendarContextProp>
