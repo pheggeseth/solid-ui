@@ -95,6 +95,13 @@ export function createMonthBodyDayHandlers<DayElement extends HTMLElement = HTML
     ArrowRight() {
       actions.goTo('next', 'day');
     },
+    Enter() {
+      actions.onDateClick(config.date());
+    },
+    [' '](event) {
+      event.preventDefault();
+      actions.onDateClick(config.date());
+    },
   });
 
   const onKeyDown: JSX.EventHandler<DayElement, KeyboardEvent> = (event) => {
