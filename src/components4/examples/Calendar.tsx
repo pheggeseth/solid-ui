@@ -1,5 +1,20 @@
-import { createSignal, For, JSX, splitProps } from 'solid-js';
+import { createSignal, For, JSX, PropsWithChildren, splitProps } from 'solid-js';
 import Calendar from '../components/Calendar';
+import { CalendarContextProp, useCalendarContext } from '../components/Calendar/context';
+
+function CalendarRoot(
+  props: PropsWithChildren<{ value: Date; onChange: (newDate: Date) => void } & CalendarContextProp>
+) {
+  return (
+    <Calendar {...props}>
+      {(() => {
+        const { props: rootProps } = Calendar.createRoot();
+        props.context?.(useCalendarContext());
+        return <div {...rootProps}>{props.children}</div>;
+      })()}
+    </Calendar>
+  );
+}
 
 function CalendarNav() {
   const { props: previousYearProps } = Calendar.Navigation.createNav({
@@ -41,23 +56,26 @@ function CalendarNav() {
   const monthFormatter = new Intl.DateTimeFormat([], { month: 'long' });
 
   return (
-    <div>
-      <button {...previousYearProps}>{'<<'}</button>
+    <div style={{ display: 'flex', 'justify-content': 'space-between', 'align-items': 'center' }}>
+      {/* <button {...previousYearProps}>{'<<'}</button> */}
       <button {...previousMonthProps}>{'<'}</button>
-      <select {...otherSelectMonthProps} value={visibleMonth()} onChange={handleMonthChange}>
-        <For each={monthOptions()}>
-          {(month) => {
-            const date = new Date();
-            date.setMonth(month);
-            return <option value={month}>{monthFormatter.format(date)}</option>;
-          }}
-        </For>
-      </select>
-      <select {...otherSelectYearProps} value={visibleYear()} onChange={handleYearChange}>
-        <For each={yearOptions()}>{(year) => <option value={year}>{year}</option>}</For>
-      </select>
+
+      <span>
+        <select {...otherSelectMonthProps} value={visibleMonth()} onChange={handleMonthChange}>
+          <For each={monthOptions()}>
+            {(month) => {
+              const date = new Date();
+              date.setMonth(month);
+              return <option value={month}>{monthFormatter.format(date)}</option>;
+            }}
+          </For>
+        </select>
+        <select {...otherSelectYearProps} value={visibleYear()} onChange={handleYearChange}>
+          <For each={yearOptions()}>{(year) => <option value={year}>{year}</option>}</For>
+        </select>
+      </span>
       <button {...nextMonthProps}>{'>'}</button>
-      <button {...nextYearProps}>{'>>'}</button>
+      {/* <button {...nextYearProps}>{'>>'}</button> */}
     </div>
   );
 }
@@ -137,11 +155,11 @@ export function CalendarExample() {
   return (
     <div>
       <div>Selected date: {date().toDateString()}</div>
-      <Calendar value={date()} onChange={handleChange}>
+      <CalendarRoot value={date()} onChange={handleChange}>
         <CalendarNav />
         <CalendarMonth />
         <CalendarActions />
-      </Calendar>
+      </CalendarRoot>
     </div>
   );
 }

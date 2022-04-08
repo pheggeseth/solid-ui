@@ -3,7 +3,6 @@ import { createStore } from 'solid-js/store';
 import { getDaysInVisibleMonth } from './utils';
 
 export type CalendarState = {
-  selectedDate: Date;
   activeDate: Date;
   visibleMonth: number;
   visibleYear: number;
@@ -41,18 +40,17 @@ export type CalendarStore = Readonly<
 >;
 
 export type CreateCalendarStoreConfig = {
-  value?: Accessor<string | number | Date>;
+  value?: Accessor<Date>;
   onCancel?: () => void;
   onChange?: (newDate: Date) => void;
 };
 
 export function createCalendarStore(config: CreateCalendarStoreConfig): CalendarStore {
-  const selectedDate = new Date(config.value?.());
+  const activeDate = new Date(config.value?.());
   const [state, setState] = createStore<CalendarState>({
-    selectedDate,
-    activeDate: selectedDate,
-    visibleMonth: selectedDate.getMonth(),
-    visibleYear: selectedDate.getFullYear(),
+    activeDate,
+    visibleMonth: activeDate.getMonth(),
+    visibleYear: activeDate.getFullYear(),
     ariaLabel: null,
     isActiveDateFromUserInteraction: false,
     deferredDateClick: null,
@@ -138,7 +136,7 @@ export function createCalendarStore(config: CreateCalendarStoreConfig): Calendar
       (date, visibleMonth) => date.getMonth() === visibleMonth
     ),
     isSelected: createSelector<Date, Date>(
-      () => state.selectedDate,
+      () => config.value?.(),
       (date, selectedDate) => date.toDateString() === selectedDate.toDateString()
     ),
     isToday: (date) => date.toDateString() === new Date().toDateString(),

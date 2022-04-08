@@ -38,6 +38,7 @@ export function createMonthBodyDayProps<DayElement extends HTMLElement = HTMLEle
 
   return {
     ...getDataProp(idPrefix),
+    'data-solid-ui-calendar-day': '',
     get ['data-active']() {
       return selectors.isActive(config.date()) ? '' : undefined;
     },

@@ -23,6 +23,7 @@ export function createMonthHeadDayProps(config: CreateMonthHeadDayConfig) {
   return {
     abbr: new Intl.DateTimeFormat([], { weekday: 'long' }).format(config.date()),
     ...getDataProp(idPrefix),
+    'data-solid-ui-calendar-day': '',
     id,
     scope: 'col',
   } as const;
