@@ -205,6 +205,10 @@
   border-radius: var(--border-radius);
 }
 
+[data-solid-ui-calendar-day]:focus {
+  outline: var(--focus-outline);
+}
+
 [data-solid-ui-calendar-month-body-day]:not([data-visible-month]) {
   color: var(--active-background);
 }
