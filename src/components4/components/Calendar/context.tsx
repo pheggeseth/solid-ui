@@ -8,7 +8,8 @@ export type CalendarState = {
   visibleMonth: number;
   visibleYear: number;
   ariaLabel: string;
-  isActiveDateFromKeyboardMove: boolean;
+  isActiveDateFromUserInteraction: boolean;
+  deferredDateClick: Date;
 };
 
 export type CalendarActions = Readonly<{
@@ -21,6 +22,7 @@ export type CalendarActions = Readonly<{
   onCancel(): void;
   onDateConfirm(): void;
   onDateClick(date: Date): void;
+  onDeferredDateClick(date: Date): void;
 }>;
 
 export type CalendarSelectors = Readonly<{
@@ -52,7 +54,8 @@ export function createCalendarStore(config: CreateCalendarStoreConfig): Calendar
     visibleMonth: selectedDate.getMonth(),
     visibleYear: selectedDate.getFullYear(),
     ariaLabel: null,
-    isActiveDateFromKeyboardMove: false,
+    isActiveDateFromUserInteraction: false,
+    deferredDateClick: null,
   });
 
   const ariaLabelFormatter = new Intl.DateTimeFormat([], { month: 'long', year: 'numeric' });
@@ -64,7 +67,7 @@ export function createCalendarStore(config: CreateCalendarStoreConfig): Calendar
         visibleMonth: date.getMonth(),
         visibleYear: date.getFullYear(),
         ariaLabel: ariaLabelFormatter.format(date),
-        isActiveDateFromKeyboardMove: true,
+        isActiveDateFromUserInteraction: true,
       });
     },
     viewCalendarMonth(year, month) {
@@ -75,7 +78,7 @@ export function createCalendarStore(config: CreateCalendarStoreConfig): Calendar
         visibleMonth: month,
         visibleYear: year,
         ariaLabel: ariaLabelFormatter.format(newDate),
-        isActiveDateFromKeyboardMove: false,
+        isActiveDateFromUserInteraction: false,
       });
     },
     goTo(direction, unit) {
@@ -116,7 +119,11 @@ export function createCalendarStore(config: CreateCalendarStoreConfig): Calendar
     },
     onDateClick(date) {
       actions.selectDate(date);
+      setState({ deferredDateClick: null });
       actions.onDateConfirm();
+    },
+    onDeferredDateClick(date) {
+      setState({ deferredDateClick: date });
     },
   };
 

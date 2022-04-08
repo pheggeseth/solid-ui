@@ -1,4 +1,4 @@
-import { createEffect, mergeProps } from 'solid-js';
+import { mergeProps } from 'solid-js';
 import { getDataProp, useId } from '~/utils/componentUtils';
 import { useCalendarActions, useCalendarContext, useCalendarState } from '../context';
 
@@ -13,10 +13,6 @@ export function createSelect(config: CreateSelectConfig) {
   const props = createSelectProps(config);
   const handlers = createSelectHandlers(config);
   const state = useCalendarState();
-
-  createEffect(() => {
-    console.log(state.visibleMonth, state.visibleYear);
-  });
 
   return {
     props: mergeProps(props, handlers),

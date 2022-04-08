@@ -131,7 +131,6 @@ export function CalendarExample() {
   const [date, setDate] = createSignal(new Date());
 
   function handleChange(newDate: Date) {
-    console.log(newDate);
     setDate(newDate);
   }
 

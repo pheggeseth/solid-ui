@@ -13,7 +13,7 @@ export type CreateDayConfig<DayElement extends HTMLElement = HTMLElement> = {
   date: Accessor<Date>;
   onClick?: JSX.EventHandler<DayElement, MouseEvent>;
   onKeyDown?: JSX.EventHandler<DayElement, KeyboardEvent>;
-  role?: JSX.HTMLAttributes<HTMLElement>['role'];
+  onMouseDown?: JSX.EventHandler<DayElement, MouseEvent>;
 };
 
 export function createMonthBodyDay<DayElement extends HTMLElement = HTMLElement>(
@@ -32,7 +32,7 @@ export function createMonthBodyDay<DayElement extends HTMLElement = HTMLElement>
 export function createMonthBodyDayProps<DayElement extends HTMLElement = HTMLElement>(
   config: CreateDayConfig<DayElement>
 ) {
-  const { idPrefix = 'solid-ui-calendar-month-body-day', role = 'gridcell' } = config;
+  const { idPrefix = 'solid-ui-calendar-month-body-day' } = config;
   const id = useId(idPrefix);
   const selectors = useCalendarSelectors();
 
@@ -54,7 +54,6 @@ export function createMonthBodyDayProps<DayElement extends HTMLElement = HTMLEle
       return selectors.isInVisibleMonth(config.date()) ? '' : undefined;
     },
     id,
-    role,
     get tabIndex() {
       return selectors.isActive(config.date()) ? 0 : -1;
     },
@@ -66,6 +65,13 @@ export function createMonthBodyDayHandlers<DayElement extends HTMLElement = HTML
 ) {
   const actions = useCalendarActions();
   const selectors = useCalendarSelectors();
+
+  const onMouseDown: JSX.EventHandler<DayElement, MouseEvent> = (event) => {
+    if (!selectors.isInVisibleMonth(config.date())) {
+      actions.onDeferredDateClick(config.date());
+    }
+    config.onMouseDown?.(event);
+  };
 
   const onClick: JSX.EventHandler<DayElement, MouseEvent> = (event) => {
     if (selectors.isActive(config.date())) {
@@ -113,16 +119,22 @@ export function createMonthBodyDayHandlers<DayElement extends HTMLElement = HTML
     onClick,
     onFocus,
     onKeyDown,
+    onMouseDown,
   } as const;
 }
 
 export function createMonthBodyDayEffects(config: CreateDayConfig & { id: string }) {
   const state = useCalendarState();
+  const actions = useCalendarActions();
   const selectors = useCalendarSelectors();
 
   createEffect(() => {
-    if (selectors.isActive(config.date()) && state.isActiveDateFromKeyboardMove) {
+    if (selectors.isActive(config.date()) && state.isActiveDateFromUserInteraction) {
       document.getElementById(config.id)?.focus();
+
+      if (state.deferredDateClick?.getTime() === config.date().getTime()) {
+        actions.onDateClick(state.deferredDateClick);
+      }
     }
   });
 }
