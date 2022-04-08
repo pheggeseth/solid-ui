@@ -1,7 +1,15 @@
 {
-  "name": "vite-template-solid",
-  "version": "0.0.0",
-  "description": "",
+  "name": "solid-ui",
+  "version": "1.0",
+  "description": "Hooks for building accessible, composable UI components with Solid.",
+  "info": "Solid UI provides sets of hooks and reactive primitives for declaratively building accessible, composable UI components that implement design patterns from the WAI-ARIA Authoring Practices 1.2.",
+  "contributors": [
+    {
+      "name": "Paul Heggeseth",
+      "email": "pheggeseth@gmail.com"
+    }
+  ],
+  "keywords": ["solidhack", "best_ecosystem"],
   "scripts": {
     "dev": "vite",
     "build": "vite build"
