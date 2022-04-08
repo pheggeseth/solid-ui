@@ -96,8 +96,8 @@ export function createCalendarStore(config: CreateCalendarStoreConfig): Calendar
       const addition = direction === 'next' ? 1 : -1;
 
       actions.viewCalendarMonth(
-        state.activeDate.getFullYear() + unit === 'year' ? addition : 0,
-        state.activeDate.getMonth() + unit === 'month' ? addition : 0
+        state.activeDate.getFullYear() + (unit === 'year' ? addition : 0),
+        state.activeDate.getMonth() + (unit === 'month' ? addition : 0)
       );
     },
     selectVisibleMonth(month) {
