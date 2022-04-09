@@ -2,7 +2,7 @@
   "name": "solid-ui",
   "version": "1.0",
   "description": "Hooks for building accessible, composable UI components with Solid.",
-  "info": "Solid UI provides sets of hooks and reactive primitives for declaratively building unstyled, accessible, composable UI components that implement design patterns from the WAI-ARIA Authoring Practices 1.2. Inspired by Headless UI and Reach UI.",
+  "info": "Solid UI provides sets of hooks and reactive primitives for declaratively building accessible, composable UI components that implement design patterns from the WAI-ARIA Authoring Practices 1.2. Inspired by Headless UI and Reach UI.",
   "contributors": [
     {
       "name": "Paul Heggeseth",

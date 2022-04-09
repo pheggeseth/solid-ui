@@ -1,5 +1,5 @@
 import { ComponentProps, mergeProps, PropsWithChildren } from 'solid-js';
-import Disclosure from '../components/Disclosure';
+import Disclosure from '../../components/Disclosure';
 
 function DisclosureTrigger(props: ComponentProps<'button'>) {
   const { props: triggerProps, effects } = Disclosure.createTrigger();

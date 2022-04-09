@@ -7,11 +7,11 @@ const App = () => {
   return (
     <>
       <Demo />
-      <section>
+      {/* <section>
         <h1>Old</h1>
         <ComboboxDemo />
         <CalendarDemo />
-      </section>
+      </section> */}
     </>
   );
 };

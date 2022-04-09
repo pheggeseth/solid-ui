@@ -1,5 +1,5 @@
 import { createSignal, PropsWithChildren } from 'solid-js';
-import SolidUISwitch, { CreateSwitchConfig } from '../components/Switch';
+import SolidUISwitch, { CreateSwitchConfig } from '../../components/Switch';
 
 function Switch(
   props: PropsWithChildren<{ checked: boolean; onChange: (checked: boolean) => void }>

@@ -1,9 +1,9 @@
 import { createEffect, PropsWithChildren, Show } from 'solid-js';
 import { Portal } from 'solid-js/web';
 import { ComponentRef } from '~/types';
-import Popover from '../components/Popover';
+import Popover from '../../components/Popover';
 
-import Popper from '../components/Popper';
+import Popper from '../../components/Popper';
 
 function PopoverTrigger(
   props: PropsWithChildren<{ ref?: ComponentRef<HTMLButtonElement> }>

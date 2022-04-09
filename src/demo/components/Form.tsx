@@ -3,7 +3,7 @@ import FormComponent, {
   CreateFormConfig,
   FormContextProp,
   useFormContext,
-} from '../components/Form';
+} from '../../components/Form';
 
 export function Form(props: PropsWithChildren<CreateFormConfig & FormContextProp>) {
   return (
