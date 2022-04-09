@@ -5,10 +5,7 @@ export function Background() {
   return (
     <section>
       <h2 id="Background">Background</h2>
-      <p>
-        Solid UI is a set of hooks for creating accessible, composible UI components using SolidJS.
-      </p>
-      <p>Every hook, for every component, returns an object with the same structure:</p>
+      <p>Every hook, for every component, returns an object with the same API:</p>
       <CodeBlock>{example1}</CodeBlock>
       <h3>
         <Code>props</Code>

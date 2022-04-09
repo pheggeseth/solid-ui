@@ -14,17 +14,24 @@ nav {
   width: 250px;
   flex: 0 0 auto;
   border-right: 1px solid #bbb;
-  margin: 0 20px;
+}
+
+nav header {
+  margin: 20px;
 }
 
 nav ul {
   list-style: none;
-  margin: 20px 0;
+  margin: 20px;
   padding: 0;
 }
 
+nav ul li {
+  margin-bottom: 10px;
+}
+
 nav ul li a {
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   text-decoration: none;
 }
 

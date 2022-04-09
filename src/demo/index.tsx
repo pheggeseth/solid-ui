@@ -12,6 +12,7 @@ import { SwitchExample } from './components/Switch';
 import './demo.css';
 import { Extensions } from './Extensions';
 import { Styling } from './Styling';
+import { Code } from './utils';
 
 export function Demo() {
   return (
@@ -25,6 +26,7 @@ export function Demo() {
           <Styling.Link />
           <Extensions.Link />
         </ul>
+        <hr aria-hidden="true" />
         <ul>
           <li>
             <a href="#Popover">Popover</a>
@@ -58,11 +60,17 @@ export function Demo() {
       </nav>
       <main>
         <h1>Solid UI</h1>
+        <p>Hooks for building declarative, accessible, composable UI components with Solid.</p>
         <Background />
         <Styling />
         <Extensions />
         <section>
           <h2 id="Popover">Popover</h2>
+          <h3>API</h3>
+          <h4>
+            <Code>createPopoverStore</Code>
+          </h4>
+          <p>Creates the SolidJS store used for internal state.</p>
           <PopoverExample />
         </section>
         <section>
