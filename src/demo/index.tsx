@@ -2,17 +2,16 @@ import '../styles.css';
 import { Background } from './Background';
 import { CalendarExample } from './components/Calendar';
 import { ComboboxExample } from './components/Combobox';
-import { DisclosureExample } from './components/Disclosure';
+import { DisclosureDemo } from './components/Disclosure';
 import { FormExample } from './components/Form';
 import { ListboxExample } from './components/Listbox';
 import { MenuExample } from './components/Menu';
-import { PopoverExample } from './components/Popover';
+import { PopoverDemo } from './components/Popover';
 import { RadioGroupExample } from './components/RadioGroup';
 import { SwitchExample } from './components/Switch';
 import './demo.css';
 import { Extensions } from './Extensions';
 import { Styling } from './Styling';
-import { Code } from './utils';
 
 export function Demo() {
   return (
@@ -22,19 +21,24 @@ export function Demo() {
           <h1>Solid UI</h1>
         </header>
         <ul>
-          <Background.Link />
-          <Styling.Link />
-          <Extensions.Link />
+          <li>
+            <Background.Link />
+          </li>
+          <li>
+            <Styling.Link />
+          </li>
+          <li>
+            <Extensions.Link />
+          </li>
         </ul>
         <hr aria-hidden="true" />
         <ul>
           <li>
-            <a href="#Popover">Popover</a>
+            <PopoverDemo.Link />
           </li>
           <li>
-            <a href="#Disclosure">Disclosure</a>
+            <DisclosureDemo.Link />
           </li>
-
           <li>
             <a href="#Menu">Menu</a>
           </li>
@@ -64,19 +68,8 @@ export function Demo() {
         <Background />
         <Styling />
         <Extensions />
-        <section>
-          <h2 id="Popover">Popover</h2>
-          <h3>API</h3>
-          <h4>
-            <Code>createPopoverStore</Code>
-          </h4>
-          <p>Creates the SolidJS store used for internal state.</p>
-          <PopoverExample />
-        </section>
-        <section>
-          <h2 id="Disclosure">Disclosure</h2>
-          <DisclosureExample />
-        </section>
+        <PopoverDemo />
+        <DisclosureDemo />
         <section>
           <h2 id="Menu">Menu</h2>
           <MenuExample />

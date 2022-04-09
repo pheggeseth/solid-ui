@@ -63,7 +63,7 @@ export function Background() {
         tricky to use (as our render prop function would only get called once).
       </p>
       <p>
-        Solid UI decides to return a <Code>context</Code> object from its component hooks, whose
+        Instead, Solid UI returns a <Code>context</Code> object from its component hooks, whose
         properties are either callbacks or SolidJS reactive primitives:
       </p>
       <CodeBlock>{example6}</CodeBlock>
@@ -71,11 +71,7 @@ export function Background() {
   );
 }
 
-Background.Link = () => (
-  <li>
-    <a href="#Background">Background</a>
-  </li>
-);
+Background.Link = () => <a href="#Background">Background</a>;
 
 const example1 = `import Popover from '@solid-ui/popover';
 

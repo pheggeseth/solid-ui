@@ -42,11 +42,7 @@ export function Styling() {
   );
 }
 
-Styling.Link = () => (
-  <li>
-    <a href="#Styling">Styling</a>
-  </li>
-);
+Styling.Link = () => <a href="#Styling">Styling</a>;
 
 const example1 = `[data-solid-ui-popover-trigger] {
   background: red;

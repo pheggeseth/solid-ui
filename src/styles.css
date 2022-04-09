@@ -11,6 +11,7 @@
   --input-margin: 0 0.25rem 0.25rem 0;
   --letter-spacing: 0.025rem;
   --padding: 0.25rem 0.5rem;
+  --panel-padding: 0.5rem 1rem;
   --transition: all 60ms;
 
   --active-background: #bbb;
@@ -60,7 +61,7 @@
 
 [data-solid-ui-panel] {
   background: white;
-  padding: var(--padding);
+  padding: var(--panel-padding);
   border-radius: var(--border-radius);
   box-shadow: var(--box-shadow);
   overflow: hidden;

@@ -14,11 +14,7 @@ export function Extensions() {
   );
 }
 
-Extensions.Link = () => (
-  <li>
-    <a href="#Extensions">Extensions</a>
-  </li>
-);
+Extensions.Link = () => <a href="#Extensions">Extensions</a>;
 
 const example1 = `import Popper from '@solid-ui/popper';
 
