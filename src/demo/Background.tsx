@@ -12,6 +12,15 @@ export function Background() {
         props, effect, and internal state needed to build UI components that follow WAI-ARIA
         accessibility recommendations.
       </p>
+      <p>
+        Solid UI is still actively being built, and many of the component hooks below are not
+        feature complete, are untested, and not considered not ready for production use.
+      </p>
+      <p>
+        This library was written as part of the SolidJS "SolidHack 2022" community hackathon. These
+        docs reference components as being available as part of the <Code>@solid-ui</Code> NPM
+        package, though this library is not actually hosted yet.
+      </p>
       <h3>Installation</h3>
       <p>For each component, you have the option of importing hooks individually:</p>
       <CodeBlock>{`import { createTrigger, createPanel } from '@solid-ui/popover';`}</CodeBlock>

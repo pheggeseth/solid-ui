@@ -20,7 +20,9 @@ export function Demo() {
       <nav>
         <header>
           <h1>
-            <a href="#Home">Solid UI</a>
+            <a href="#Home">
+              SOLID<strong>UI</strong>
+            </a>
           </h1>
         </header>
         <ul>
@@ -66,17 +68,10 @@ export function Demo() {
         </ul>
       </nav>
       <main>
-        <h1 id="Home">Solid UI</h1>
+        <h1 id="Home">
+          SOLID<strong>UI</strong>
+        </h1>
         <p>Hooks for building declarative, accessible, composable UI components with SolidJS.</p>
-        <p>
-          Solid UI is still actively being built, and many of the component hooks below are not
-          feature complete, are untested, and not considered not ready for production use.
-        </p>
-        <p>
-          This library was written as part of the SolidJS "SolidHack 2022" community hackathon.
-          These docs reference components as being available as part of the <Code>@solid-ui</Code>{' '}
-          NPM package, though this library is not actually hosted yet.
-        </p>
         <Background />
         <Styling />
         <Extensions />

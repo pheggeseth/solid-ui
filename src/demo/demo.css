@@ -15,12 +15,14 @@ nav {
   width: 250px;
   flex: 0 0 auto;
   border-right: 1px solid #888;
-  background: #bbb;
+  background: #2c4f7c;
 }
 
 nav header a {
   padding-left: 20px;
   font-size: 1.75rem;
+  letter-spacing: 0.5rem;
+  font-weight: 300;
 }
 
 nav hr {
@@ -41,17 +43,22 @@ nav a {
   display: flex;
   align-items: center;
   padding-left: 20px;
-  color: var(--color);
+  color: white;
 }
 
 nav ul a:hover {
-  background: #888;
+  background: #446b9e;
 }
 
 main {
   flex: 1 1 auto;
   margin: 0 40px;
   overflow: auto;
+}
+
+main h1 {
+  letter-spacing: 0.5rem;
+  font-weight: 300;
 }
 
 section {
