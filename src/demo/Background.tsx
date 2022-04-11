@@ -1,10 +1,22 @@
-import { createEffect } from 'solid-js';
 import { Code, CodeBlock } from './utils';
 
 export function Background() {
   return (
     <section>
       <h2 id="Background">Background</h2>
+      <p>
+        Solid UI is a low-level library for declaratively building accessible, composable UI
+        components using reactive primitives/hooks built with SolidJS. Rather than expose pre-built
+        components, Solid UI gives you simple, consistent hooks which take care of managing the
+        props, effect, and internal state needed to build UI components that follow WAI-ARIA
+        accessibility recommendations.
+      </p>
+      <h3>Installation</h3>
+      <p>For each component, you have the option of importing hooks individually:</p>
+      <CodeBlock>{`import { createTrigger, createPanel } from '@solid-ui/popover';`}</CodeBlock>
+      <p>or all at once from the component's default import:</p>
+      <CodeBlock>{example0}</CodeBlock>
+      <h3>General API</h3>
       <p>Every hook, for every component, returns an object with the same API:</p>
       <CodeBlock>{example1}</CodeBlock>
       <h3>
@@ -72,6 +84,11 @@ export function Background() {
 }
 
 Background.Link = () => <a href="#Background">Background</a>;
+
+const example0 = `import Popover from '@solid-ui/popover';
+
+const trigger = Popover.createTrigger();
+const panel = Popover.createPanel();`;
 
 const example1 = `import Popover from '@solid-ui/popover';
 

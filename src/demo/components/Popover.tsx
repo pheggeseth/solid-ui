@@ -1,12 +1,11 @@
-import { createEffect, PropsWithChildren, Show } from 'solid-js';
+import { Component, createEffect, Show } from 'solid-js';
 import { Portal } from 'solid-js/web';
 import { ComponentRef } from '~/types';
 import Popover from '../../components/Popover';
-
 import Popper from '../../components/Popper';
-import { Code, CodeBlock } from '../utils';
+import { CodeBlock } from '../utils';
 
-function PopoverTrigger(props: PropsWithChildren<{ ref?: ComponentRef<HTMLButtonElement> }>) {
+const PopoverTrigger: Component<{ ref?: ComponentRef<HTMLButtonElement> }> = (props) => {
   const { props: triggerProps, effects } = Popover.createTrigger();
 
   effects();
@@ -16,9 +15,9 @@ function PopoverTrigger(props: PropsWithChildren<{ ref?: ComponentRef<HTMLButton
       {props.children}
     </button>
   );
-}
+};
 
-function PopoverOverlay(props: PropsWithChildren) {
+const PopoverOverlay: Component = (props) => {
   const { props: overlayProps, effects, context } = Popover.createOverlay();
 
   createEffect(() => {
@@ -34,9 +33,9 @@ function PopoverOverlay(props: PropsWithChildren) {
       </Portal>
     </Show>
   );
-}
+};
 
-function PopoverPanel(props: PropsWithChildren<{ ref?: ComponentRef<HTMLDivElement> }>) {
+const PopoverPanel: Component<{ ref?: ComponentRef<HTMLDivElement> }> = (props) => {
   const { props: panelProps, effects, context } = Popover.createPanel();
 
   createEffect(() => {
@@ -54,9 +53,9 @@ function PopoverPanel(props: PropsWithChildren<{ ref?: ComponentRef<HTMLDivEleme
       </Portal>
     </Show>
   );
-}
+};
 
-function PopoverExample() {
+const MyPopover: Component = () => {
   return (
     <Popper>
       <Popover>
@@ -69,20 +68,20 @@ function PopoverExample() {
       </Popover>
     </Popper>
   );
-}
+};
 
-export function PopoverDemo() {
+export const PopoverDemo = () => {
   return (
     <section>
       <h2 id="Popover">Popover</h2>
       <p>A popover is a floating panel that appears near an anchor point.</p>
       <h3>Example</h3>
-      <PopoverExample />
+      <MyPopover />
       <h3>Code</h3>
       <CodeBlock>{exampleCode}</CodeBlock>
     </section>
   );
-}
+};
 
 PopoverDemo.Link = () => (
   <li>
@@ -90,15 +89,13 @@ PopoverDemo.Link = () => (
   </li>
 );
 
-const exampleCode = `import { createEffect, PropsWithChildren, Show } from 'solid-js';
+const exampleCode = `import { Component, createEffect, Show } from 'solid-js';
 import { Portal } from 'solid-js/web';
 import { ComponentRef } from '@solid-ui/types';
 import Popover from '@solid-ui/popover';
-
 import Popper from '@solid-ui/popper';
-import { Code, CodeBlock } from '../utils';
 
-function PopoverTrigger(props: PropsWithChildren<{ ref?: ComponentRef<HTMLButtonElement> }>) {
+const PopoverTrigger: Component<{ ref?: ComponentRef<HTMLButtonElement> }> = (props) => {
   const { props: triggerProps, effects } = Popover.createTrigger();
 
   effects();
@@ -108,9 +105,9 @@ function PopoverTrigger(props: PropsWithChildren<{ ref?: ComponentRef<HTMLButton
       {props.children}
     </button>
   );
-}
+};
 
-function PopoverOverlay(props: PropsWithChildren) {
+const PopoverOverlay: Component = (props) => {
   const { props: overlayProps, effects, context } = Popover.createOverlay();
 
   createEffect(() => {
@@ -126,9 +123,9 @@ function PopoverOverlay(props: PropsWithChildren) {
       </Portal>
     </Show>
   );
-}
+};
 
-function PopoverPanel(props: PropsWithChildren<{ ref?: ComponentRef<HTMLDivElement> }>) {
+const PopoverPanel: Component<{ ref?: ComponentRef<HTMLDivElement> }> = (props) => {
   const { props: panelProps, effects, context } = Popover.createPanel();
 
   createEffect(() => {
@@ -146,9 +143,9 @@ function PopoverPanel(props: PropsWithChildren<{ ref?: ComponentRef<HTMLDivEleme
       </Portal>
     </Show>
   );
-}
+};
 
-function PopoverExample() {
+const MyPopover: Component = () => {
   return (
     <Popper>
       <Popover>
@@ -161,4 +158,4 @@ function PopoverExample() {
       </Popover>
     </Popper>
   );
-}`;
+};`;

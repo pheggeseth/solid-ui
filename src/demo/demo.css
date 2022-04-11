@@ -1,5 +1,6 @@
 body {
   background: #eee;
+  font-size: 1.1rem;
   font-family: sans-serif;
   margin: 0;
 }
@@ -13,12 +14,17 @@ body {
 nav {
   width: 250px;
   flex: 0 0 auto;
-  border-right: 1px solid #bbb;
+  border-right: 1px solid #888;
   background: var(--selected-background);
 }
 
 nav header {
   margin: 20px;
+}
+
+nav hr {
+  border: none;
+  border-bottom: 1px solid #888;
 }
 
 nav ul {
