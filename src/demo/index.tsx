@@ -3,7 +3,7 @@ import { Background } from './Background';
 import { CalendarExample } from './components/Calendar';
 import { ComboboxDemo } from './components/Combobox';
 import { DisclosureDemo } from './components/Disclosure';
-import { FormExample } from './components/Form';
+import { FormDemo } from './components/Form';
 import { ListboxDemo } from './components/Listbox';
 import { MenuDemo } from './components/Menu';
 import { PopoverDemo } from './components/Popover';
@@ -52,7 +52,7 @@ export function Demo() {
             <RadioGroupDemo.Link />
           </li>
           <li>
-            <a href="#Form">Form</a>
+            <FormDemo.Link />
           </li>
           <li>
             <a href="#Switch">Switch</a>
@@ -74,10 +74,7 @@ export function Demo() {
         <ListboxDemo />
         <ComboboxDemo />
         <RadioGroupDemo />
-        <section>
-          <h2 id="Form">Form</h2>
-          <FormExample />
-        </section>
+        <FormDemo />
         <section>
           <h1 id="Switch">Switch</h1>
           <SwitchExample />
