@@ -15,7 +15,7 @@ nav {
   width: 250px;
   flex: 0 0 auto;
   border-right: 1px solid #888;
-  background: var(--selected-background);
+  background: #bbb;
 }
 
 nav header {
@@ -44,7 +44,7 @@ nav a {
 }
 
 nav a:hover {
-  background: var(--active-background);
+  background: #888;
 }
 
 main {

@@ -9,7 +9,7 @@ export type CreateTodayConfig<TodayElement extends HTMLButtonElement = HTMLButto
 };
 
 export function createToday<TodayElement extends HTMLButtonElement = HTMLButtonElement>(
-  config: CreateTodayConfig<TodayElement>
+  config: CreateTodayConfig<TodayElement> = {}
 ) {
   const props = createTodayProps(config);
   const handlers = createTodayHandlers(config);
@@ -21,7 +21,7 @@ export function createToday<TodayElement extends HTMLButtonElement = HTMLButtonE
 }
 
 export function createTodayProps<TodayElement extends HTMLButtonElement = HTMLButtonElement>(
-  config: CreateTodayConfig<TodayElement>
+  config: CreateTodayConfig<TodayElement> = {}
 ) {
   const { 'aria-label': ariaLabel = 'go to today', idPrefix = 'solid-ui-calendar-view-today' } =
     config;
@@ -36,12 +36,12 @@ export function createTodayProps<TodayElement extends HTMLButtonElement = HTMLBu
 }
 
 export function createTodayHandlers<TodayElement extends HTMLButtonElement = HTMLButtonElement>(
-  config: CreateTodayConfig<TodayElement>
+  config: CreateTodayConfig<TodayElement> = {}
 ) {
   const actions = useCalendarActions();
 
   const onClick: JSX.EventHandler<TodayElement, MouseEvent> = (event) => {
-    actions.selectDate(new Date());
+    actions.viewToday();
     config.onClick?.(event);
   };
 

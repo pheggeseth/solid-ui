@@ -1,3 +1,4 @@
+import { PopoverStoreContext } from '~/components/Popover';
 import { Code, CodeBlock } from './utils';
 
 export function Background() {
@@ -79,6 +80,38 @@ export function Background() {
         properties are either callbacks or SolidJS reactive primitives:
       </p>
       <CodeBlock>{example6}</CodeBlock>
+      <h3>Component stores and provider components</h3>
+      <p>
+        Every Solid UI component relies on a SolidJS <Code>store</Code> being provided using SolidJS{' '}
+        <Code>context</Code>.
+      </p>
+      <p>
+        Stores can be created using a component's "createStore" hook and provided using the
+        corresponding component Context provider:
+      </p>
+      <CodeBlock>{example7}</CodeBlock>
+      <p>
+        The only components that Solid UI exports directly are context provider components. Every
+        composable Solid UI component relies on SolidJS context, and each component's context needs
+        to be provided so that its sub-components can communicate.
+      </p>
+      <p>
+        Because this is such a common pattern, Solid UI exports simple provider components which
+        implement this pattern:
+      </p>
+      <CodeBlock>{example9}</CodeBlock>
+      <h3>
+        Provider components can use their own <Code>context</Code>!
+      </h3>
+      <p>
+        Because we want every component (even provider components) to have access to the component
+        context, if needed, Solid UI provider components are implemented so that every provider
+        component takes in an optional <Code>context</Code> prop, which is a function that gets
+        passed the component's context as a parameter. Think of it like a function <Code>ref</Code>{' '}
+        or a render prop, where the function gives you access to the internal context so you can
+        save it for later.
+      </p>
+      <CodeBlock>{example10}</CodeBlock>
     </section>
   );
 }
@@ -156,6 +189,43 @@ const example6 = `function SolidUIContext() {
 
   return <div {...props} style={{ background: context.isActive() ? 'red' : 'blue' }}></div>;
 }`;
+
+const example7 = `import { PopoverStoreContext, createPopoverStore } from '@solid-ui/popover';
+
+() => {
+  const store = createPopoverStore();
+  return (
+    <PopoverStoreContext.Provider value={store}></PopoverStoreContext.Provider>
+  );
+}`;
+
+const example9 = `function PopoverProvider(props) {
+  const store = createPopoverStore();
+
+  // An "IIFE" works here because SolidJS defers evaluating children until they are needed,
+  // so "usePopoverContext" won't be called until the store context is available.
+  // This anonymous function is only ever invoked once.
+  return (
+    <PopoverStoreContext.Provider value={store}>
+      {(() => {
+        props.context?.(usePopoverContext());
+        return props.children;
+      })()}
+    </PopoverStoreContext.Provider>
+  );
+}
+
+import Popover, { PopoverProvider } from '@solid-ui/popover';
+
+<PopoverProvider></PopoverProvider> // creates the store and provides it via the component store context
+<Popover></Popover> // the main function of the default export IS the "PopoverProvider"`;
+
+const example10 = `import Popover from '@solid-ui/popover';
+
+let context;
+<Popover context={(ctx) => {
+  context = ctx; // we now have access to the context object that Popover itself provides!
+}}></Popover>`;
 
 const multipleExample = `function MyComponent() {
   const {

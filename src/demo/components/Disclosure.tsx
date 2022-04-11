@@ -37,7 +37,7 @@ export function DisclosureDemo() {
       <h2 id="Disclosure">Disclosure</h2>
       <p>
         A disclosure is a simple pattern for showing and hiding content. It differs from a popover
-        in that the content should appear in the flow of the document, and not as a floating panel.
+        in that the content should appear in the flow of the document and not as a floating panel.
       </p>
       <h3>Example</h3>
       <DisclosureExample />

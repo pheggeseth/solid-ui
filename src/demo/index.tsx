@@ -1,6 +1,6 @@
 import '../styles.css';
 import { Background } from './Background';
-import { CalendarExample } from './components/Calendar';
+import { CalendarDemo } from './components/Calendar';
 import { ComboboxDemo } from './components/Combobox';
 import { DisclosureDemo } from './components/Disclosure';
 import { FormDemo } from './components/Form';
@@ -58,7 +58,7 @@ export function Demo() {
             <SwitchDemo.Link />
           </li>
           <li>
-            <a href="#Calendar">Calendar</a>
+            <CalendarDemo.Link />
           </li>
         </ul>
       </nav>
@@ -67,7 +67,7 @@ export function Demo() {
         <p>Hooks for building declarative, accessible, composable UI components with Solid.</p>
         <p>
           Solid UI is still actively being built, and many of the component hooks below are not
-          feature complete, are untested, and not ready for production use.
+          feature complete, are untested, and not considered not ready for production use.
         </p>
         <Background />
         <Styling />
@@ -80,10 +80,7 @@ export function Demo() {
         <RadioGroupDemo />
         <FormDemo />
         <SwitchDemo />
-        <section>
-          <h1 id="Calendar">Calendar</h1>
-          <CalendarExample />
-        </section>
+        <CalendarDemo />
       </main>
     </>
   );

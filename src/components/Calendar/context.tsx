@@ -16,6 +16,7 @@ export type CalendarActions = Readonly<{
   viewCalendarMonth(year: number, month: number): void;
   goTo(direction: 'previous' | 'next', unit: 'year' | 'month' | 'week' | 'day'): void;
   view(direction: 'previous' | 'next', unit: 'year' | 'month'): void;
+  viewToday(): void;
   selectVisibleMonth(month: number): void;
   selectVisibleYear(year: number): void;
   onCancel(): void;
@@ -102,6 +103,10 @@ export function createCalendarStore(config: CreateCalendarStoreConfig): Calendar
         state.activeDate.getFullYear() + (unit === 'year' ? addition : 0),
         state.activeDate.getMonth() + (unit === 'month' ? addition : 0)
       );
+    },
+    viewToday() {
+      const today = new Date();
+      actions.viewCalendarMonth(today.getFullYear(), today.getMonth());
     },
     selectVisibleMonth(month) {
       actions.viewCalendarMonth(state.activeDate.getFullYear(), month);
