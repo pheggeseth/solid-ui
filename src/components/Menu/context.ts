@@ -8,12 +8,7 @@ import {
   createActiveItemActions,
   CreateActiveItemActionsConfig,
 } from '../ActiveItem';
-import {
-  createPopoverPanelActions,
-  PopoverPanelActions,
-  PopoverPanelActionsSetStoreFunction,
-  PopoverPanelState,
-} from '../Popover';
+import { createPopoverPanelActions, PopoverPanelActions, PopoverPanelState } from '../Popover';
 
 type MenuElementIds = {
   triggerId: string;
@@ -131,6 +126,7 @@ export type MenuContext = Readonly<{
   isOpen: Accessor<boolean>;
   open: () => void;
   close: () => void;
+  hasPanel: Accessor<boolean>;
 }>;
 
 export function useMenuContext(): MenuContext {
@@ -143,6 +139,7 @@ export function useMenuContext(): MenuContext {
     isOpen: () => state.isPanelOpen,
     open: () => actions.openPopover(),
     close: () => actions.closePopover(),
+    hasPanel: () => !!state.panelId,
   } as const;
 }
 

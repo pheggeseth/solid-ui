@@ -5,7 +5,7 @@ import {
   focusInitialChildOnMount,
 } from '~/utils/eventUtils';
 import { getDataProp, useId } from '~/utils/componentUtils';
-import { useKeyEventHandlers } from "~/utils/useKeyEventHandlers";
+import { useKeyEventHandlers } from '~/utils/useKeyEventHandlers';
 import { useMenuActions, useMenuContext, useMenuState } from './context';
 
 export type ListConfig<ListElement extends HTMLElement> = {

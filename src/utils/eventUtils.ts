@@ -1,8 +1,7 @@
-import { Accessor, createEffect, JSX, onCleanup, onMount } from 'solid-js';
-import { Container } from '~/oldComponents/Calendar/Calendar';
+import { Accessor, createEffect, onCleanup, onMount } from 'solid-js';
 
 export const focusableElementsQuery =
-  'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+  ':is(button, [href], input, select, textarea, [tabindex]):not([tabindex="-1"])';
 
 export function getAllFocusableElements(container: HTMLElement) {
   const elements = Array.from(
