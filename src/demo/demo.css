@@ -115,6 +115,7 @@ main header {
 main header h1 {
   letter-spacing: 0.5rem;
   font-weight: 300;
+  font-size: 3rem;
 }
 
 section {
