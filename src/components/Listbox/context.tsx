@@ -140,6 +140,7 @@ export type ListboxContext<Value> = Readonly<{
   isActive: (itemId: string) => boolean;
   isSelected: (value: Value) => boolean;
   isOpen: Accessor<boolean>;
+  hasPanel: Accessor<boolean>;
   open: () => void;
   close: () => void;
 }>;
@@ -153,6 +154,7 @@ export function useListboxContext<Value = any>(): ListboxContext<Value> {
     isActive: (itemId: string) => selectors.isActive(itemId),
     isSelected: (value: Value) => selectors.isSelected(value),
     isOpen: () => state.isPanelOpen,
+    hasPanel: () => !!state.panelId,
     open: () => actions.openPopover(),
     close: () => actions.closePopover(),
   };

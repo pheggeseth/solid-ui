@@ -4,7 +4,7 @@ import { CalendarExample } from './components/Calendar';
 import { ComboboxExample } from './components/Combobox';
 import { DisclosureDemo } from './components/Disclosure';
 import { FormExample } from './components/Form';
-import { ListboxExample } from './components/Listbox';
+import { ListboxDemo } from './components/Listbox';
 import { MenuDemo } from './components/Menu';
 import { PopoverDemo } from './components/Popover';
 import { RadioGroupExample } from './components/RadioGroup';
@@ -43,7 +43,7 @@ export function Demo() {
             <MenuDemo.Link />
           </li>
           <li>
-            <a href="#Listbox">Listbox</a>
+            <ListboxDemo.Link />
           </li>
           <li>
             <a href="#Combobox">Combobox</a>
@@ -71,10 +71,7 @@ export function Demo() {
         <PopoverDemo />
         <DisclosureDemo />
         <MenuDemo />
-        <section>
-          <h2 id="Listbox">Listbox</h2>
-          <ListboxExample />
-        </section>
+        <ListboxDemo />
         <section>
           <h2 id="Combobox">Combobox</h2>
           <ComboboxExample />

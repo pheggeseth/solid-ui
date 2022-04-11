@@ -124,9 +124,9 @@ export function useMenuSelectors() {
 export type MenuContext = Readonly<{
   isActive: (itemId: string) => boolean;
   isOpen: Accessor<boolean>;
+  hasPanel: Accessor<boolean>;
   open: () => void;
   close: () => void;
-  hasPanel: Accessor<boolean>;
 }>;
 
 export function useMenuContext(): MenuContext {

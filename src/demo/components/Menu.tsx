@@ -127,9 +127,9 @@ export function MenuDemo() {
     <section>
       <h2 id="Menu">Menu</h2>
       <p>
-        Menu lets you build dropdowns with items that can perform an `action()` when selected, or
-        rely on their native click behavior when selected (like navigating to a new page with a
-        link).
+        Menu lets you build dropdowns with items that can perform an <Code>action()</Code> when
+        selected, or rely on their native click behavior when selected (like navigating to a new
+        page with a link).
       </p>
       <p>
         Menu can either directly render a list with <Code>createList()</Code>, or can first render a

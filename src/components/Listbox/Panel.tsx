@@ -62,14 +62,16 @@ export function createPanelEffects(config: { id: string }) {
 
   registerPanelIdOnMount({ id: config.id });
 
-  createFocusTrapEffect({
-    containerId: config.id,
-    isEnabled: () => state.isPanelOpen,
-  });
+  if (state.listId) {
+    createFocusTrapEffect({
+      containerId: config.id,
+      isEnabled: () => state.isPanelOpen,
+    });
 
-  focusInitialChildOnMount({
-    containerId: config.id,
-  });
+    focusInitialChildOnMount({
+      containerId: config.id,
+    });
+  }
 
   createClickAwayEffect({
     containerId: config.id,
