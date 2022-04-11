@@ -139,7 +139,7 @@ pre {
   overflow: hidden;
 }
 
-@media screen and (max-width: 800px) {
+@media screen and (max-width: 1024px) {
   nav {
     position: absolute;
     left: -250px;
