@@ -4,6 +4,7 @@ import path from 'path';
 
 export default defineConfig({
   plugins: [solidPlugin()],
+  base: '/solid-ui/',
   build: {
     target: 'esnext',
     polyfillDynamicImport: false,
