@@ -96,7 +96,7 @@ function ComboboxOption<Value = any>(props: PropsWithChildren<{ value?: Value }>
   return <li {...optionProps}>{props.children}</li>;
 }
 
-export function MyCombobox() {
+function MyCombobox() {
   const [value, setValue] = createSignal<{ displayValue: string; value: string }>(null);
   const [inputValue, setInputValue] = createSignal('');
   const filteredFruits = createMemo(() =>
@@ -255,7 +255,7 @@ export const fruits = [
   createFruit('watermelon'),
 ];
 
-export function MyCombobox() {
+function MyCombobox() {
   const [value, setValue] = createSignal<{ displayValue: string; value: string }>(null);
   const [inputValue, setInputValue] = createSignal('');
   const filteredFruits = createMemo(() =>

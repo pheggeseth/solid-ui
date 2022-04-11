@@ -1,13 +1,13 @@
 import '../styles.css';
 import { Background } from './Background';
 import { CalendarExample } from './components/Calendar';
-import { ComboboxDemo, MyCombobox } from './components/Combobox';
+import { ComboboxDemo } from './components/Combobox';
 import { DisclosureDemo } from './components/Disclosure';
 import { FormExample } from './components/Form';
 import { ListboxDemo } from './components/Listbox';
 import { MenuDemo } from './components/Menu';
 import { PopoverDemo } from './components/Popover';
-import { RadioGroupExample } from './components/RadioGroup';
+import { RadioGroupDemo } from './components/RadioGroup';
 import { SwitchExample } from './components/Switch';
 import './demo.css';
 import { Extensions } from './Extensions';
@@ -49,7 +49,7 @@ export function Demo() {
             <ComboboxDemo.Link />
           </li>
           <li>
-            <a href="#Radio Group">Radio Group</a>
+            <RadioGroupDemo.Link />
           </li>
           <li>
             <a href="#Form">Form</a>
@@ -73,10 +73,7 @@ export function Demo() {
         <MenuDemo />
         <ListboxDemo />
         <ComboboxDemo />
-        <section>
-          <h2 id="Radio Group">Radio Group</h2>
-          <RadioGroupExample />
-        </section>
+        <RadioGroupDemo />
         <section>
           <h2 id="Form">Form</h2>
           <FormExample />
