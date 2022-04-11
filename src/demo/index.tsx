@@ -12,6 +12,7 @@ import { SwitchDemo } from './components/Switch';
 import './demo.css';
 import { Extensions } from './Extensions';
 import { Styling } from './Styling';
+import { Code } from './utils';
 
 export function Demo() {
   return (
@@ -68,6 +69,11 @@ export function Demo() {
         <p>
           Solid UI is still actively being built, and many of the component hooks below are not
           feature complete, are untested, and not considered not ready for production use.
+        </p>
+        <p>
+          This library was written as part of the SolidJS "SolidHack 2022" community hackathon.
+          These docs reference components as being available as part of the <Code>@solid-ui</Code>{' '}
+          NPM package, though this library is not actually hosted yet.
         </p>
         <Background />
         <Styling />
