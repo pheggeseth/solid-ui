@@ -18,6 +18,57 @@ nav {
   background: #2c4f7c;
 }
 
+nav header {
+  position: relative;
+}
+
+#open-menu {
+  display: none;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 1.67em;
+  left: 1.67em;
+  border-radius: 50%;
+  height: 40px;
+  width: 40px;
+  background: #2c4f7c;
+  border: none;
+  cursor: pointer;
+  color: white;
+}
+
+#open-menu:hover {
+  background: #446b9e;
+}
+
+#close-menu {
+  height: 40px;
+  width: 40px;
+  background: #2c4f7c;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  color: white;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: 0;
+  right: 16px;
+}
+
+#close-menu:hover {
+  background: #446b9e;
+}
+
+#nav-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.25);
+}
+
 nav header a {
   padding-left: 20px;
   font-size: 1.75rem;
@@ -52,11 +103,16 @@ nav ul a:hover {
 
 main {
   flex: 1 1 auto;
-  margin: 0 40px;
+  padding: 0 40px;
   overflow: auto;
 }
 
-main h1 {
+main header {
+  text-align: center;
+  padding: 0 20px;
+}
+
+main header h1 {
   letter-spacing: 0.5rem;
   font-weight: 300;
 }
@@ -80,4 +136,37 @@ pre {
   border: 1px solid #ccc;
   border-radius: 5px;
   overflow: hidden;
+}
+
+@media screen and (max-width: 800px) {
+  nav {
+    position: absolute;
+    left: -250px;
+    height: 100vh;
+    transition: left 120ms;
+  }
+
+  nav.open {
+    left: 0;
+  }
+
+  #open-menu {
+    display: flex;
+  }
+
+  #nav-overlay.open {
+    display: block;
+  }
+
+  #close-menu.open {
+    display: flex;
+  }
+
+  main {
+    padding: 0;
+  }
+
+  section {
+    border-radius: 0;
+  }
 }
