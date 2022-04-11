@@ -19,7 +19,9 @@ export function Demo() {
     <>
       <nav>
         <header>
-          <h1>Solid UI</h1>
+          <h1>
+            <a href="#Home">Solid UI</a>
+          </h1>
         </header>
         <ul>
           <li>
@@ -64,8 +66,8 @@ export function Demo() {
         </ul>
       </nav>
       <main>
-        <h1>Solid UI</h1>
-        <p>Hooks for building declarative, accessible, composable UI components with Solid.</p>
+        <h1 id="Home">Solid UI</h1>
+        <p>Hooks for building declarative, accessible, composable UI components with SolidJS.</p>
         <p>
           Solid UI is still actively being built, and many of the component hooks below are not
           feature complete, are untested, and not considered not ready for production use.

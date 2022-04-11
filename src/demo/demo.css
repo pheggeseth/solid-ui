@@ -18,8 +18,9 @@ nav {
   background: #bbb;
 }
 
-nav header {
-  margin: 20px;
+nav header a {
+  padding-left: 20px;
+  font-size: 1.75rem;
 }
 
 nav hr {
@@ -43,7 +44,7 @@ nav a {
   color: var(--color);
 }
 
-nav a:hover {
+nav ul a:hover {
   background: #888;
 }
 
