@@ -11,7 +11,21 @@ const CalendarRoot: Component<
       {(() => {
         const { props: rootProps } = Calendar.createRoot();
         props.context?.(useCalendarContext());
-        return <div {...rootProps}>{props.children}</div>;
+        return (
+          <div
+            {...rootProps}
+            style={{
+              display: 'inline-flex',
+              'flex-direction': 'column',
+              border: 'var(--border)',
+              'border-radius': 'var(--border-radius)',
+              padding: '1rem',
+              'margin-top': '1rem',
+            }}
+          >
+            {props.children}
+          </div>
+        );
       })()}
     </Calendar>
   );
@@ -140,7 +154,7 @@ const CalendarActions: Component = () => {
   const { props: saveProps } = Calendar.Actions.createSave();
 
   return (
-    <div style={{ display: 'flex', 'justify-content': 'space-between' }}>
+    <div style={{ display: 'flex', 'justify-content': 'space-between', 'margin-top': '0.5rem' }}>
       <button {...todayProps}>Today</button>
       <span style={{ display: 'flex', gap: '0.25rem' }}>
         <button {...cancelProps}>Cancel</button>
@@ -199,7 +213,20 @@ const CalendarRoot: Component<
       {(() => {
         const { props: rootProps } = Calendar.createRoot();
         props.context?.(useCalendarContext());
-        return <div {...rootProps}>{props.children}</div>;
+        return (
+          <div
+            {...rootProps}
+            style={{
+              display: 'inline-flex',
+              'flex-direction': 'column',
+              border: 'var(--border)',
+              'border-radius': 'var(--border-radius)',
+              padding: '1rem',
+              'margin-top': '1rem',
+            }}
+          >
+            {props.children}
+          </div>;
       })()}
     </Calendar>
   );
@@ -229,7 +256,7 @@ const CalendarNav: Component = () => {
     props: selectYearProps,
     context: { value: visibleYear, options: yearOptions },
   } = Calendar.Navigation.createSelect({ unit: 'year' });
-  
+
   const [localSelectYearProps, otherSelectYearProps] = splitProps(selectYearProps, ['onChange']);
   const handleYearChange: JSX.EventHandler<HTMLSelectElement, Event> = (event) => {
     localSelectYearProps.onChange(Number(event.currentTarget.value));
@@ -330,7 +357,7 @@ const CalendarActions: Component = () => {
   const { props: saveProps } = Calendar.Actions.createSave();
 
   return (
-    <div style={{ display: 'flex', 'justify-content': 'space-between' }}>
+    <div style={{ display: 'flex', 'justify-content': 'space-between', 'margin-top': '0.5rem' }}>
       <button {...todayProps}>Today</button>
       <span style={{ display: 'flex', gap: '0.25rem' }}>
         <button {...cancelProps}>Cancel</button>
@@ -348,7 +375,7 @@ export const MyCalendar: Component = () => {
   }
 
   return (
-    <div>
+    <div style={{ border: '2px solid #888' }}>
       <div>Selected date: {date().toDateString()}</div>
       <CalendarRoot value={date()} onChange={handleChange}>
         <CalendarNav />
