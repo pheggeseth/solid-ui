@@ -56,6 +56,7 @@ export type ComboboxStore<Value> = Readonly<
 export type CreateComboboxStoreConfig<Value> = CreateActiveItemActionsConfig &
   CreateListboxValueConfig<Value> &
   Readonly<{
+    sortOptions?: (valueA: Value, valueB: Value) => number;
     orientation?: Accessor<ListOrientation>;
   }>;
 
@@ -95,6 +96,14 @@ export function createComboboxStore<Value = any>(
     ...createPopoverPanelActions(setState),
     setElementId(name, id) {
       setState({ [name]: id });
+    },
+    addItem(itemId) {
+      setState('items', (items) => {
+        const newItems = [...items, itemId];
+        return config.sortOptions
+          ? newItems.sort((idA, idB) => config.sortOptions(values[idA], values[idB]))
+          : newItems;
+      });
     },
     addValue(itemId, value) {
       values[itemId] = value;

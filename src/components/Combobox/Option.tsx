@@ -101,10 +101,10 @@ export function createOptionHandlers<OptionElement extends HTMLElement = HTMLEle
 export type CreateOptionEffectsConfig<Value> = { id: string; value: Accessor<Value> };
 
 export function createOptionEffects<Value>(config: CreateOptionEffectsConfig<Value>) {
-  addOptionOnMount(config);
-  removeOptionOnCleanup(config);
   addValueOnMount(config);
   removeValueOnCleanup(config);
+  addOptionOnMount(config);
+  removeOptionOnCleanup(config);
 }
 
 export function addOptionOnMount(config: { id: string }) {

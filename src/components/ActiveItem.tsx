@@ -42,7 +42,10 @@ export function createActiveItemActions(
       setState('items', (items) => [...items, item]);
     },
     removeItem(itemId) {
-      setState('items', (items) => items.filter((id) => id !== itemId));
+      setState((prevState) => ({
+        items: prevState.items.filter((id) => id !== itemId),
+        activeItemId: itemId === prevState.activeItemId ? undefined : prevState.activeItemId,
+      }));
     },
     initializeItemFocus() {
       setState((state) => {
@@ -126,120 +129,3 @@ export function createActiveItemActions(
     },
   };
 }
-
-// export type CreateActiveItemContainerPropsConfig = {
-//   disableTypeahead?: boolean;
-//   excludeAriaProps?: boolean;
-//   tabIndex?: string | number;
-// };
-
-// export function createActiveItemContainerOnKeyDown<ContainerElement extends HTMLElement>(config: {
-//   disableTypeahead?: boolean;
-// }) {
-//   const state = useActiveItemState();
-//   const actions = useActiveItemActions();
-
-//   return useKeyEventHandlers<ContainerElement>({
-//     ArrowUp(event) {
-//       if (state.orientation === 'vertical') {
-//         event.preventDefault();
-//         actions.focusPreviousItem();
-//       }
-//     },
-//     ArrowDown(event) {
-//       if (state.orientation === 'vertical') {
-//         event.preventDefault();
-//         actions.focusNextItem();
-//       }
-//     },
-//     ArrowLeft(event) {
-//       if (state.orientation === 'horizontal') {
-//         event.preventDefault();
-//         actions.focusPreviousItem();
-//       }
-//     },
-//     ArrowRight(event) {
-//       if (state.orientation === 'horizontal') {
-//         event.preventDefault();
-//         actions.focusNextItem();
-//       }
-//     },
-//     Home(event) {
-//       event.preventDefault();
-//       actions.focusFirstDescendent();
-//     },
-//     End(event) {
-//       event.preventDefault();
-//       actions.focusLastItem();
-//     },
-//     default(event) {
-//       if (event.key.length === 1 && !config.disableTypeahead) {
-//         if (!state.search && event.key === ' ') {
-//           return;
-//         } else {
-//           actions.focusTypeaheadItem(event.key);
-//         }
-//       }
-//     },
-//   });
-// }
-
-// export function createActiveItemContainerProps<ContainerElement extends HTMLElement>(
-//   config: CreateActiveItemContainerPropsConfig = {}
-// ) {
-//   const state = useActiveItemState();
-//   const actions = useActiveItemActions();
-
-//   const onKeyDown = createActiveItemContainerOnKeyDown({
-//     disableTypeahead: config.disableTypeahead,
-//   });
-
-//   return {
-//     get ['aria-activedescendent']() {
-//       return state.activeItemId;
-//     },
-//     'data-solid-ui-list': '',
-//     onFocus() {
-//       actions.initializeItemFocus();
-//     },
-//     onKeyDown,
-//     tabIndex: config.tabIndex ?? 0,
-//   };
-// }
-
-// export type CreatActiveItemPropsConfig = {
-//   id: string;
-// };
-
-// export function createActiveItemProps(config: CreatActiveItemPropsConfig) {
-//   const state = useActiveItemState();
-//   const selectors = useActiveItemSelectors();
-//   const actions = useActiveItemActions();
-
-//   onMount(() => actions.addItem(config.id));
-//   onCleanup(() => actions.removeItem(config.id));
-
-//   createEffect(() => {
-//     if (state.activeItemId === config.id) {
-//       // TODO: figure out a better way of scrolling a descendent into view if necessary
-//       // document.getElementById(config.id).scrollIntoView(false);
-//     }
-//   });
-
-//   return {
-//     get ['aria-selected']() {
-//       return selectors.isItemActive(config.id) || undefined;
-//     },
-//     get ['data-active']() {
-//       return selectors.isItemActive(config.id) ? '' : undefined;
-//     },
-//     'data-solid-ui-list-item': '',
-//     onMouseEnter() {
-//       actions.focusItem(config.id);
-//     },
-//     onMouseLeave() {
-//       actions.clearItemFocus();
-//     },
-//     tabIndex: -1,
-//   };
-// }

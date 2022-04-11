@@ -1,4 +1,13 @@
-import { createEffect, createSignal, For, JSX, PropsWithChildren, Show } from 'solid-js';
+import {
+  createEffect,
+  createMemo,
+  createSignal,
+  For,
+  Index,
+  JSX,
+  PropsWithChildren,
+  Show,
+} from 'solid-js';
 import { Portal } from 'solid-js/web';
 import { ComponentRef } from '~/types';
 import Combobox from '../../components/Combobox';
@@ -88,26 +97,29 @@ function ComboboxOption<Value = any>(props: PropsWithChildren<{ value?: Value }>
   return <li {...optionProps}>{props.children}</li>;
 }
 
-export function ComboboxExample() {
+export function MyCombobox() {
   const [value, setValue] = createSignal<{ displayValue: string; value: string }>(null);
+  const [inputValue, setInputValue] = createSignal('');
+  const filteredFruits = createMemo(() =>
+    fruits.filter((fruit) => fruit.displayValue.includes(inputValue()))
+  );
 
   return (
     <Popper>
       <Combobox
         value={value()}
-        onChange={(newValue) => {
-          console.log('combobox change:', newValue);
-          setValue(newValue);
-        }}
+        onChange={(newValue) => setValue(newValue)}
+        sortOptions={(a, b) => filteredFruits().indexOf(a) - filteredFruits().indexOf(b)}
       >
         <ComboboxLabel>Choose a fruit: </ComboboxLabel>
         <ComboboxInput
           getDisplayValue={(value: Fruit) => value?.displayValue ?? ''}
+          onInput={(event) => setInputValue(event.currentTarget.value)}
           ref={Popper.AnchorRef}
         />
         <ComboboxTrigger>Open</ComboboxTrigger>
         <ComboboxList ref={Popper.PopperRef}>
-          <For each={fruits}>
+          <For each={filteredFruits()}>
             {(fruit) => <ComboboxOption value={fruit}>{fruit.displayValue}</ComboboxOption>}
           </For>
         </ComboboxList>
@@ -115,3 +127,14 @@ export function ComboboxExample() {
     </Popper>
   );
 }
+
+export function ComboboxDemo() {
+  return (
+    <section>
+      <h2 id="Combobox">Combobox</h2>
+      <MyCombobox />
+    </section>
+  );
+}
+
+ComboboxDemo.Link = () => <a href="#Combobox">Combobox</a>;

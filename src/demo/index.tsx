@@ -1,7 +1,7 @@
 import '../styles.css';
 import { Background } from './Background';
 import { CalendarExample } from './components/Calendar';
-import { ComboboxExample } from './components/Combobox';
+import { ComboboxDemo, MyCombobox } from './components/Combobox';
 import { DisclosureDemo } from './components/Disclosure';
 import { FormExample } from './components/Form';
 import { ListboxDemo } from './components/Listbox';
@@ -46,7 +46,7 @@ export function Demo() {
             <ListboxDemo.Link />
           </li>
           <li>
-            <a href="#Combobox">Combobox</a>
+            <ComboboxDemo.Link />
           </li>
           <li>
             <a href="#Radio Group">Radio Group</a>
@@ -72,10 +72,7 @@ export function Demo() {
         <DisclosureDemo />
         <MenuDemo />
         <ListboxDemo />
-        <section>
-          <h2 id="Combobox">Combobox</h2>
-          <ComboboxExample />
-        </section>
+        <ComboboxDemo />
         <section>
           <h2 id="Radio Group">Radio Group</h2>
           <RadioGroupExample />

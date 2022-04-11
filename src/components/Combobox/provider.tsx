@@ -12,6 +12,7 @@ export type ComboboxProviderProps<Value> = PropsWithChildren<
   ComboboxContextProp<Value> & {
     onChange?: (newValue: Value) => void;
     orientation?: ListOrientation;
+    sortOptions?: (valueA: Value, valueB: Value) => number;
     value?: Value;
   }
 >;
@@ -21,6 +22,7 @@ export default function ComboboxProvider<Value>(props: ComboboxProviderProps<Val
   const store = createComboboxStore({
     onChange: props.onChange,
     orientation: () => props.orientation,
+    sortOptions: props.sortOptions,
     value: () => props.value,
   });
 
